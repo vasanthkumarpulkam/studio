@@ -89,12 +89,20 @@ export default function Home() {
           <Button variant="ghost" asChild size="sm">
             <Link href="#">Contact Us</Link>
           </Button>
-          <Button asChild style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
-            <Link href="/login">Login</Link>
-          </Button>
-           <Button variant="outline" asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+          {currentUser ? (
+            <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button asChild style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </nav>
       </header>
       <main className="flex-1">

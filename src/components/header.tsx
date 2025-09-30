@@ -1,4 +1,5 @@
 
+
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -27,7 +28,7 @@ export function Header() {
           </SheetTrigger>
           <SheetContent side="left">
             <nav className="grid gap-6 text-lg font-medium">
-              <Logo href="/dashboard" />
+              <Logo href="/" />
               <SidebarNav userRole={user.role} isMobile={true} />
             </nav>
           </SheetContent>
