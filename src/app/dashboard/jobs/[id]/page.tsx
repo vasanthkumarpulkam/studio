@@ -31,6 +31,7 @@ import {
   Play,
   Hammer,
   Clock,
+  Briefcase,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,6 +42,7 @@ import AcceptBidButton from '@/components/accept-bid-button';
 import MarkCompletedButton from '@/components/mark-completed-button';
 import LeaveReviewForm from '@/components/leave-review-form';
 import StartWorkButton from '@/components/start-work-button';
+import type { Provider } from '@/types';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
@@ -52,7 +54,12 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
 
   const bids = getBidsForJob(job.id);
   const isOwner = job.postedBy === currentUser.id;
-  const isProvider = currentUser.role === 'provider';
+  
+  const currentUserIsProvider = currentUser.role === 'provider';
+  const providerProfile = currentUserIsProvider ? getProvider(currentUser.id) as Provider : undefined;
+  const canProviderBid = providerProfile?.skills.includes(job.category);
+
+
   const hasPaymentMethod = currentUser.hasPaymentMethod;
 
   const statusColors = {
@@ -143,13 +150,23 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
             </CardContent>
           </Card>
 
-          {isProvider && !isOwner && job.status === 'open' && (
+          {currentUserIsProvider && !isOwner && job.status === 'open' && (
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle className="font-headline">Interested in this job?</CardTitle>
               </CardHeader>
               <CardContent>
-                {!hasPaymentMethod ? <PaymentAlert /> : <BidForm job={job} />}
+                {!canProviderBid && (
+                   <Alert>
+                    <Briefcase className="h-4 w-4" />
+                    <AlertTitle>Outside Your Skillset</AlertTitle>
+                    <AlertDescription>
+                     This job is in the '{job.category}' category, which is not one of your registered skills. You can only bid on jobs that match your profile.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {canProviderBid && !hasPaymentMethod && <PaymentAlert />}
+                {canProviderBid && hasPaymentMethod && <BidForm job={job} />}
               </CardContent>
             </Card>
           )}

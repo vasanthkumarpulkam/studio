@@ -19,9 +19,9 @@ export const users: User[] = [
 ];
 
 export const providers: Provider[] = [
-  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair'], location: 'San Francisco, CA', hasPaymentMethod: true },
-  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting'], location: 'San Francisco, CA', hasPaymentMethod: true },
-  { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening'], location: 'Oakland, CA', hasPaymentMethod: false },
+  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening', 'Landscaping'], location: 'Oakland, CA', hasPaymentMethod: false },
 ];
 
 export const jobs: Job[] = [
@@ -75,11 +75,15 @@ export const bids: Bid[] = [
 
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
-const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' (customer) hasPaymentMethod: false. 'user-2' (provider) hasPaymentMethod: true. 'user-4' (provider) hasPaymentMethod: false.
+const MOCKED_CURRENT_USER_ID = 'user-2'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
 
 export function getCurrentUser(): User {
   const user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
-  if (!user) throw new Error('Mocked user not found');
+  if (!user) {
+    const provider = getProvider(MOCKED_CURRENT_USER_ID);
+    if (!provider) throw new Error('Mocked user not found');
+    return provider;
+  }
   return user;
 }
 
@@ -89,6 +93,13 @@ export function getProvider(id: string): Provider | undefined {
 
 export function getJobsForCustomer(userId: string): Job[] {
   return jobs.filter(j => j.postedBy === userId);
+}
+
+export function getOpenJobsForProvider(providerId: string): Job[] {
+    const provider = getProvider(providerId);
+    if (!provider) return [];
+    
+    return jobs.filter(job => job.status === 'open' && provider.skills.includes(job.category));
 }
 
 export function getAllOpenJobs(): Job[] {
@@ -108,6 +119,7 @@ export const jobCategories = [
     'Cooking',
     'Babysitting',
     'Gardening',
+    'Grass Cutting',
     'Laundry',
     'Dishwashing',
     'Handyman Work',

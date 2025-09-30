@@ -8,7 +8,7 @@ import {
 import {
   getCurrentUser,
   getJobsForCustomer,
-  getAllOpenJobs,
+  getOpenJobsForProvider,
   jobCategories,
 } from '@/lib/data';
 import { JobCard } from '@/components/job-card';
@@ -31,14 +31,14 @@ export default function DashboardPage() {
   const isProvider = currentUser.role === 'provider';
 
   if (isProvider) {
-    const jobs = getAllOpenJobs();
+    const jobs = getOpenJobsForProvider(currentUser.id);
     return (
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold font-headline">Find Work</h1>
             <p className="text-muted-foreground">
-              Browse and bid on jobs available in your area.
+              Browse and bid on jobs available in your area and skillset.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export default function DashboardPage() {
             <CardContent className="py-12 text-center">
               <h3 className="text-xl font-semibold">No Open Jobs</h3>
               <p className="text-muted-foreground mt-2">
-                There are no jobs available right now. Check back later!
+                There are no jobs matching your skills right now. Check back later!
               </p>
             </CardContent>
           </Card>
