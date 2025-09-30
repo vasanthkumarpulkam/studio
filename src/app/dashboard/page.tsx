@@ -1,5 +1,7 @@
 
+'use client';
 
+import { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -26,14 +28,55 @@ import {
 import { ListFilter, Search, FilePlus2, Briefcase, MapPin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from '@/components/header';
+import type { Job } from '@/types';
 
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [location, setLocation] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  
+  const allJobs = useMemo(() => getAllOpenJobs(), []);
+  const providerJobs = useMemo(() => currentUser ? getOpenJobsForProvider(currentUser.id) : [], [currentUser]);
+  const customerJobs = useMemo(() => currentUser ? getJobsForCustomer(currentUser.id) : [], [currentUser]);
+
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>(allJobs);
+
+  useEffect(() => {
+    const jobsToFilter = currentUser?.role === 'provider' ? providerJobs : allJobs;
+    
+    const results = jobsToFilter.filter(job => {
+      const searchTermMatch = searchTerm.toLowerCase() 
+        ? job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          job.description.toLowerCase().includes(searchTerm.toLowerCase())
+        : true;
+
+      const locationMatch = location.toLowerCase() 
+        ? job.location.toLowerCase().includes(location.toLowerCase())
+        : true;
+      
+      const categoryMatch = selectedCategories.length > 0
+        ? selectedCategories.includes(job.category)
+        : true;
+
+      return searchTermMatch && locationMatch && categoryMatch;
+    });
+
+    setFilteredJobs(results);
+
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, currentUser]);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
   
   // Logged-out public view
   if (!currentUser) {
-    const availableJobs = getAllOpenJobs();
     return (
       <>
         <Header />
@@ -48,6 +91,8 @@ export default function DashboardPage() {
                           type="search"
                           placeholder="Search by keyword..."
                           className="w-full rounded-lg bg-background pl-10"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
                           />
                       </div>
                       <div className="relative flex-1 w-full">
@@ -56,12 +101,14 @@ export default function DashboardPage() {
                           type="search"
                           placeholder="Location"
                           className="w-full rounded-lg bg-background pl-10"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
-                            <span>Category</span>
+                            <span>Category ({selectedCategories.length})</span>
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
@@ -69,7 +116,13 @@ export default function DashboardPage() {
                           <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {jobCategories.map(cat => (
-                              <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
+                              <DropdownMenuCheckboxItem 
+                                key={cat}
+                                checked={selectedCategories.includes(cat)}
+                                onCheckedChange={() => handleCategoryChange(cat)}
+                              >
+                                {cat}
+                              </DropdownMenuCheckboxItem>
                           ))}
                       </DropdownMenuContent>
                       </DropdownMenu>
@@ -84,9 +137,9 @@ export default function DashboardPage() {
                 <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
               </div>
               <div className="mt-6">
-                  {availableJobs.length > 0 ? (
+                  {filteredJobs.length > 0 ? (
                       <div className="space-y-6">
-                      {availableJobs.map((job) => (
+                      {filteredJobs.map((job) => (
                           <JobCard key={job.id} job={job} role="customer" />
                       ))}
                       </div>
@@ -95,7 +148,7 @@ export default function DashboardPage() {
                       <CardContent className="py-12 text-center">
                           <h3 className="text-xl font-semibold">No Jobs Available</h3>
                           <p className="text-muted-foreground mt-2">
-                          There are no jobs posted right now. Check back later!
+                          There are no jobs matching your criteria. Try adjusting your filters.
                           </p>
                       </CardContent>
                       </Card>
@@ -113,7 +166,6 @@ export default function DashboardPage() {
 
   // Provider View
   if (isProvider) {
-    const jobs = getOpenJobsForProvider(currentUser.id);
     return (
       <>
         <Header />
@@ -128,6 +180,8 @@ export default function DashboardPage() {
                           type="search"
                           placeholder="Search by keyword..."
                           className="w-full rounded-lg bg-background pl-10"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
                           />
                       </div>
                        <div className="relative flex-1 w-full">
@@ -136,20 +190,28 @@ export default function DashboardPage() {
                           type="search"
                           placeholder="Location"
                           className="w-full rounded-lg bg-background pl-10"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
-                            <span>Category</span>
+                            <span>Category ({selectedCategories.length})</span>
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[240px] max-h-60 overflow-y-auto">
-                          <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                          <DropdownMenuLabel>Filter by your skills</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          {jobCategories.map(cat => (
-                              <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
+                          {getProvider(currentUser.id)?.skills.map(cat => (
+                              <DropdownMenuCheckboxItem 
+                                key={cat}
+                                checked={selectedCategories.includes(cat)}
+                                onCheckedChange={() => handleCategoryChange(cat)}
+                              >
+                                {cat}
+                              </DropdownMenuCheckboxItem>
                           ))}
                       </DropdownMenuContent>
                       </DropdownMenu>
@@ -165,9 +227,9 @@ export default function DashboardPage() {
                 </p>
             </div>
 
-            {jobs.length > 0 ? (
+            {filteredJobs.length > 0 ? (
               <div className="space-y-6">
-                {jobs.map((job) => (
+                {filteredJobs.map((job) => (
                   <JobCard key={job.id} job={job} role="provider" />
                 ))}
               </div>
@@ -176,7 +238,7 @@ export default function DashboardPage() {
                 <CardContent className="py-12 text-center">
                   <h3 className="text-xl font-semibold">No Open Jobs</h3>
                   <p className="text-muted-foreground mt-2">
-                    There are no jobs matching your skills right now. Check back later!
+                    There are no jobs matching your criteria. Try adjusting your filters.
                   </p>
                 </CardContent>
               </Card>
@@ -188,7 +250,7 @@ export default function DashboardPage() {
   }
 
   // Customer View
-  const myJobs = getJobsForCustomer(currentUser.id);
+  const myJobs = customerJobs;
   
   return (
     <>
@@ -239,3 +301,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
