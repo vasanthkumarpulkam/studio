@@ -5,11 +5,9 @@ import { usePathname } from 'next/navigation';
 import {
   Home,
   FilePlus2,
-  User,
   Settings,
   Search,
   Gavel,
-  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,9 +20,7 @@ export function SidebarNav({ userRole, isMobile = false }: SidebarNavProps) {
   const pathname = usePathname();
 
   const baseNav = [
-    { href: '/dashboard/profile', label: 'Profile', icon: User },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-    { href: '/dashboard/settings/payment', label: 'Payment', icon: CreditCard },
   ];
 
   const customerNav = [
@@ -44,14 +40,14 @@ export function SidebarNav({ userRole, isMobile = false }: SidebarNavProps) {
   const linkClass = (href: string) =>
     cn(
       'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-      pathname === href && 'bg-muted text-primary',
+      pathname.startsWith(href) && href !== '/dashboard' ? 'bg-muted text-primary' : pathname === href ? 'bg-muted text-primary' : '',
       isMobile && 'text-lg'
     );
   
   const mobileLinkClass = (href: string) =>
     cn(
       "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground",
-      pathname === href && 'text-foreground'
+      pathname.startsWith(href) && href !== '/dashboard' ? 'text-foreground' : pathname === href ? 'text-foreground' : ''
     );
 
 
