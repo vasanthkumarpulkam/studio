@@ -121,8 +121,8 @@ export default function SignupPage() {
                 <Button type="submit" className="w-full">
                   Create Account
                 </Button>
-                 <Button variant="link" asChild>
-                    <Link href="/">Back</Link>
+                 <Button variant="link" type="button" onClick={() => router.back()}>
+                    Back
                 </Button>
               </div>
             </form>
@@ -136,7 +136,7 @@ export default function SignupPage() {
                     <Button type="submit" className="w-full">
                         Verify & Create Account
                     </Button>
-                     <Button variant="link" size="sm" onClick={() => setStep(1)}>
+                     <Button variant="link" size="sm" type="button" onClick={() => setStep(1)}>
                         Back to sign up
                     </Button>
                 </div>

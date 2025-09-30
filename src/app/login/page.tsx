@@ -1,4 +1,6 @@
 
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,15 +13,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+
   return (
     <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
-            <div className='mb-4 flex justify-center'>
-                <Logo href="/" />
-            </div>
+          <div className="mb-4 flex justify-center">
+            <Logo href="/" />
+          </div>
           <CardTitle className="text-2xl font-headline">Welcome Back!</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
@@ -49,10 +54,10 @@ export default function LoginPage() {
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full" asChild>
-                <Link href="/dashboard">Login</Link>
+              <Link href="/dashboard">Login</Link>
             </Button>
-             <Button variant="link" asChild>
-                <Link href="/">Back</Link>
+            <Button variant="link" onClick={() => router.back()}>
+              Back
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
