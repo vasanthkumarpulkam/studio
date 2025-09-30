@@ -27,7 +27,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
-import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote } from 'lucide-react';
+import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, Home, ChevronRight } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 const jobSchema = z.object({
@@ -75,6 +75,14 @@ export default function NewJobPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+       <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/dashboard" className="flex items-center gap-2 hover:text-foreground">
+          <Home className="w-4 h-4" />
+          Dashboard
+        </Link>
+        <ChevronRight className="w-4 h-4" />
+        <span className="text-foreground">Post a New Job</span>
+      </div>
       <div className="max-w-3xl mx-auto w-full">
         <Card>
           <CardHeader>
