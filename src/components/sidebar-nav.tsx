@@ -12,7 +12,6 @@ import {
   Gavel,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
 
 type SidebarNavProps = {
   userRole: 'customer' | 'provider';
@@ -24,15 +23,13 @@ export function SidebarNav({ userRole, isMobile = false }: SidebarNavProps) {
 
   const customerNav = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
-    { href: '/dashboard/my-jobs', label: 'My Jobs', icon: Briefcase },
     { href: '/dashboard/jobs/new', label: 'Post a Job', icon: FilePlus2 },
     { href: '/dashboard/profile', label: 'Profile', icon: User },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ];
 
   const providerNav = [
-    { href: '/dashboard', label: 'Dashboard', icon: Home },
-    { href: '/dashboard/find-jobs', label: 'Find Jobs', icon: Search },
+    { href: '/dashboard', label: 'Find Jobs', icon: Search },
     { href: '/dashboard/my-bids', label: 'My Bids', icon: Gavel },
     { href: '/dashboard/profile', label: 'Profile', icon: User },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
