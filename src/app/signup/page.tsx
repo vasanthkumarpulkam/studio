@@ -48,14 +48,14 @@ export default function SignupPage() {
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
-              <Logo />
+              <Logo href="/" />
           </div>
           <CardTitle className="text-2xl font-headline">
             {step === 1 ? 'Create an Account' : 'Verify Your Email'}
           </CardTitle>
           <CardDescription>
             {step === 1
-              ? 'Join HandyConnect to hire or offer your services.'
+              ? 'Join ServiceHub to hire or offer your services.'
               : `Enter the 6-digit code sent to ${email}`}
           </CardDescription>
         </CardHeader>
