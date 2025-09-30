@@ -23,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ListFilter } from 'lucide-react';
+import { ListFilter, Search } from 'lucide-react';
 import { FilePlus2 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -34,40 +34,42 @@ export default function DashboardPage() {
     const jobs = getOpenJobsForProvider(currentUser.id);
     return (
       <div>
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="mb-6">
             <h1 className="text-3xl font-bold font-headline">Find Work</h1>
             <p className="text-muted-foreground">
               Browse and bid on jobs available in your area and skillset.
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative ml-auto flex-1 md:grow-0">
-                <Input
-                type="search"
-                placeholder="Search by location..."
-                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                />
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-1">
-                  <ListFilter className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Category
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {jobCategories.map(cat => (
-                    <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
+
+        <Card className="mb-6">
+            <CardContent className="p-4">
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div className="relative flex-1 w-full">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                        type="search"
+                        placeholder="Search by keyword, location..."
+                        className="w-full rounded-lg bg-background pl-10"
+                        />
+                    </div>
+                    <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full sm:w-auto">
+                        <ListFilter className="mr-2 h-4 w-4" />
+                        Category
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
+                        <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {jobCategories.map(cat => (
+                            <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
+                        ))}
+                    </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </CardContent>
+        </Card>
 
         {jobs.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
