@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -61,8 +62,8 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   
   let canProviderBid = false;
   if (currentUserIsProvider) {
-    const providerProfile = currentUser as Provider;
-    canProviderBid = providerProfile.skills.includes(job.category);
+    const providerProfile = getProvider(currentUser.id);
+    canProviderBid = providerProfile?.skills.includes(job.category) ?? false;
   }
 
   const hasPaymentMethod = currentUser.hasPaymentMethod;
