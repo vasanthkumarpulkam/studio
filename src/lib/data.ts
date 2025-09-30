@@ -88,18 +88,22 @@ export { notifications };
 
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
-const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
+// Set to null to simulate a logged-out user
+const MOCKED_CURRENT_USER_ID: string | null = null; // 'user-1' (customer), 'user-2' (provider)
 
-export function getCurrentUser(): User {
-  // Find in regular users
-  let user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
-  if (user) return { ...user, hasPaymentMethod: providers.find(p => p.id === user?.id)?.hasPaymentMethod ?? user.hasPaymentMethod };
+export function getCurrentUser(): User | null {
+  if (!MOCKED_CURRENT_USER_ID) {
+    return null;
+  }
   
-  // Find in providers
-  const provider = getProvider(MOCKED_CURRENT_USER_ID);
-  if (provider) return provider;
+  // Find in regular users or providers
+  let user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
+  if (user) {
+    const providerDetails = providers.find(p => p.id === user?.id);
+    return { ...user, ...providerDetails };
+  }
 
-  throw new Error('Mocked user not found');
+  return null;
 }
 
 
@@ -184,5 +188,3 @@ export const jobCategories = [
     'Freelance Computer Work',
     'Other'
 ];
-
-    

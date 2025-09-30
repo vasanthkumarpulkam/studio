@@ -23,15 +23,62 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ListFilter, Search, FilePlus2, Briefcase } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Header } from '@/components/header';
 
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
+  
+  // Logged-out public view
+  if (!currentUser) {
+    const availableJobs = getAllOpenJobs();
+    return (
+      <>
+      <Header />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Find Your Next Job</h1>
+          <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
+        </div>
+         <div className="mt-6">
+            {availableJobs.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {availableJobs.map((job) => (
+                    <JobCard key={job.id} job={job} role="customer" />
+                ))}
+                </div>
+            ) : (
+                <Card>
+                <CardContent className="py-12 text-center">
+                    <h3 className="text-xl font-semibold">No Jobs Available</h3>
+                    <p className="text-muted-foreground mt-2">
+                    There are no jobs posted right now. Check back later!
+                    </p>
+                </CardContent>
+                </Card>
+            )}
+        </div>
+         <div className="text-center py-8">
+          <h2 className="text-2xl font-bold font-headline mb-2">Ready to Post a Job?</h2>
+          <p className="text-muted-foreground mb-4">Sign up as a customer to get help from our talented providers.</p>
+          <Button asChild>
+            <Link href="/signup">Sign Up Now</Link>
+          </Button>
+        </div>
+      </div>
+      </>
+    );
+  }
+
+
   const isProvider = currentUser.role === 'provider';
 
+  // Provider View
   if (isProvider) {
     const jobs = getOpenJobsForProvider(currentUser.id);
     return (
+      <>
+      <Header />
       <div>
         <div className="mb-6">
             <h1 className="text-3xl font-bold font-headline">Find Work</h1>
@@ -87,24 +134,25 @@ export default function DashboardPage() {
           </Card>
         )}
       </div>
+      </>
     );
   }
 
   // Customer View
   const myJobs = getJobsForCustomer(currentUser.id);
-  const availableJobs = getAllOpenJobs();
   
   return (
+    <>
+    <Header />
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome, {currentUser.name}!</h1>
-        <p className="text-muted-foreground">Find the perfect service providers for your needs.</p>
+        <p className="text-muted-foreground">Manage your jobs or post a new one.</p>
       </div>
 
-       <Tabs defaultValue="browse" className="w-full">
+       <Tabs defaultValue="my-jobs" className="w-full">
         <div className='flex justify-between items-center flex-wrap gap-4'>
             <TabsList>
-                <TabsTrigger value="browse"><Search className='mr-2'/>Browse Jobs</TabsTrigger>
                 <TabsTrigger value="my-jobs"><Briefcase className='mr-2' />My Jobs ({myJobs.length})</TabsTrigger>
             </TabsList>
             <Button asChild>
@@ -114,27 +162,6 @@ export default function DashboardPage() {
                 </Link>
             </Button>
         </div>
-        <TabsContent value="browse">
-             <div className="mt-6">
-                <h2 className="text-2xl font-bold font-headline mb-4">Available Jobs</h2>
-                {availableJobs.length > 0 ? (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {availableJobs.map((job) => (
-                        <JobCard key={job.id} job={job} role="customer" />
-                    ))}
-                    </div>
-                ) : (
-                    <Card>
-                    <CardContent className="py-12 text-center">
-                        <h3 className="text-xl font-semibold">No Jobs Available</h3>
-                        <p className="text-muted-foreground mt-2">
-                        There are no jobs posted right now. Check back later!
-                        </p>
-                    </CardContent>
-                    </Card>
-                )}
-            </div>
-        </TabsContent>
         <TabsContent value="my-jobs">
             <div className="mt-6">
                  {myJobs.length > 0 ? (
@@ -160,5 +187,6 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
+    </>
   );
 }
