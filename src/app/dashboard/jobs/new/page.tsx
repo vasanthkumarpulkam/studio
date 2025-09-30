@@ -28,10 +28,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
-import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, Home, ChevronRight } from 'lucide-react';
+import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 const jobSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -93,16 +94,19 @@ export default function NewJobPage() {
 
 
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/dashboard" className="flex items-center gap-2 hover:text-foreground">
-          <Home className="w-4 h-4" />
-          Dashboard
-        </Link>
-        <ChevronRight className="w-4 h-4" />
-        <span className="text-foreground">Post a New Job</span>
-      </div>
-      <div className="max-w-3xl mx-auto w-full">
+    <>
+       <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Post a New Job</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      <div className="max-w-3xl w-full">
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Post a New Job</CardTitle>
@@ -271,6 +275,6 @@ export default function NewJobPage() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </>
   );
 }

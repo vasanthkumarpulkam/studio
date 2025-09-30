@@ -35,7 +35,6 @@ import {
 } from '@/components/ui/select';
 import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Header } from '@/components/header';
 import type { Job } from '@/types';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
@@ -94,7 +93,7 @@ export default function DashboardPage() {
 
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius, currentUser?.role]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
@@ -117,8 +116,7 @@ export default function DashboardPage() {
   if (!currentUser) {
     return (
       <>
-        <Header />
-        <div className="grid lg:grid-cols-[320px_1fr] gap-8 p-4 md:p-6">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8">
           <aside className="hidden lg:block">
              <Card>
               <CardContent className="p-4">
@@ -238,8 +236,7 @@ export default function DashboardPage() {
   if (isProvider) {
     return (
       <>
-        <Header />
-        <div className="grid lg:grid-cols-[320px_1fr] gap-8 p-4 md:p-6">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8">
           <aside className="hidden lg:block">
             <Card>
               <CardContent className="p-4">
@@ -356,8 +353,7 @@ export default function DashboardPage() {
   
   return (
     <>
-    <Header />
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome, {currentUser.name}!</h1>
         <p className="text-muted-foreground">Manage your jobs or post a new one.</p>
