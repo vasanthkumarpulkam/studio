@@ -30,7 +30,7 @@ export default function MyBidsPage() {
     const job = getJob(jobId);
     if (!job) return <Badge variant="destructive">Error</Badge>;
 
-    if (job.status === 'completed' || job.status === 'in-progress') {
+    if (job.status === 'completed' || job.status === 'in-progress' || job.status === 'working') {
       if (job.acceptedBid === bidId) {
         return <Badge className="bg-green-100 text-green-800 border-green-200">Won</Badge>;
       }

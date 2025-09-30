@@ -47,7 +47,7 @@ export const jobs: Job[] = [
     budget: 60,
     postedBy: 'user-1',
     postedOn: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'in-progress',
+    status: 'working',
     acceptedBid: 'bid-3',
     images: [jobImage2],
     isCashOnly: true,

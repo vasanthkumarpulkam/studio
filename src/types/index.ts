@@ -25,7 +25,7 @@ export type Job = {
   budget?: number;
   postedBy: string; // userId
   postedOn: string; // ISO date string
-  status: 'open' | 'in-progress' | 'completed' | 'disputed';
+  status: 'open' | 'in-progress' | 'working' | 'completed' | 'disputed';
   images: string[];
   acceptedBid?: string; // bidId
   isCashOnly?: boolean;

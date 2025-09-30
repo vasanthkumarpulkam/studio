@@ -40,9 +40,23 @@ export async function acceptBid(jobId: string, bidId: string) {
     }
 }
 
-export async function markJobAsCompleted(jobId: string) {
+export async function startWork(jobId: string) {
     const job = jobs.find(j => j.id === jobId);
     if (job && job.status === 'in-progress') {
+        job.status = 'working';
+        console.log(`Work started for job ${jobId}.`);
+        revalidatePath(`/dashboard/jobs/${jobId}`);
+        revalidatePath('/dashboard/my-bids');
+    } else {
+        console.error('Job not found or not in the correct state to start work.');
+        throw new Error('Could not start work on this job.');
+    }
+}
+
+
+export async function markJobAsCompleted(jobId: string) {
+    const job = jobs.find(j => j.id === jobId);
+    if (job && (job.status === 'in-progress' || job.status === 'working')) {
         job.status = 'completed';
         console.log(`Job ${jobId} marked as completed.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);

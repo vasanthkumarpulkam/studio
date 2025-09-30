@@ -16,7 +16,7 @@ export default function MarkCompletedButton({ jobId }: { jobId: string }) {
         await markJobAsCompleted(jobId);
         toast({
           title: 'Job Marked as Completed!',
-          description: 'Once both parties confirm, payment will be released.',
+          description: 'Payment will be released once the customer confirms completion.',
         });
       } catch (error) {
         toast({

@@ -28,6 +28,8 @@ import {
   CreditCard,
   ShieldAlert,
   Banknote,
+  Play,
+  Hammer,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +39,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AcceptBidButton from '@/components/accept-bid-button';
 import MarkCompletedButton from '@/components/mark-completed-button';
 import LeaveReviewForm from '@/components/leave-review-form';
+import StartWorkButton from '@/components/start-work-button';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
@@ -54,9 +57,16 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const statusColors = {
     open: 'bg-green-100 text-green-800 border-green-200',
     'in-progress': 'bg-blue-100 text-blue-800 border-blue-200',
+    working: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     completed: 'bg-gray-100 text-gray-800 border-gray-200',
     disputed: 'bg-red-100 text-red-800 border-red-200',
   };
+
+  const statusIcons = {
+      'in-progress': <Check className="h-4 w-4 text-blue-600"/>,
+      working: <Hammer className="h-4 w-4 text-yellow-600"/>,
+      completed: <Check className="h-4 w-4 text-green-600"/>,
+  }
 
   const acceptedBid = job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
   const acceptedProvider = acceptedBid ? getProvider(acceptedBid.providerId) : null;
@@ -161,7 +171,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
         </div>
 
         <div className="space-y-6">
-          {job.status !== 'open' && acceptedProvider && (
+          {(job.status !== 'open' && acceptedProvider) && (
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Provider Selected</CardTitle>
@@ -180,30 +190,50 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                       </div>
                     </div>
                   </div>
+
                   {job.status === 'in-progress' && (
-                    <Alert variant="default" className="bg-blue-50 border-blue-200">
-                        <Check className="h-4 w-4 text-blue-600"/>
-                        <AlertTitle className="text-blue-800">Job In Progress</AlertTitle>
+                     <Alert variant="default" className="bg-blue-50 border-blue-200">
+                        {statusIcons[job.status]}
+                        <AlertTitle className="text-blue-800">Job Accepted</AlertTitle>
                         <AlertDescription className="text-blue-700">
-                         {job.isCashOnly ? 'This is a cash job. Payment will be made directly to the provider. The platform fee will be charged to the provider\'s saved payment method upon completion.' : `Payment of $${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.`}
+                         The provider has been selected. Waiting for work to begin.
                         </AlertDescription>
                     </Alert>
                   )}
-                  {isOwner && job.status === 'in-progress' && (
+
+                  {job.status === 'working' && (
+                     <Alert variant="default" className="bg-yellow-50 border-yellow-200">
+                        {statusIcons[job.status]}
+                        <AlertTitle className="text-yellow-800">Job In Progress</AlertTitle>
+                        <AlertDescription className="text-yellow-700">
+                          {job.isCashOnly ? 'This is a cash job. Payment will be made directly to the provider. The platform fee will be charged to the provider\'s saved payment method upon completion.' : `Payment of $${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.`}
+                        </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {isOwner && (job.status === 'in-progress' || job.status === 'working') && (
                     <div className="flex flex-col space-y-2">
                       <MarkCompletedButton jobId={job.id} />
                       <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
                     </div>
                   )}
+
                   {currentUser.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'in-progress' && (
+                     <div className="flex flex-col space-y-2">
+                        <StartWorkButton jobId={job.id} />
+                     </div>
+                  )}
+
+                  {currentUser.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'working' && (
                      <div className="flex flex-col space-y-2">
                         <MarkCompletedButton jobId={job.id} />
                         <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
                      </div>
                   )}
+
                   {job.status === 'completed' && (
                      <Alert variant="default" className="bg-green-50 border-green-200">
-                        <Check className="h-4 w-4 text-green-600"/>
+                        {statusIcons[job.status]}
                         <AlertTitle className="text-green-800">Job Completed!</AlertTitle>
                         <AlertDescription className="text-green-700">
                           {job.isCashOnly ? 'The provider has received cash payment. You can now leave a review.' : 'Payment has been released to the provider. You can now leave a review.'}
