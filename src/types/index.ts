@@ -21,7 +21,7 @@ export type Job = {
   title: string;
   description: string;
   category: string;
-  location: string;
+  location:string;
   budget?: number;
   postedBy: string; // userId
   postedOn: string; // ISO date string

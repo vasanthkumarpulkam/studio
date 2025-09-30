@@ -25,7 +25,8 @@ import {
   Check,
   User,
   AlertTriangle,
-  CreditCard
+  CreditCard,
+  ShieldAlert
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -181,10 +182,16 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     </Alert>
                   )}
                   {isOwner && job.status === 'in-progress' && (
-                    <MarkCompletedButton jobId={job.id} />
+                    <div className="flex flex-col space-y-2">
+                      <MarkCompletedButton jobId={job.id} />
+                      <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
+                    </div>
                   )}
                   {(acceptedProvider.id === currentUser.id) && job.status === 'in-progress' && (
-                     <MarkCompletedButton jobId={job.id} />
+                     <div className="flex flex-col space-y-2">
+                        <MarkCompletedButton jobId={job.id} />
+                        <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
+                     </div>
                   )}
                   {job.status === 'completed' && (
                      <Alert variant="default" className="bg-green-50 border-green-200">
