@@ -112,7 +112,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-8">
-          <Card className="bg-white">
+          <Card>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-2">
@@ -164,7 +164,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           </Card>
 
           {currentUserIsProvider && !isOwner && job.status === 'open' && (
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="font-headline">Interested in this job?</CardTitle>
               </CardHeader>
@@ -206,7 +206,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           )}
 
           {job.status === 'completed' && (isOwner || (acceptedProvider && currentUser && acceptedProvider.id === currentUser.id)) && currentUser && (
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <CardTitle className='font-headline'>Leave a Review</CardTitle>
                 <CardDescription>Rate your experience with the {isOwner ? 'provider' : 'customer'}.</CardDescription>
@@ -224,7 +224,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
 
         <div className="space-y-6">
           {(job.status !== 'open' && acceptedProvider) && (
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Provider Selected</CardTitle>
               </CardHeader>
@@ -297,7 +297,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           )}
           
           {isOwner && job.status === 'open' && (
-            <Card className="bg-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-xl">
                   {bids.length} {bids.length === 1 ? 'Bid' : 'Bids'} Received
