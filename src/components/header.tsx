@@ -21,28 +21,38 @@ export function Header() {
           <Logo />
         </Link>
       </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <nav className="grid gap-6 text-lg font-medium">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 text-lg font-semibold"
-            >
-              <Logo />
-            </Link>
-            <SidebarNav userRole={user.role} isMobile={true} />
-          </nav>
-        </SheetContent>
-      </Sheet>
+      {user && (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle navigation menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <nav className="grid gap-6 text-lg font-medium">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 text-lg font-semibold"
+              >
+                <Logo />
+              </Link>
+              <SidebarNav userRole={user.role} isMobile={true} />
+            </nav>
+          </SheetContent>
+        </Sheet>
+      )}
       <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <NotificationBell userId={user.id} />
-        <UserNav user={user} />
+        {user ? (
+          <>
+            <NotificationBell userId={user.id} />
+            <UserNav user={user} />
+          </>
+        ) : (
+          <Button asChild>
+             <Link href="/login">Login / Sign Up</Link>
+          </Button>
+        )}
       </div>
     </header>
   );
