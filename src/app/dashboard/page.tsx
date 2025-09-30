@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -34,38 +35,66 @@ export default function DashboardPage() {
     const availableJobs = getAllOpenJobs();
     return (
       <>
-      <Header />
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-primary">Find Your Next Job</h1>
-          <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
+        <Header />
+        <div className="grid lg:grid-cols-[280px_1fr] gap-8 p-4 md:p-6">
+          <aside className="hidden lg:block">
+             <Card>
+              <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="relative flex-1 w-full">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                          type="search"
+                          placeholder="Search by keyword..."
+                          className="w-full rounded-lg bg-background pl-10"
+                          />
+                      </div>
+                      <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="w-full sm:w-auto">
+                          <ListFilter className="mr-2 h-4 w-4" />
+                          Category
+                          </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
+                          <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {jobCategories.map(cat => (
+                              <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
+                          ))}
+                      </DropdownMenuContent>
+                      </DropdownMenu>
+                  </div>
+              </CardContent>
+            </Card>
+          </aside>
+          <main>
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight text-primary">Find Your Next Job</h1>
+                <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
+              </div>
+              <div className="mt-6">
+                  {availableJobs.length > 0 ? (
+                      <div className="space-y-6">
+                      {availableJobs.map((job) => (
+                          <JobCard key={job.id} job={job} role="customer" />
+                      ))}
+                      </div>
+                  ) : (
+                      <Card>
+                      <CardContent className="py-12 text-center">
+                          <h3 className="text-xl font-semibold">No Jobs Available</h3>
+                          <p className="text-muted-foreground mt-2">
+                          There are no jobs posted right now. Check back later!
+                          </p>
+                      </CardContent>
+                      </Card>
+                  )}
+              </div>
+            </div>
+          </main>
         </div>
-         <div className="mt-6">
-            {availableJobs.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {availableJobs.map((job) => (
-                    <JobCard key={job.id} job={job} role="customer" />
-                ))}
-                </div>
-            ) : (
-                <Card>
-                <CardContent className="py-12 text-center">
-                    <h3 className="text-xl font-semibold">No Jobs Available</h3>
-                    <p className="text-muted-foreground mt-2">
-                    There are no jobs posted right now. Check back later!
-                    </p>
-                </CardContent>
-                </Card>
-            )}
-        </div>
-         <div className="text-center py-8">
-          <h2 className="text-2xl font-bold font-headline mb-2">Ready to Post a Job?</h2>
-          <p className="text-muted-foreground mb-4">Sign up as a customer to get help from our talented providers.</p>
-          <Button asChild>
-            <Link href="/signup">Sign Up Now</Link>
-          </Button>
-        </div>
-      </div>
       </>
     );
   }
@@ -78,62 +107,65 @@ export default function DashboardPage() {
     const jobs = getOpenJobsForProvider(currentUser.id);
     return (
       <>
-      <Header />
-      <div>
-        <div className="mb-6">
-            <h1 className="text-3xl font-bold font-headline">Find Work</h1>
-            <p className="text-muted-foreground">
-              Browse and bid on jobs available in your area and skillset.
-            </p>
+        <Header />
+        <div className="grid lg:grid-cols-[280px_1fr] gap-8 p-4 md:p-6">
+          <aside className="hidden lg:block">
+            <Card>
+              <CardContent className="p-4">
+                  <div className="flex flex-col gap-4">
+                      <div className="relative flex-1 w-full">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                          type="search"
+                          placeholder="Search by keyword, location..."
+                          className="w-full rounded-lg bg-background pl-10"
+                          />
+                      </div>
+                      <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="w-full justify-between">
+                            <span>Category</span>
+                            <ListFilter className="h-4 w-4" />
+                          </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[240px] max-h-60 overflow-y-auto">
+                          <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {jobCategories.map(cat => (
+                              <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
+                          ))}
+                      </DropdownMenuContent>
+                      </DropdownMenu>
+                  </div>
+              </CardContent>
+            </Card>
+          </aside>
+           <main>
+            <div className="mb-6">
+                <h1 className="text-3xl font-bold font-headline">Find Work</h1>
+                <p className="text-muted-foreground">
+                  Browse and bid on jobs available in your area and skillset.
+                </p>
+            </div>
+
+            {jobs.length > 0 ? (
+              <div className="space-y-6">
+                {jobs.map((job) => (
+                  <JobCard key={job.id} job={job} role="provider" />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <h3 className="text-xl font-semibold">No Open Jobs</h3>
+                  <p className="text-muted-foreground mt-2">
+                    There are no jobs matching your skills right now. Check back later!
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </main>
         </div>
-
-        <Card className="mb-6">
-            <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="relative flex-1 w-full">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                        type="search"
-                        placeholder="Search by keyword, location..."
-                        className="w-full rounded-lg bg-background pl-10"
-                        />
-                    </div>
-                    <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-full sm:w-auto">
-                        <ListFilter className="mr-2 h-4 w-4" />
-                        Category
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
-                        <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {jobCategories.map(cat => (
-                            <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
-                        ))}
-                    </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </CardContent>
-        </Card>
-
-        {jobs.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} role="provider" />
-            ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <h3 className="text-xl font-semibold">No Open Jobs</h3>
-              <p className="text-muted-foreground mt-2">
-                There are no jobs matching your skills right now. Check back later!
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
       </>
     );
   }
@@ -144,7 +176,7 @@ export default function DashboardPage() {
   return (
     <>
     <Header />
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 md:p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome, {currentUser.name}!</h1>
         <p className="text-muted-foreground">Manage your jobs or post a new one.</p>
@@ -167,7 +199,7 @@ export default function DashboardPage() {
                  {myJobs.length > 0 ? (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {myJobs.map((job) => (
-                        <JobCard key={job.id} job={job} role="customer" />
+                        <JobCard key={job.id} job={job} role="customer" isGrid />
                     ))}
                     </div>
                 ) : (
