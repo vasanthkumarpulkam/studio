@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -36,7 +37,7 @@ export default function BidForm({ job }: { job: Job }) {
   const [suggestion, setSuggestion] = useState<{ suggestedBid: number; reasoning: string } | null>(null);
   const { toast } = useToast();
   const currentUser = getCurrentUser();
-  const hasPaymentMethod = currentUser.hasPaymentMethod;
+  const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
   const form = useForm<BidFormValues>({
     resolver: zodResolver(bidSchema),
@@ -66,6 +67,14 @@ export default function BidForm({ job }: { job: Job }) {
   };
   
   function onSubmit(values: BidFormValues) {
+    if (!currentUser) {
+        toast({
+            variant: 'destructive',
+            title: 'Not Logged In',
+            description: 'You must be logged in to submit a bid.',
+        });
+        return;
+    }
     if (!hasPaymentMethod) {
       toast({
         variant: 'destructive',
