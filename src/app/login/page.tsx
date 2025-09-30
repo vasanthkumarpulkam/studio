@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { useRouter } from 'next/navigation';
+import { login } from '@/lib/data';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,7 +22,8 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, you would handle authentication here.
-    // For this mock, we'll just redirect to the dashboard.
+    // For this mock, we'll log in as 'user-1' and then redirect.
+    login('user-1');
     router.push('/dashboard');
   };
 
