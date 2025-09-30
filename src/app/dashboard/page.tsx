@@ -25,6 +25,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ListFilter, Search, FilePlus2, Briefcase, MapPin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from '@/components/header';
@@ -36,6 +43,7 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('newest');
   
   const allJobs = useMemo(() => getAllOpenJobs(), []);
   const providerJobs = useMemo(() => currentUser ? getOpenJobsForProvider(currentUser.id) : [], [currentUser]);
@@ -46,7 +54,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const jobsToFilter = currentUser?.role === 'provider' ? providerJobs : allJobs;
     
-    const results = jobsToFilter.filter(job => {
+    let results = jobsToFilter.filter(job => {
       const searchTermMatch = searchTerm.toLowerCase() 
         ? job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
           job.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -63,9 +71,25 @@ export default function DashboardPage() {
       return searchTermMatch && locationMatch && categoryMatch;
     });
 
+    // Sorting logic
+    results.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.postedOn).getTime() - new Date(a.postedOn).getTime();
+        case 'oldest':
+          return new Date(a.postedOn).getTime() - new Date(b.postedOn).getTime();
+        case 'budget-asc':
+          return (a.budget || Infinity) - (b.budget || Infinity);
+        case 'budget-desc':
+          return (b.budget || 0) - (a.budget || 0);
+        default:
+          return 0;
+      }
+    });
+
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, currentUser]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, currentUser, sortBy]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
@@ -132,9 +156,22 @@ export default function DashboardPage() {
           </aside>
           <main>
             <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Find Your Next Job</h1>
-                <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-primary">Find Your Next Job</h1>
+                  <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
+                </div>
+                <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest Listings</SelectItem>
+                    <SelectItem value="oldest">Oldest Listings</SelectItem>
+                    <SelectItem value="budget-asc">Budget: Low to High</SelectItem>
+                    <SelectItem value="budget-desc">Budget: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="mt-6">
                   {filteredJobs.length > 0 ? (
@@ -220,11 +257,24 @@ export default function DashboardPage() {
             </Card>
           </aside>
            <main>
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold font-headline">Find Work</h1>
-                <p className="text-muted-foreground">
-                  Browse and bid on jobs available in your area and skillset.
-                </p>
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h1 className="text-3xl font-bold font-headline">Find Work</h1>
+                  <p className="text-muted-foreground">
+                    Browse and bid on jobs available in your area and skillset.
+                  </p>
+                </div>
+                <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest Listings</SelectItem>
+                    <SelectItem value="oldest">Oldest Listings</SelectItem>
+                    <SelectItem value="budget-asc">Budget: Low to High</SelectItem>
+                    <SelectItem value="budget-desc">Budget: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
             </div>
 
             {filteredJobs.length > 0 ? (
