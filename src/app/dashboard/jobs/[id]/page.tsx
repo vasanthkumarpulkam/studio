@@ -182,7 +182,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                 {canProviderBid && hasPaymentMethod && currentUser && (
                   <div className="space-y-6">
                     <div className="flex justify-end">
-                      <ChatModal 
+                     {currentUser && <ChatModal 
                         triggerButton={
                           <Button variant="outline">
                               <MessageSquare className="mr-2 h-4 w-4"/>
@@ -195,7 +195,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                         currentUser={currentUser}
                         jobId={job.id}
                         providerId={currentUser.id}
-                      />
+                      />}
                     </div>
                     <Separator />
                     <BidForm job={job} />
@@ -206,7 +206,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           )}
 
           {job.status === 'completed' && (isOwner || (acceptedProvider && currentUser && acceptedProvider.id === currentUser.id)) && currentUser && (
-            <Card>
+            <Card className="bg-white">
               <CardHeader>
                 <CardTitle className='font-headline'>Leave a Review</CardTitle>
                 <CardDescription>Rate your experience with the {isOwner ? 'provider' : 'customer'}.</CardDescription>
