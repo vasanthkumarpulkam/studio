@@ -30,6 +30,7 @@ import {
   Banknote,
   Play,
   Hammer,
+  Clock,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -268,10 +269,18 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                  </Avatar>
                                  <div>
                                    <p className="font-semibold">{provider.name}</p>
-                                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                     <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                                     <span>{provider.rating} ({provider.reviews} reviews)</span>
+                                   <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                                     <span className="flex items-center gap-1">
+                                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                                        {provider.rating} ({provider.reviews} reviews)
+                                     </span>
                                      {provider.isVerified && <ShieldCheck className="w-3 h-3 text-primary" />}
+                                     {bid.completionTime && (
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="w-3 h-3" />
+                                            {bid.completionTime}
+                                        </span>
+                                     )}
                                    </div>
                                  </div>
                              </div>

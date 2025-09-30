@@ -37,5 +37,6 @@ export type Bid = {
   providerId: string; // userId
   amount: number;
   submittedOn: string; // ISO date string
+  completionTime?: string; // e.g., "2-3 days"
   message?: string;
 };

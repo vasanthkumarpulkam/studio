@@ -24,6 +24,7 @@ import { getCurrentUser } from '@/lib/data';
 
 const bidSchema = z.object({
   amount: z.coerce.number().positive('Must be a positive number.'),
+  completionTime: z.string().min(1, 'Please provide an estimated completion time.'),
   message: z.string().optional(),
 });
 
@@ -40,6 +41,7 @@ export default function BidForm({ job }: { job: Job }) {
     resolver: zodResolver(bidSchema),
     defaultValues: {
       amount: 0,
+      completionTime: '',
       message: '',
     },
   });
@@ -108,19 +110,34 @@ export default function BidForm({ job }: { job: Job }) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <fieldset disabled={!hasPaymentMethod} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your Bid Amount ($)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="e.g., 75.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Your Bid Amount ($)</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="e.g., 75.00" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="completionTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Est. Completion Time</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., 2-3 days" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </div>
             <FormField
               control={form.control}
               name="message"

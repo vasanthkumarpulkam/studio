@@ -67,10 +67,10 @@ export const jobs: Job[] = [
 ];
 
 export const bids: Bid[] = [
-  { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I\'m a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
-  { id: 'bid-2', jobId: 'job-1', providerId: 'user-4', amount: 140, submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString() },
-  { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 55, submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'bid-4', jobId: 'job-3', providerId: 'user-3', amount: 850, submittedOn: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), message: 'I specialize in hardwood floor refinishing and can make your floors look brand new.' },
+  { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, completionTime: '2-3 hours', submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I\'m a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
+  { id: 'bid-2', jobId: 'job-1', providerId: 'user-4', amount: 140, completionTime: '4 hours', submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString() },
+  { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 55, completionTime: '1 day', submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'bid-4', jobId: 'job-3', providerId: 'user-3', amount: 850, completionTime: '3-4 days', submittedOn: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), message: 'I specialize in hardwood floor refinishing and can make your floors look brand new.' },
 ];
 
 // In a real app, this would involve authentication. Here, we'll just mock it.
