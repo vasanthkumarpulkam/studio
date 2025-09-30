@@ -24,7 +24,7 @@ export default function SignupPage() {
           </div>
           <CardTitle className="text-2xl font-headline">Create an Account</CardTitle>
           <CardDescription>
-            Join HandyConnect to hire or offer your services.
+            Join ServiceHub to hire or offer your services.
           </CardDescription>
         </CardHeader>
         <CardContent>

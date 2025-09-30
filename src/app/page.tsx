@@ -4,29 +4,26 @@ import { Button } from '@/components/ui/button';
 import Logo from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Search, Handshake } from 'lucide-react';
+import { CheckCircle, Search, Handshake, ShieldCheck, FileText, Banknote } from 'lucide-react';
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
-  const featureImage1 = PlaceHolderImages.find(p => p.id === 'feature-1');
-  const featureImage2 = PlaceHolderImages.find(p => p.id === 'feature-2');
-  const featureImage3 = PlaceHolderImages.find(p => p.id === 'feature-3');
   
   const features = [
     {
-      icon: <Search className="w-10 h-10 text-primary" />,
-      title: "Post & Find Jobs Easily",
-      description: "Customers can post jobs with details and photos. Providers can browse and find work that matches their skills.",
+      icon: <FileText className="w-10 h-10 text-primary" />,
+      title: "Detailed Job Posting",
+      description: "Customers can easily post jobs with comprehensive details like descriptions, budget, photos, and location to attract the right professionals.",
     },
     {
       icon: <Handshake className="w-10 h-10 text-primary" />,
-      title: "Private Bidding",
-      description: "Providers submit bids privately. Customers can review offers and choose the best provider for their needs without a public auction.",
+      title: "Private Bidding System",
+      description: "Providers can send their price offers directly and privately to the customer, ensuring a competitive and confidential bidding process.",
     },
     {
-      icon: <CheckCircle className="w-10 h-10 text-primary" />,
-      title: "Secure Escrow & Payments",
-      description: "All payments are handled securely through our platform. Funds are held in escrow and released only when the job is completed to everyone's satisfaction.",
+      icon: <Banknote className="w-10 h-10 text-primary" />,
+      title: "Secure Escrow Payments",
+      description: "Payments are held securely in an escrow system. Funds are only released to the provider when both parties confirm the job is completed.",
     }
   ];
 
@@ -62,7 +59,7 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    Get it done with HandyConnect
+                    Get it done with ServiceHub
                   </h1>
                   <p className="max-w-[600px] text-foreground/80 md:text-xl">
                     The reliable way to connect with local service providers for all your home and daily needs. Post a job, get bids, and pay securely.
@@ -82,7 +79,7 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">How It Works</div>
+                <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Key Features</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">A new way to hire help</h2>
                 <p className="max-w-[900px] text-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Our platform simplifies the process of finding and hiring skilled workers. Here’s how it works for our customers.
@@ -129,7 +126,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-foreground/60">&copy; 2024 HandyConnect. All rights reserved.</p>
+        <p className="text-xs text-foreground/60">&copy; 2024 ServiceHub. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="#" className="text-xs hover:underline underline-offset-4">
             Terms of Service
