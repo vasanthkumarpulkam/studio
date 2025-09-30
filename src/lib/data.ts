@@ -188,7 +188,7 @@ export const bids: Bid[] = [
 
 export let chats: ChatMessage[] = [
     { id: 'chat-1', jobId: 'job-1', providerId: 'user-2', senderId: 'user-2', text: "Hello! I've reviewed your job posting for the leaky sink. I can come by tomorrow morning to take a look. Does that work for you?", timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString() },
-    { id: 'chat-2', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Hi Mike, thanks for the quick response! Tomorrow morning works perfectly. What time are you thinking?", timestamp: new Date(Date-now() - 19 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-2', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Hi Mike, thanks for the quick response! Tomorrow morning works perfectly. What time are you thinking?", timestamp: new Date(Date.now() - 19 * 60 * 60 * 1000).toISOString() },
     { id: 'chat-3', jobId: 'job-1', providerId: 'user-2', senderId: 'user-2', text: "Great. I can be there around 9 AM. I'll bring all the necessary tools to get it fixed right away.", timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString() },
     { id: 'chat-4', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Perfect, see you at 9 AM then. Thanks!", timestamp: new Date(Date.now() - 17 * 60 * 60 * 1000).toISOString() },
     { id: 'chat-5', jobId: 'job-1', providerId: 'user-3', senderId: 'user-3', text: "Is the job still available? I can offer a competitive rate.", timestamp: new Date(Date.now() - 21 * 60 * 60 * 1000).toISOString() },
