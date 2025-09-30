@@ -32,10 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ListFilter, Search, FilePlus2, Briefcase, MapPin } from 'lucide-react';
+import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from '@/components/header';
 import type { Job } from '@/types';
+import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 
 
 export default function DashboardPage() {
@@ -44,6 +47,7 @@ export default function DashboardPage() {
   const [location, setLocation] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
+  const [radius, setRadius] = useState([50]);
   
   const allJobs = useMemo(() => getAllOpenJobs(), []);
   const providerJobs = useMemo(() => currentUser ? getOpenJobsForProvider(currentUser.id) : [], [currentUser]);
@@ -99,16 +103,29 @@ export default function DashboardPage() {
     );
   };
   
+  const clearFilters = () => {
+    setSearchTerm('');
+    setLocation('');
+    setSelectedCategories([]);
+    setRadius([50]);
+  }
+
+  const activeFilterCount = (searchTerm ? 1 : 0) + (location ? 1 : 0) + selectedCategories.length;
+
   // Logged-out public view
   if (!currentUser) {
     return (
       <>
         <Header />
-        <div className="grid lg:grid-cols-[280px_1fr] gap-8 p-4 md:p-6">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8 p-4 md:p-6">
           <aside className="hidden lg:block">
              <Card>
               <CardContent className="p-4">
                   <div className="flex flex-col gap-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>Filters ({activeFilterCount})</h3>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>Clear all</Button>
+                      </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -129,6 +146,21 @@ export default function DashboardPage() {
                           onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
+                       <div className="space-y-2">
+                          <Label>Search Radius</Label>
+                          <Slider
+                              value={radius}
+                              onValueChange={setRadius}
+                              max={250}
+                              step={1}
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>1 mile</span>
+                              <span>{radius[0]} miles</span>
+                              <span>250 miles</span>
+                          </div>
+                      </div>
+                      <Separator/>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
@@ -136,7 +168,7 @@ export default function DashboardPage() {
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[240px] max-h-60 overflow-y-auto">
+                      <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
                           <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {jobCategories.map(cat => (
@@ -206,11 +238,15 @@ export default function DashboardPage() {
     return (
       <>
         <Header />
-        <div className="grid lg:grid-cols-[280px_1fr] gap-8 p-4 md:p-6">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8 p-4 md:p-6">
           <aside className="hidden lg:block">
             <Card>
               <CardContent className="p-4">
                   <div className="flex flex-col gap-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>Filters ({activeFilterCount})</h3>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>Clear all</Button>
+                      </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -231,6 +267,21 @@ export default function DashboardPage() {
                           onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
+                       <div className="space-y-2">
+                          <Label>Search Radius</Label>
+                          <Slider
+                              value={radius}
+                              onValueChange={setRadius}
+                              max={250}
+                              step={1}
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>1 mile</span>
+                              <span>{radius[0]} miles</span>
+                              <span>250 miles</span>
+                          </div>
+                      </div>
+                      <Separator/>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
@@ -238,7 +289,7 @@ export default function DashboardPage() {
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[240px] max-h-60 overflow-y-auto">
+                      <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
                           <DropdownMenuLabel>Filter by your skills</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {getProvider(currentUser.id)?.skills.map(cat => (
