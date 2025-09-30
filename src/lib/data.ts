@@ -200,7 +200,11 @@ export { notifications };
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
 // Set to null to simulate a logged-out user
-const MOCKED_CURRENT_USER_ID: string | null = null; // 'user-1' (customer), 'user-2' (provider)
+let MOCKED_CURRENT_USER_ID: string | null = null; // 'user-1' (customer), 'user-2' (provider)
+
+export function login(userId: string) {
+    MOCKED_CURRENT_USER_ID = userId;
+}
 
 export function getCurrentUser(): User | Provider | null {
   if (!MOCKED_CURRENT_USER_ID) {
