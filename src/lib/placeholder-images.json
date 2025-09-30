@@ -3,26 +3,26 @@
     {
       "id": "hero-image",
       "description": "A person happily using a tablet to book a service.",
-      "imageUrl": "https://images.unsplash.com/photo-1758525866728-de7d5c30a07c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoYXBweSUyMHBlcnNvbiUyMHRhYmxldHxlbnwwfHx8fDE3NTkyNTY2NTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1554774853-719586f82d77?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoYXBweSUyMHBlcnNvbiUyMHRhYmxldHxlbnwwfHx8fDE3NTkyNTY2NTB8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "happy person tablet"
     },
     {
       "id": "feature-1",
-      "description": "A magnifying glass over a job listing.",
-      "imageUrl": "https://images.unsplash.com/photo-1583410700344-f9038d4a83a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYWduaWZ5aW5nJTIwZ2xhc3MlMjBqb2J8ZW58MHx8fHwxNzU5MjU2NjUwfDA&ixlib.rb-4.1.0&q=80&w=1080",
-      "imageHint": "job search"
+      "description": "An illustration of a person posting a job on a giant smartphone.",
+      "imageUrl": "https://storage.googleapis.com/aifirebase-7c645.appspot.com/templates/servicehub/feature-1.png",
+      "imageHint": "job posting illustration"
     },
     {
       "id": "feature-2",
-      "description": "A person receiving multiple bids on a phone.",
-      "imageUrl": "https://images.unsplash.com/photo-1628191136453-2638a6a3b2b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiaWRkaW5nJTIwYXBwfGVufDB8fHx8MTc1OTI1NjY1MXww&ixlib.rb-4.1.0&q=80&w=1080",
-      "imageHint": "bidding app"
+      "description": "An illustration of a person receiving multiple bids on a phone.",
+      "imageUrl": "https://storage.googleapis.com/aifirebase-7c645.appspot.com/templates/servicehub/feature-2.png",
+      "imageHint": "bidding app illustration"
     },
     {
       "id": "feature-3",
-      "description": "A secure lock icon on a digital screen.",
-      "imageUrl": "https://images.unsplash.com/photo-1694174439282-ee8cdf0ec6ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWN1cmUlMjBsb2NrfGVufDB8fHx8MTc1OTI1NjY1MXww&ixlib.rb-4.1.0&q=80&w=1080",
-      "imageHint": "secure lock"
+      "description": "An illustration of a secure transaction with a handshake.",
+      "imageUrl": "https://storage.googleapis.com/aifirebase-7c645.appspot.com/templates/servicehub/feature-3.png",
+      "imageHint": "secure transaction illustration"
     },
     {
       "id": "user-avatar-1",
@@ -51,19 +51,19 @@
     {
       "id": "user-avatar-5",
       "description": "Avatar for James Brown",
-      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjAxMTc0MjR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjAxMTc0MjR8MA&ixlib.rb-4.0.3&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
       "id": "user-avatar-6",
       "description": "Avatar for Jessica Williams",
-      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8fDE3NjAxMTc0MjV8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8fDE3NjAxMTc0MjV8MA&ixlib.rb-4.0.3&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
       "id": "job-plumbing-1",
       "description": "A leaky pipe under a sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1550018333-69b7e87b0d05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsZWFreSUyMHBpcGV8ZW58MHx8fHwxNzU5MTgxODY1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1550018333-69b7e87b0d05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsZWFreSUyMHBpcGV8ZW58MHx8fHwxNzU5MTgxODY1fDA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "leaky pipe"
     },
     {
@@ -81,7 +81,7 @@
     {
       "id": "job-lawn",
       "description": "An overgrown lawn.",
-      "imageUrl": "https://images.unsplash.com/photo-1727014980472-2b1812522e2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b3Zlcmdyb3duJTIwbGF3bnxlbnwwfHx8fDE3NTkyNTY2NTB8MA&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1542159784-055869a239f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b3Zlcmdyb3duJTIwbGF3bnxlbnwwfHx8fDE3NTkyNTY2NTB8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "overgrown lawn"
     },
     {

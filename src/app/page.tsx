@@ -117,7 +117,7 @@ export default function Home() {
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
               <Card className="bg-transparent border-none shadow-none">
                 {feature1 && <div className="relative h-48 mb-4">
-                    <Image src={feature1.imageUrl} alt={feature1.description} fill objectFit="contain" className="mx-auto" data-ai-hint={feature1.imageHint}/>
+                    <Image src={feature1.imageUrl} alt={feature1.description} fill className="object-contain" data-ai-hint={feature1.imageHint}/>
                 </div>}
                 <CardHeader className="p-0">
                   <CardTitle className="font-headline">1. Post Your Job</CardTitle>
@@ -128,7 +128,7 @@ export default function Home() {
               </Card>
                <Card className="bg-transparent border-none shadow-none">
                  {feature2 && <div className="relative h-48 mb-4">
-                    <Image src={feature2.imageUrl} alt={feature2.description} fill objectFit="contain" className="mx-auto" data-ai-hint={feature2.imageHint}/>
+                    <Image src={feature2.imageUrl} alt={feature2.description} fill className="object-contain" data-ai-hint={feature2.imageHint}/>
                 </div>}
                 <CardHeader className="p-0">
                   <CardTitle className="font-headline">2. Receive Private Bids</CardTitle>
@@ -139,12 +139,12 @@ export default function Home() {
               </Card>
                <Card className="bg-transparent border-none shadow-none">
                  {feature3 && <div className="relative h-48 mb-4">
-                    <Image src={feature3.imageUrl} alt={feature3.description} fill objectFit="contain" className="mx-auto" data-ai-hint={feature3.imageHint}/>
+                    <Image src={feature3.imageUrl} alt={feature3.description} fill className="object-contain" data-ai-hint={feature3.imageHint}/>
                 </div>}
                 <CardHeader className="p-0">
                   <CardTitle className="font-headline">3. Hire & Pay Securely</CardTitle>
                   <CardDescription>
-                    Choose the best provider and fund the job. Payment is held in escrow until the work is completed to your satisfaction.
+                    Choose the best provider and fund the. Payment is held in escrow until the work is completed to your satisfaction.
                   </CardDescription>
                 </CardHeader>
               </Card>
