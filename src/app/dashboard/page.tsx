@@ -12,6 +12,7 @@ import {
   getOpenJobsForProvider,
   jobCategories,
   getAllOpenJobs,
+  getProvider,
 } from '@/lib/data';
 import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
@@ -93,7 +94,7 @@ export default function DashboardPage() {
 
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, currentUser, sortBy]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, currentUser, sortBy, radius]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
@@ -402,5 +403,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
