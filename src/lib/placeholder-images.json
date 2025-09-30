@@ -1,3 +1,70 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "A person happily using a tablet to book a service.",
+      "imageUrl": "https://images.unsplash.com/photo-1758525866728-de7d5c30a07c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoYXBweSUyMHBlcnNvbiUyMHRhYmxldHxlbnwwfHx8fDE3NTkyNTY2NTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "happy person tablet"
+    },
+    {
+      "id": "feature-1",
+      "description": "A close-up of a person typing on a laptop.",
+      "imageUrl": "https://images.unsplash.com/photo-1499914485622-a88fac536970?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0eXBpbmclMjBsYXB0b3B8ZW58MHx8fHwxNzU5MjIwMDExfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "typing laptop"
+    },
+    {
+      "id": "feature-2",
+      "description": "Two people shaking hands over a deal.",
+      "imageUrl": "https://images.unsplash.com/photo-1712571676982-cc72b0beaacb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoYW5kc2hha2UlMjBkZWFsfGVufDB8fHx8MTc1OTE3NDAzMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "handshake deal"
+    },
+    {
+      "id": "feature-3",
+      "description": "A secure lock icon on a digital screen.",
+      "imageUrl": "https://images.unsplash.com/photo-1694174439282-ee8cdf0ec6ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZWN1cmUlMjBsb2NrfGVufDB8fHx8MTc1OTI1NjY1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "secure lock"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "Avatar for Sarah Lee",
+      "imageUrl": "https://images.unsplash.com/photo-1609505848912-b7c3b8b4beda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1OTE3MTY1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "user-avatar-2",
+      "description": "Avatar for Mike Johnson",
+      "imageUrl": "https://images.unsplash.com/photo-1715029005043-e88d219a3c48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzU5MTcxOTc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "user-avatar-3",
+      "description": "Avatar for David Chen",
+      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1OTE1MzcwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man smiling"
+    },
+    {
+      "id": "user-avatar-4",
+      "description": "Avatar for Emily Rodriguez",
+      "imageUrl": "https://images.unsplash.com/photo-1692736475357-7c18bfbb808b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzU5MjMzMTk0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman smiling"
+    },
+    {
+      "id": "job-plumbing",
+      "description": "A leaky pipe under a sink.",
+      "imageUrl": "https://images.unsplash.com/photo-1756409180599-7d7c189be185?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGVha3klMjBwaXBlfGVufDB8fHx8MTc1OTE4MTg2NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leaky pipe"
+    },
+    {
+      "id": "job-lawn",
+      "description": "An overgrown lawn.",
+      "imageUrl": "https://images.unsplash.com/photo-1630347538756-abd1794028ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxvdmVyZ3Jvd24lMjBsYXdufGVufDB8fHx8MTc1OTI1NjY1MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "overgrown lawn"
+    },
+    {
+      "id": "job-floor",
+      "description": "Scratched wooden floor.",
+      "imageUrl": "https://images.unsplash.com/photo-1721704988929-58b5f64c9266?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "scratched floor"
+    }
+  ]
 }
