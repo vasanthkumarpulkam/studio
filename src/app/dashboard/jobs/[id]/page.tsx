@@ -187,7 +187,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                       <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
                     </div>
                   )}
-                  {(acceptedProvider.id === currentUser.id) && job.status === 'in-progress' && (
+                  {currentUser.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'in-progress' && (
                      <div className="flex flex-col space-y-2">
                         <MarkCompletedButton jobId={job.id} />
                         <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
