@@ -87,25 +87,43 @@
     {
       "id": "user-avatar-6",
       "description": "Avatar for Jessica Williams",
-      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8fDE3NjAxMTc0MjV8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8fDE3NjAxMTc0MjV8MA&ixlib.rb-4.0.3&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
-      "id": "job-plumbing",
+      "id": "job-plumbing-1",
       "description": "A leaky pipe under a sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1756409180599-7d7c189be185?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGVha3klMjBwaXBlfGVufDB8fHx8MTc1OTE4MTg2NXww&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1550018333-69b7e87b0d05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsZWFreSUyMHBpcGV8ZW58MHx8fHwxNzU5MTgxODY1fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "leaky pipe"
+    },
+    {
+      "id": "job-plumbing-2",
+      "description": "Water damage under a sink.",
+      "imageUrl": "https://images.unsplash.com/photo-1657069343971-1276c3b175e1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3YXRlciUyMGRhbWFnZXxlbnwwfHx8fDE3NTkyNjg4NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "water damage"
+    },
+    {
+      "id": "job-plumbing-3",
+      "description": "Close up of pipe fitting.",
+      "imageUrl": "https://images.unsplash.com/photo-1709980378474-d5c30c4edbd3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwaXBlJTIwZml0dGluZ3xlbnwwfHx8fDE3NTkyNjg4NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pipe fitting"
     },
     {
       "id": "job-lawn",
       "description": "An overgrown lawn.",
-      "imageUrl": "https://images.unsplash.com/photo-1630347538756-abd1794028ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxvdmVyZ3Jvd24lMjBsYXdufGVufDB8fHx8MTc1OTI1NjY1MHww&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1727014980472-2b1812522e2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b3Zlcmdyb3duJTIwbGF3bnxlbnwwfHx8fDE3NTkyNTY2NTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "overgrown lawn"
     },
     {
-      "id": "job-floor",
+      "id": "job-floor-1",
       "description": "Scratched wooden floor.",
-      "imageUrl": "https://images.unsplash.com/photo-1721704988929-58b5f64c9266?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1645568093134-30e78cf6c23f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "scratched floor"
+    },
+    {
+      "id": "job-floor-2",
+      "description": "Another angle of a scratched wooden floor.",
+      "imageUrl": "https://images.unsplash.com/photo-1622653416662-5a74e75717db?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "scratched floor"
     }
   ]

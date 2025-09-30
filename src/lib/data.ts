@@ -10,9 +10,12 @@ const avatar5 = PlaceHolderImages.find(p => p.id === 'user-avatar-5')?.imageUrl 
 const avatar6 = PlaceHolderImages.find(p => p.id === 'user-avatar-6')?.imageUrl || '';
 
 
-const jobImage1 = PlaceHolderImages.find(p => p.id === 'job-plumbing')?.imageUrl || '';
-const jobImage2 = PlaceHolderImages.find(p => p.id === 'job-lawn')?.imageUrl || '';
-const jobImage3 = PlaceHolderImages.find(p => p.id === 'job-floor')?.imageUrl || '';
+const jobImagePlumbing1 = PlaceHolderImages.find(p => p.id === 'job-plumbing-1')?.imageUrl || '';
+const jobImagePlumbing2 = PlaceHolderImages.find(p => p.id === 'job-plumbing-2')?.imageUrl || '';
+const jobImagePlumbing3 = PlaceHolderImages.find(p => p.id === 'job-plumbing-3')?.imageUrl || '';
+const jobImageLawn = PlaceHolderImages.find(p => p.id === 'job-lawn')?.imageUrl || '';
+const jobImageFloor1 = PlaceHolderImages.find(p => p.id === 'job-floor-1')?.imageUrl || '';
+const jobImageFloor2 = PlaceHolderImages.find(p => p.id === 'job-floor-2')?.imageUrl || '';
 
 
 export const users: User[] = [
@@ -43,7 +46,7 @@ export const jobs: Job[] = [
     postedBy: 'user-1',
     postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'open',
-    images: [jobImage1],
+    images: [jobImagePlumbing1, jobImagePlumbing2, jobImagePlumbing3],
     isCashOnly: false,
   },
   {
@@ -57,7 +60,7 @@ export const jobs: Job[] = [
     postedOn: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'in-progress',
     acceptedBid: 'bid-3',
-    images: [jobImage2],
+    images: [jobImageLawn],
     isCashOnly: true,
   },
   {
@@ -70,7 +73,7 @@ export const jobs: Job[] = [
     postedOn: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'completed',
     acceptedBid: 'bid-4',
-    images: [jobImage3],
+    images: [jobImageFloor1, jobImageFloor2],
     isCashOnly: false,
   },
   {
@@ -200,7 +203,7 @@ export { notifications };
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
 // Set to null to simulate a logged-out user
-let MOCKED_CURRENT_USER_ID: string | null = null; // 'user-1' (customer), 'user-2' (provider)
+let MOCKED_CURRENT_USER_ID: string | null = null; 
 
 export function login(userId: string | null) {
     MOCKED_CURRENT_USER_ID = userId;
