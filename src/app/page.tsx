@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="px-4 lg:px-6 h-16 flex items-center shadow-sm bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="px-4 lg:px-6 h-16 flex items-center shadow-sm bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <Link href="/" className="flex items-center justify-center">
           <Logo />
         </Link>
@@ -36,7 +36,7 @@ export default function Home() {
         </nav>
       </header>
       <main className="flex-1">
-        <section className="w-full py-20 md:py-32 lg:py-40 bg-white">
+        <section className="w-full py-20 md:py-32 lg:py-40 bg-card">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-6 text-center">
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl font-headline">
@@ -60,11 +60,11 @@ export default function Home() {
                                 data-ai-hint={userPostingJobImage.imageHint}
                             />
                         )}
-                        <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm rounded-full p-2">
+                        <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm rounded-full p-2">
                            <ArrowUpRight className="w-6 h-6 text-primary transition-transform group-hover:rotate-45" />
                         </div>
                     </CardHeader>
-                    <CardContent className="p-6 bg-white">
+                    <CardContent className="p-6 bg-card">
                         <CardTitle className="font-headline text-2xl">Post a Job</CardTitle>
                         <CardDescription className="mt-2">
                          Describe your task, set a budget, and get bids instantly from verified providers.
@@ -85,11 +85,11 @@ export default function Home() {
                                 data-ai-hint={providerFindingWorkImage.imageHint}
                             />
                         )}
-                         <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm rounded-full p-2">
+                         <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm rounded-full p-2">
                            <ArrowUpRight className="w-6 h-6 text-primary transition-transform group-hover:rotate-45" />
                         </div>
                     </CardHeader>
-                    <CardContent className="p-6 bg-white">
+                    <CardContent className="p-6 bg-card">
                         <CardTitle className="font-headline text-2xl">Find Work</CardTitle>
                         <CardDescription className="mt-2">
                          Browse nearby jobs, bid privately, and grow your income on your own schedule.
@@ -103,7 +103,7 @@ export default function Home() {
 
         <Testimonials />
         
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-card">
           <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">
@@ -125,7 +125,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-4 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-white">
+      <footer className="flex flex-col gap-4 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-card">
         <p className="text-xs text-foreground/60">&copy; 2024 HandyConnect. All rights reserved.</p>
         <nav className="sm:ml-auto flex flex-wrap justify-center gap-4 sm:gap-6">
            <Link href="#" className="text-xs hover:underline underline-offset-4">Terms of Service</Link>

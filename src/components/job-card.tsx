@@ -25,7 +25,9 @@ export function JobCard({ job, role }: JobCardProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
             <CardTitle className="font-bold text-lg">
-                {job.title}
+                <Link href={`/dashboard/jobs/${job.id}`} className="hover:underline">
+                    {job.title}
+                </Link>
             </CardTitle>
             <Badge className={statusColors[job.status]}>{job.status}</Badge>
         </div>
@@ -44,7 +46,7 @@ export function JobCard({ job, role }: JobCardProps) {
             {job.budget && (
                  <div className="flex items-center gap-2 text-muted-foreground">
                     <CircleDollarSign className="w-4 h-4" />
-                    <span>{job.budget}</span>
+                    <span>Budget: ${job.budget}</span>
                 </div>
             )}
             <div className="flex items-center gap-2 text-muted-foreground">
