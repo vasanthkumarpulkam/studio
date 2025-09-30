@@ -37,6 +37,7 @@ import {
   Clock,
   Briefcase,
   MessageSquare,
+  ArrowLeft,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -110,6 +111,14 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
+      <div className="mb-6">
+        <Button asChild variant="outline" size="sm">
+          <Link href="/dashboard">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Jobs
+          </Link>
+        </Button>
+      </div>
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-8">
           <Card>
