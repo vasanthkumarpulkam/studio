@@ -30,6 +30,8 @@ import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
 import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, Home, ChevronRight } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const jobSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -44,8 +46,16 @@ type JobFormValues = z.infer<typeof jobSchema>;
 
 export default function NewJobPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const currentUser = getCurrentUser();
-  const hasPaymentMethod = currentUser.hasPaymentMethod;
+
+  useEffect(() => {
+    if (!currentUser) {
+      router.push('/login');
+    }
+  }, [currentUser, router]);
+
+  const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobSchema),
@@ -75,6 +85,12 @@ export default function NewJobPage() {
     });
     form.reset();
   }
+
+  if (!currentUser) {
+    // Render a loading state or null while redirecting
+    return null;
+  }
+
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -192,7 +208,7 @@ export default function NewJobPage() {
                       <FormItem>
                           <FormLabel>Budget (Optional)</FormLabel>
                           <FormControl>
-                          <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} onChange={field.onChange} />
+                          <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} />
                           </FormControl>
                           <FormDescription>
                               Provide an estimated budget to guide providers.
