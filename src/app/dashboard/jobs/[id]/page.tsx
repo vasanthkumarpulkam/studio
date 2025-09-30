@@ -31,6 +31,7 @@ import { format } from 'date-fns';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AcceptBidButton from '@/components/accept-bid-button';
 import MarkCompletedButton from '@/components/mark-completed-button';
+import LeaveReviewForm from '@/components/leave-review-form';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
@@ -112,6 +113,22 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
               </CardContent>
             </Card>
           )}
+
+          {job.status === 'completed' && (isOwner || acceptedProvider?.id === currentUser.id) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className='font-headline'>Leave a Review</CardTitle>
+                <CardDescription>Rate your experience with the {isOwner ? 'provider' : 'customer'}.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LeaveReviewForm 
+                  jobId={job.id} 
+                  revieweeId={isOwner ? acceptedProvider!.id : job.postedBy}
+                  reviewerRole={currentUser.role}
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -154,7 +171,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                         <Check className="h-4 w-4 text-green-600"/>
                         <AlertTitle className="text-green-800">Job Completed!</AlertTitle>
                         <AlertDescription className="text-green-700">
-                          Payment has been released to the provider.
+                          Payment has been released to the provider. You can now leave a review.
                         </AlertDescription>
                     </Alert>
                   )}
