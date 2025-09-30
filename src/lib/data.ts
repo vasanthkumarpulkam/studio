@@ -202,7 +202,7 @@ export { notifications };
 // Set to null to simulate a logged-out user
 let MOCKED_CURRENT_USER_ID: string | null = null; // 'user-1' (customer), 'user-2' (provider)
 
-export function login(userId: string) {
+export function login(userId: string | null) {
     MOCKED_CURRENT_USER_ID = userId;
 }
 
