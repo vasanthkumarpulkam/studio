@@ -35,14 +35,14 @@ import {
 } from '@/components/ui/select';
 import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Job } from '@/types';
+import type { Job, Provider, User } from '@/types';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 
 
 export default function DashboardPage() {
-  const currentUser = useMemo(() => getCurrentUser(), []);
+  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -50,10 +50,20 @@ export default function DashboardPage() {
   const [radius, setRadius] = useState([50]);
   
   const allJobs = useMemo(() => getAllOpenJobs(), []);
-  const providerJobs = useMemo(() => currentUser ? getOpenJobsForProvider(currentUser.id) : [], [currentUser]);
-  const customerJobs = useMemo(() => currentUser ? getJobsForCustomer(currentUser.id) : [], [currentUser]);
+  const [providerJobs, setProviderJobs] = useState<Job[]>([]);
+  const [customerJobs, setCustomerJobs] = useState<Job[]>([]);
 
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    setCurrentUser(user);
+
+    if (user) {
+        setProviderJobs(getOpenJobsForProvider(user.id));
+        setCustomerJobs(getJobsForCustomer(user.id));
+    }
+  }, []);
 
   useEffect(() => {
     const jobsToFilter = currentUser?.role === 'provider' ? providerJobs : allJobs;
@@ -399,3 +409,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    

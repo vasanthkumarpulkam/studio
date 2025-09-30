@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight } from 'lucide-react';
 import type { Job } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
+import { getCurrentUser } from '@/lib/data';
 
 type JobCardProps = {
   job: Job;
@@ -14,6 +15,8 @@ type JobCardProps = {
 };
 
 export function JobCard({ job, role, isGrid = false }: JobCardProps) {
+  const currentUser = getCurrentUser();
+
   const statusColors = {
     open: 'bg-green-100 text-green-800 border-green-200',
     'in-progress': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -126,7 +129,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                     </div>
                     <Button asChild size="sm" className="mt-2 md:mt-0">
                         <Link href={`/dashboard/jobs/${job.id}`}>
-                            {role === 'provider' ? 'View & Bid' : 'View Details'}
+                            {currentUser && role === 'provider' ? 'View & Bid' : 'View Details'}
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
@@ -136,3 +139,5 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
      </Card>
   )
 }
+
+    
