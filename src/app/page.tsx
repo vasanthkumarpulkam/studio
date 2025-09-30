@@ -2,6 +2,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -16,8 +17,17 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { getCurrentUser } from '@/lib/data';
+import type { User, Provider } from '@/types';
 
 export default function Home() {
+  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+
+  useEffect(() => {
+    setCurrentUser(getCurrentUser());
+  }, []);
+
+  const postJobHref = currentUser ? '/dashboard/jobs/new' : '/login';
 
   const customerFeatures = PlaceHolderImages.filter(p => p.id.startsWith('feature-1'));
   const providerFeatures = PlaceHolderImages.filter(p => p.id.startsWith('feature-2'));
@@ -71,7 +81,7 @@ export default function Home() {
             <Link href="#">Get the App</Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/dashboard/jobs/new">Post a Job</Link>
+            <Link href={postJobHref}>Post a Job</Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
             <Link href="/dashboard">Find Work</Link>
@@ -99,7 +109,7 @@ export default function Home() {
               </p>
             </div>
              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
-                <FeatureCarousel features={customerFeatures} link="/dashboard/jobs/new" cta="Post a Job" />
+                <FeatureCarousel features={customerFeatures} link={postJobHref} cta="Post a Job" />
                 <FeatureCarousel features={providerFeatures} link="/dashboard" cta="Find Work" />
             </div>
           </div>
@@ -117,7 +127,7 @@ export default function Home() {
             <div className="mx-auto w-full max-w-sm space-y-2">
               <div className="flex justify-center gap-4">
                 <Button size="lg" asChild>
-                  <Link href="/dashboard/jobs/new">
+                  <Link href={postJobHref}>
                     Post a Job
                   </Link>
                 </Button>
