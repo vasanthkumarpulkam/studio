@@ -1,8 +1,9 @@
-// src/app/actions.ts
 'use server';
 
 import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
 import type { SuggestInitialBidOutput } from '@/ai/flows/suggest-initial-bid';
+import { jobs } from '@/lib/data';
+import { revalidatePath } from 'next/cache';
 
 export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<SuggestInitialBidOutput> {
   // In a real app, you'd fetch this data from your database
@@ -22,4 +23,32 @@ export async function getAiBidSuggestion(jobDescription: string, jobCategory: st
     // Return a structured error or re-throw
     throw new Error('Failed to get AI suggestion.');
   }
+}
+
+export async function acceptBid(jobId: string, bidId: string) {
+    // In a real app, you would update this in your database
+    const job = jobs.find(j => j.id === jobId);
+    if (job && job.status === 'open') {
+        job.status = 'in-progress';
+        job.acceptedBid = bidId;
+        console.log(`Bid ${bidId} accepted for job ${jobId}. Job status updated to in-progress.`);
+        revalidatePath(`/dashboard/jobs/${jobId}`);
+        revalidatePath('/dashboard/my-bids');
+    } else {
+        console.error('Job not found or not available for bidding.');
+        throw new Error('Job not found or not available for bidding.');
+    }
+}
+
+export async function markJobAsCompleted(jobId: string) {
+    const job = jobs.find(j => j.id === jobId);
+    if (job && job.status === 'in-progress') {
+        job.status = 'completed';
+        console.log(`Job ${jobId} marked as completed.`);
+        revalidatePath(`/dashboard/jobs/${jobId}`);
+        revalidatePath('/dashboard/my-bids');
+    } else {
+        console.error('Job not found or not in progress.');
+        throw new Error('Job not found or not in progress.');
+    }
 }

@@ -29,6 +29,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import BidForm from '@/components/bid-form';
 import { format } from 'date-fns';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import AcceptBidButton from '@/components/accept-bid-button';
+import MarkCompletedButton from '@/components/mark-completed-button';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
@@ -49,7 +51,8 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     disputed: 'bg-red-100 text-red-800 border-red-200',
   };
 
-  const acceptedProvider = job.acceptedBid ? getProvider(bids.find(b => b.id === job.acceptedBid)?.providerId || '') : null;
+  const acceptedBid = job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
+  const acceptedProvider = acceptedBid ? getProvider(acceptedBid.providerId) : null;
 
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
@@ -125,14 +128,26 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     </Avatar>
                     <div>
                       <p className="font-semibold">{acceptedProvider.name}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                        <span>{acceptedProvider.rating} ({acceptedProvider.reviews} reviews)</span>
+                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <span>Bid:</span>
+                        <span className="font-bold text-foreground">${acceptedBid?.amount.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                   {job.status === 'in-progress' && (
-                    <Button className="w-full"><Check className="mr-2 h-4 w-4"/>Mark as Completed</Button>
+                    <Alert variant="default" className="bg-blue-50 border-blue-200">
+                        <Check className="h-4 w-4 text-blue-600"/>
+                        <AlertTitle className="text-blue-800">Job In Progress</AlertTitle>
+                        <AlertDescription className="text-blue-700">
+                         Payment of ${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.
+                        </AlertDescription>
+                    </Alert>
+                  )}
+                  {isOwner && job.status === 'in-progress' && (
+                    <MarkCompletedButton jobId={job.id} />
+                  )}
+                  {(acceptedProvider.id === currentUser.id) && job.status === 'in-progress' && (
+                     <MarkCompletedButton jobId={job.id} />
                   )}
                   {job.status === 'completed' && (
                      <Alert variant="default" className="bg-green-50 border-green-200">
@@ -181,7 +196,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                           </div>
                           {bid.message && <p className="text-sm text-muted-foreground mt-2 pl-11">{bid.message}</p>}
                           <div className="flex justify-end mt-2">
-                            <Button size="sm">Accept Bid</Button>
+                             <AcceptBidButton jobId={job.id} bidId={bid.id} />
                           </div>
                         </div>
                       );
