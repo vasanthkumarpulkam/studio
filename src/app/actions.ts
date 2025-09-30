@@ -2,7 +2,8 @@
 
 import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
 import type { SuggestInitialBidOutput } from '@/ai/flows/suggest-initial-bid';
-import { jobs } from '@/lib/data';
+import { jobs, bids as allBids, notifications as allNotifications } from '@/lib/data';
+import type { Bid } from '@/types';
 import { revalidatePath } from 'next/cache';
 
 export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<SuggestInitialBidOutput> {
@@ -24,6 +25,37 @@ export async function getAiBidSuggestion(jobDescription: string, jobCategory: st
     throw new Error('Failed to get AI suggestion.');
   }
 }
+
+export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
+    const job = jobs.find(j => j.id === bidData.jobId);
+    if (!job) {
+        throw new Error('Job not found.');
+    }
+
+    const newBid: Bid = {
+        ...bidData,
+        id: `bid-${Date.now()}`,
+        submittedOn: new Date().toISOString(),
+    };
+    allBids.push(newBid);
+
+    // Create a notification for the job poster
+    allNotifications.push({
+        id: `notif-${Date.now()}`,
+        userId: job.postedBy,
+        message: `You received a new bid of $${newBid.amount.toFixed(2)} for your job "${job.title}".`,
+        link: `/dashboard/jobs/${job.id}`,
+        isRead: false,
+        createdAt: new Date().toISOString(),
+    });
+
+    console.log('New bid submitted:', newBid);
+    console.log('New notification created for user:', job.postedBy);
+    
+    revalidatePath(`/dashboard/jobs/${job.id}`);
+    // Potentially revalidate a path for notifications if we have a dedicated page
+}
+
 
 export async function acceptBid(jobId: string, bidId: string) {
     // In a real app, you would update this in your database
@@ -65,4 +97,21 @@ export async function markJobAsCompleted(jobId: string) {
         console.error('Job not found or not in progress.');
         throw new Error('Job not found or not in progress.');
     }
+}
+
+export async function markNotificationAsRead(notificationId: string) {
+    const notification = allNotifications.find(n => n.id === notificationId);
+    if (notification) {
+        notification.isRead = true;
+        revalidatePath('/dashboard'); // Revalidate a common path to trigger data refetch
+    }
+}
+
+export async function markAllNotificationsAsRead(userId: string) {
+    allNotifications.forEach(n => {
+        if (n.userId === userId) {
+            n.isRead = true;
+        }
+    });
+    revalidatePath('/dashboard'); // Revalidate a common path to trigger data refetch
 }

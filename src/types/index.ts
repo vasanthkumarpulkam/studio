@@ -40,3 +40,12 @@ export type Bid = {
   completionTime?: string; // e.g., "2-3 days"
   message?: string;
 };
+
+export type Notification = {
+    id: string;
+    userId: string;
+    message: string;
+    link: string;
+    isRead: boolean;
+    createdAt: string; // ISO date string
+}

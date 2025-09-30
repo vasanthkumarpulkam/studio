@@ -42,11 +42,13 @@ import AcceptBidButton from '@/components/accept-bid-button';
 import MarkCompletedButton from '@/components/mark-completed-button';
 import LeaveReviewForm from '@/components/leave-review-form';
 import StartWorkButton from '@/components/start-work-button';
-import type { Provider } from '@/types';
+import type { Provider, User as UserType } from '@/types';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
-  const currentUser = getCurrentUser();
+  
+  // This is a hack to get the full user object, which might be a provider
+  const currentUser = getCurrentUser() as UserType | Provider;
 
   if (!job) {
     notFound();
@@ -56,9 +58,12 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const isOwner = job.postedBy === currentUser.id;
   
   const currentUserIsProvider = currentUser.role === 'provider';
-  const providerProfile = currentUserIsProvider ? getProvider(currentUser.id) as Provider : undefined;
-  const canProviderBid = providerProfile?.skills.includes(job.category);
-
+  
+  let canProviderBid = false;
+  if (currentUserIsProvider) {
+    const providerProfile = currentUser as Provider;
+    canProviderBid = providerProfile.skills.includes(job.category);
+  }
 
   const hasPaymentMethod = currentUser.hasPaymentMethod;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,7 +17,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Sparkles, Loader2, HandCoins } from 'lucide-react';
-import { getAiBidSuggestion } from '@/app/actions';
+import { getAiBidSuggestion, submitBid } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Job } from '@/types';
 import { getCurrentUser } from '@/lib/data';
@@ -31,7 +31,8 @@ const bidSchema = z.object({
 type BidFormValues = z.infer<typeof bidSchema>;
 
 export default function BidForm({ job }: { job: Job }) {
-  const [loading, setLoading] = useState(false);
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
+  const [isSubmitting, startSubmitting] = useTransition();
   const [suggestion, setSuggestion] = useState<{ suggestedBid: number; reasoning: string } | null>(null);
   const { toast } = useToast();
   const currentUser = getCurrentUser();
@@ -47,7 +48,7 @@ export default function BidForm({ job }: { job: Job }) {
   });
 
   const handleSuggestion = async () => {
-    setLoading(true);
+    setLoadingSuggestion(true);
     setSuggestion(null);
     try {
       const result = await getAiBidSuggestion(job.description, job.category);
@@ -60,7 +61,7 @@ export default function BidForm({ job }: { job: Job }) {
         description: 'Could not fetch AI suggestion. Please try again.',
       });
     } finally {
-      setLoading(false);
+      setLoadingSuggestion(false);
     }
   };
   
@@ -73,21 +74,36 @@ export default function BidForm({ job }: { job: Job }) {
       });
       return;
     }
-    console.log(values);
-    toast({
-      title: 'Bid Submitted!',
-      description: `Your bid of $${values.amount} has been sent.`,
-    })
-    form.reset();
-    setSuggestion(null);
+    
+    startSubmitting(async () => {
+      try {
+        await submitBid({
+          ...values,
+          jobId: job.id,
+          providerId: currentUser.id,
+        });
+        toast({
+          title: 'Bid Submitted!',
+          description: `Your bid of $${values.amount} has been sent.`,
+        });
+        form.reset();
+        setSuggestion(null);
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to submit bid. Please try again.',
+        });
+      }
+    });
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h3 className="text-xl font-bold font-headline">Submit Your Bid</h3>
-        <Button variant="outline" onClick={handleSuggestion} disabled={loading || !hasPaymentMethod}>
-          {loading ? (
+        <Button variant="outline" onClick={handleSuggestion} disabled={loadingSuggestion || !hasPaymentMethod || isSubmitting}>
+          {loadingSuggestion ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Sparkles className="mr-2 h-4 w-4" />
@@ -109,7 +125,7 @@ export default function BidForm({ job }: { job: Job }) {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <fieldset disabled={!hasPaymentMethod} className="space-y-4">
+          <fieldset disabled={!hasPaymentMethod || isSubmitting} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                 control={form.control}
@@ -152,9 +168,13 @@ export default function BidForm({ job }: { job: Job }) {
               )}
             />
           </fieldset>
-          <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod}>
-            <HandCoins className="mr-2 h-4 w-4" />
-            Submit Bid
+          <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isSubmitting}>
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <HandCoins className="mr-2 h-4 w-4" />
+            )}
+            {isSubmitting ? 'Submitting...' : 'Submit Bid'}
           </Button>
         </form>
       </Form>

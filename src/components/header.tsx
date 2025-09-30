@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Bell } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import Logo from '@/components/logo';
 import { SidebarNav } from '@/components/sidebar-nav';
 import { UserNav } from '@/components/user-nav';
 import { getCurrentUser } from '@/lib/data';
+import NotificationBell from './notification-bell';
 
 export function Header() {
   const user = getCurrentUser();
@@ -40,10 +41,7 @@ export function Header() {
         </SheetContent>
       </Sheet>
       <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Toggle notifications</span>
-        </Button>
+        <NotificationBell userId={user.id} />
         <UserNav user={user} />
       </div>
     </header>

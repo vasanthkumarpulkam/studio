@@ -1,5 +1,6 @@
-import type { User, Provider, Job, Bid } from '@/types';
+import type { User, Provider, Job, Bid, Notification } from '@/types';
 import { PlaceHolderImages } from './placeholder-images';
+import { notifications } from './notifications';
 
 const avatar1 = PlaceHolderImages.find(p => p.id === 'user-avatar-1')?.imageUrl || '';
 const avatar2 = PlaceHolderImages.find(p => p.id === 'user-avatar-2')?.imageUrl || '';
@@ -12,7 +13,7 @@ const jobImage3 = PlaceHolderImages.find(p => p.id === 'job-floor')?.imageUrl ||
 
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Sarah Lee', email: 'sarah.lee@example.com', avatarUrl: avatar1, role: 'customer', hasPaymentMethod: false },
+  { id: 'user-1', name: 'Sarah Lee', email: 'sarah.lee@example.com', avatarUrl: avatar1, role: 'customer', hasPaymentMethod: true },
   { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', hasPaymentMethod: true },
   { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', hasPaymentMethod: true },
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', hasPaymentMethod: false },
@@ -68,24 +69,29 @@ export const jobs: Job[] = [
 
 export const bids: Bid[] = [
   { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, completionTime: '2-3 hours', submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I\'m a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
-  { id: 'bid-2', jobId: 'job-1', providerId: 'user-4', amount: 140, completionTime: '4 hours', submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString() },
+  { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 140, completionTime: '4 hours', submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString() },
   { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 55, completionTime: '1 day', submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'bid-4', jobId: 'job-3', providerId: 'user-3', amount: 850, completionTime: '3-4 days', submittedOn: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), message: 'I specialize in hardwood floor refinishing and can make your floors look brand new.' },
 ];
 
+export { notifications };
+
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
-const MOCKED_CURRENT_USER_ID = 'user-2'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
+const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
 
 export function getCurrentUser(): User {
-  const user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
-  if (!user) {
-    const provider = getProvider(MOCKED_CURRENT_USER_ID);
-    if (!provider) throw new Error('Mocked user not found');
-    return provider;
-  }
-  return user;
+  // Find in regular users
+  let user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
+  if (user) return { ...user, hasPaymentMethod: providers.find(p => p.id === user?.id)?.hasPaymentMethod ?? user.hasPaymentMethod };
+  
+  // Find in providers
+  const provider = getProvider(MOCKED_CURRENT_USER_ID);
+  if (provider) return provider;
+
+  throw new Error('Mocked user not found');
 }
+
 
 export function getProvider(id: string): Provider | undefined {
   return providers.find(p => p.id === id);
@@ -113,6 +119,11 @@ export function getJob(id: string): Job | undefined {
 export function getBidsForJob(jobId: string): Bid[] {
   return bids.filter(b => b.jobId === jobId);
 }
+
+export function getNotificationsForUser(userId: string): Notification[] {
+    return notifications.filter(n => n.userId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
 
 export const jobCategories = [
     'Cleaning',
