@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import Logo from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Search, Handshake, ShieldCheck, FileText, Banknote, UserCheck, MessageSquareQuote, ArrowRight, Star } from 'lucide-react';
+import { UserCheck, Banknote, MessageSquareQuote, Star, ArrowRight, FileText, Handshake, ShieldCheck } from 'lucide-react';
+import Testimonials from '@/components/testimonials';
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
@@ -127,6 +128,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <Testimonials />
         
         <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
           <div className="container px-4 md:px-6">
