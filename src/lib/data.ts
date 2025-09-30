@@ -28,27 +28,27 @@ export const providers: Provider[] = [
 export const jobs: Job[] = [
   {
     id: 'job-1',
-    title: 'Test Frontend Job',
-    description: 'This is a test job created from frontend testing',
+    title: 'Fix leaky kitchen sink',
+    description: 'There is a constant drip under my kitchen sink. It seems to be coming from the cold water line. I have tried tightening the fittings but it hasnt stopped. The cabinet underneath is starting to get water damage. Need someone to come and fix it as soon as possible.',
     category: 'Plumbing',
-    location: 'Test Location',
-    budget: 100,
+    location: 'San Francisco, CA',
+    budget: 150,
     postedBy: 'user-1',
-    postedOn: "2025-09-29T12:00:00.000Z",
+    postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'open',
     images: [jobImage1],
     isCashOnly: false,
   },
   {
     id: 'job-2',
-    title: 'Bid Test Job',
-    description: 'This job is created to test the bidding system',
-    category: 'Electrical',
-    location: 'Bid Test Location',
-    budget: 200,
-    postedBy: 'user-3',
-    postedOn: "2025-09-29T12:00:00.000Z",
-    status: 'open',
+    title: 'Mow lawn and trim hedges',
+    description: 'My front and back lawns need cutting. The backyard is about 500 sq ft and the front is smaller. Hedges along the fence also need trimming. I have a green waste bin for the clippings.',
+    category: 'Grass Cutting',
+    location: 'Oakland, CA',
+    budget: 80,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'in-progress',
     acceptedBid: 'bid-3',
     images: [jobImage2],
     isCashOnly: true,
@@ -64,6 +64,7 @@ export const jobs: Job[] = [
     status: 'completed',
     acceptedBid: 'bid-4',
     images: [jobImage3],
+    isCashOnly: false,
   },
 ];
 
@@ -78,7 +79,7 @@ export { notifications };
 
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
-const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
+const MOCKED_CURRENT_USER_ID = 'user-2'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
 
 export function getCurrentUser(): User {
   // Find in regular users
