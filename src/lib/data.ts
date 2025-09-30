@@ -65,7 +65,7 @@ export const jobs: Job[] = [
 ];
 
 export const bids: Bid[] = [
-  { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I'm a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
+  { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I\'m a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
   { id: 'bid-2', jobId: 'job-1', providerId: 'user-4', amount: 140, submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString() },
   { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 55, submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'bid-4', jobId: 'job-3', providerId: 'user-3', amount: 850, submittedOn: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), message: 'I specialize in hardwood floor refinishing and can make your floors look brand new.' },
@@ -102,13 +102,45 @@ export function getBidsForJob(jobId: string): Bid[] {
 }
 
 export const jobCategories = [
-    'Plumbing',
-    'Grass Cutting',
-    'Flooring',
-    'General Repair',
-    'Painting',
-    'Gardening',
     'Cleaning',
-    'Moving',
-    'Electrical'
-]
+    'Cooking',
+    'Babysitting',
+    'Gardening',
+    'Laundry',
+    'Dishwashing',
+    'Handyman Work',
+    'Appliance Repairs',
+    'Car Repairs',
+    'Plumbing',
+    'Electrical',
+    'AC/Heating',
+    'Tiling',
+    'Flooring',
+    'Painting',
+    'Roofing',
+    'Packing',
+    'Movers',
+    'Furniture Assembly',
+    'Storage Help',
+    'Truck Rentals',
+    'Delivery Support',
+    'Decoration',
+    'Catering',
+    'DJ',
+    'Bartenders',
+    'Photographers',
+    'Videographers',
+    'Event Helpers',
+    'Drivers',
+    'Security',
+    'General Labor',
+    'Construction',
+    'Shop Assistant',
+    'Cash-Only Job',
+    'Tutoring',
+    'Personal Training',
+    'Pet Care',
+    'Tech Setup',
+    'Freelance Computer Work',
+    'Other'
+];
