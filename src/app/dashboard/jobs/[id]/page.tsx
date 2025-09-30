@@ -53,24 +53,24 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
   
   // This is a hack to get the full user object, which might be a provider
-  const currentUser = getCurrentUser() as UserType | Provider;
+  const currentUser = getCurrentUser() as UserType | Provider | null;
 
   if (!job) {
     notFound();
   }
 
   const bids = getBidsForJob(job.id);
-  const isOwner = job.postedBy === currentUser.id;
+  const isOwner = currentUser ? job.postedBy === currentUser.id : false;
   
-  const currentUserIsProvider = currentUser.role === 'provider';
+  const currentUserIsProvider = currentUser?.role === 'provider';
   
   let canProviderBid = false;
-  if (currentUserIsProvider) {
+  if (currentUserIsProvider && currentUser) {
     const providerProfile = getProvider(currentUser.id);
     canProviderBid = providerProfile?.skills.includes(job.category) ?? false;
   }
 
-  const hasPaymentMethod = currentUser.hasPaymentMethod;
+  const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
   const statusColors = {
     open: 'bg-green-100 text-green-800 border-green-200',
@@ -181,7 +181,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
             </Card>
           )}
 
-          {job.status === 'completed' && (isOwner || acceptedProvider?.id === currentUser.id) && (
+          {job.status === 'completed' && (isOwner || (acceptedProvider && currentUser && acceptedProvider.id === currentUser.id)) && currentUser && (
             <Card>
               <CardHeader>
                 <CardTitle className='font-headline'>Leave a Review</CardTitle>
@@ -246,13 +246,13 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     </div>
                   )}
 
-                  {currentUser.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'in-progress' && (
+                  {currentUser?.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'in-progress' && (
                      <div className="flex flex-col space-y-2">
                         <StartWorkButton jobId={job.id} />
                      </div>
                   )}
 
-                  {currentUser.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'working' && (
+                  {currentUser?.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'working' && (
                      <div className="flex flex-col space-y-2">
                         <MarkCompletedButton jobId={job.id} />
                         <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
@@ -318,7 +318,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                           </div>
                           {bid.message && <p className="text-sm text-muted-foreground mt-2 pl-11">{bid.message}</p>}
                           <div className="flex justify-end mt-3 gap-2">
-                             <ChatModal 
+                             {currentUser && <ChatModal 
                                 triggerButton={
                                   <Button variant="outline" size="sm">
                                       <MessageSquare className="mr-2 h-4 w-4"/>
@@ -329,7 +329,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                 jobTitle={job.title}
                                 providerName={provider.name}
                                 currentUser={currentUser}
-                             />
+                             />}
                              <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
                           </div>
                         </div>
