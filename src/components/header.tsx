@@ -1,5 +1,7 @@
 
+'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -9,9 +11,16 @@ import { SidebarNav } from '@/components/sidebar-nav';
 import { UserNav } from '@/components/user-nav';
 import { getCurrentUser } from '@/lib/data';
 import NotificationBell from './notification-bell';
+import type { User, Provider } from '@/types';
+import { usePathname } from 'next/navigation';
 
 export function Header() {
-  const user = getCurrentUser();
+  const [user, setUser] = useState<User | Provider | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-40">
