@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ export function Header() {
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-40">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <Logo href={user ? "/dashboard" : "/"} />
+        <Logo href="/" />
       </nav>
       {user && (
         <Sheet>
