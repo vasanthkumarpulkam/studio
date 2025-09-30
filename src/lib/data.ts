@@ -20,8 +20,8 @@ export const users: User[] = [
 ];
 
 export const providers: Provider[] = [
-  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs'], location: 'San Francisco, CA', hasPaymentMethod: true },
-  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling', 'Electrical'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs', 'Electrical'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling', 'Electrical', 'Furniture Assembly'], location: 'San Francisco, CA', hasPaymentMethod: true },
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening', 'Landscaping'], location: 'Oakland, CA', hasPaymentMethod: false },
 ];
 
@@ -65,6 +65,45 @@ export const jobs: Job[] = [
     acceptedBid: 'bid-4',
     images: [jobImage3],
     isCashOnly: false,
+  },
+  {
+    id: 'job-4',
+    title: 'Assemble IKEA bed frame and dresser',
+    description: 'I just moved and have a new MALM bed frame and a 6-drawer dresser from IKEA that need to be assembled. I have all the boxes and parts.',
+    category: 'Furniture Assembly',
+    location: 'Berkeley, CA',
+    budget: 120,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: false,
+  },
+  {
+    id: 'job-5',
+    title: 'Install new ceiling fan in bedroom',
+    description: 'Need a licensed electrician to remove an old light fixture and install a new ceiling fan with a light kit. The ceiling is standard height (8 ft).',
+    category: 'Electrical',
+    location: 'San Jose, CA',
+    budget: 200,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: false,
+  },
+  {
+    id: 'job-6',
+    title: 'Weed and mulch garden beds',
+    description: 'Front yard garden beds are full of weeds. Need someone to clear them out, lay down new weed barrier fabric, and spread mulch. Mulch will be provided.',
+    category: 'Gardening',
+    location: 'Palo Alto, CA',
+    budget: 180,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: true,
   },
 ];
 
