@@ -14,13 +14,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Star } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Star, CircleDollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const reviewSchema = z.object({
   rating: z.number().min(1, 'Please select a rating.'),
   comment: z.string().min(10, 'Review must be at least 10 characters long.').optional(),
+  tipAmount: z.coerce.number().min(0, 'Tip must be a positive number.').optional(),
 });
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
@@ -40,6 +42,7 @@ export default function LeaveReviewForm({ jobId, revieweeId, reviewerRole }: Lea
     defaultValues: {
       rating: 0,
       comment: '',
+      tipAmount: undefined,
     },
   });
 
@@ -62,34 +65,56 @@ export default function LeaveReviewForm({ jobId, revieweeId, reviewerRole }: Lea
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="rating"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Rating</FormLabel>
-              <FormControl>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={cn(
-                        'w-8 h-8 cursor-pointer transition-colors',
-                        (hoverRating >= star || currentRating >= star)
-                          ? 'text-amber-400 fill-amber-400'
-                          : 'text-gray-300'
-                      )}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      onClick={() => field.onChange(star)}
-                    />
-                  ))}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+            control={form.control}
+            name="rating"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Rating</FormLabel>
+                <FormControl>
+                    <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                        key={star}
+                        className={cn(
+                            'w-8 h-8 cursor-pointer transition-colors',
+                            (hoverRating >= star || currentRating >= star)
+                            ? 'text-amber-400 fill-amber-400'
+                            : 'text-gray-300'
+                        )}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        onClick={() => field.onChange(star)}
+                        />
+                    ))}
+                    </div>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+            {reviewerRole === 'customer' && (
+                <FormField
+                    control={form.control}
+                    name="tipAmount"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Add a Tip (Optional)</FormLabel>
+                        <div className="relative">
+                            <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <FormControl>
+                                <Input type="number" placeholder="e.g., 10.00" className="pl-10" {...field} />
+                            </FormControl>
+                        </div>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+        </div>
+        
         <FormField
           control={form.control}
           name="comment"
