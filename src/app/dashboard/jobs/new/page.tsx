@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -28,11 +29,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
-import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote } from 'lucide-react';
+import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, X, Image as ImageIcon } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import Image from 'next/image';
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
 
 const jobSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -41,6 +46,7 @@ const jobSchema = z.object({
   location: z.string().min(2, 'Location is required.'),
   budget: z.coerce.number().positive().optional(),
   isCashOnly: z.boolean().default(false),
+  images: z.array(z.any()).optional(),
 });
 
 type JobFormValues = z.infer<typeof jobSchema>;
@@ -49,6 +55,7 @@ export default function NewJobPage() {
   const { toast } = useToast();
   const router = useRouter();
   const currentUser = getCurrentUser();
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -67,8 +74,40 @@ export default function NewJobPage() {
       isCashOnly: false,
       category: '',
       budget: undefined,
+      images: [],
     },
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const currentImages = form.getValues('images') || [];
+    
+    const newImages = files.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        toast({ variant: 'destructive', title: 'File too large', description: `${file.name} is larger than 10MB.` });
+        return false;
+      }
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        toast({ variant: 'destructive', title: 'Invalid file type', description: `${file.name} is not a supported image format.` });
+        return false;
+      }
+      return true;
+    });
+
+    const updatedImages = [...currentImages, ...newImages];
+    form.setValue('images', updatedImages);
+    
+    const newPreviews = updatedImages.map(file => URL.createObjectURL(file));
+    setImagePreviews(newPreviews);
+  };
+
+  const removeImage = (index: number) => {
+    const updatedImages = (form.getValues('images') || []).filter((_, i) => i !== index);
+    form.setValue('images', updatedImages);
+
+    const newPreviews = updatedImages.map(file => URL.createObjectURL(file));
+    setImagePreviews(newPreviews);
+  };
 
   function onSubmit(values: JobFormValues) {
     if (!hasPaymentMethod) {
@@ -85,6 +124,7 @@ export default function NewJobPage() {
       description: `Your job "${values.title}" is now live.`,
     });
     form.reset();
+    setImagePreviews([]);
   }
 
   if (!currentUser) {
@@ -245,25 +285,65 @@ export default function NewJobPage() {
                     )}
                   />
 
-                  <div>
-                      <FormLabel>Photos (Optional)</FormLabel>
-                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-input px-6 py-10">
-                          <div className="text-center">
-                          <Camera className="mx-auto h-12 w-12 text-gray-300" />
-                          <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                              <label
-                              htmlFor="file-upload"
-                              className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
-                              >
-                              <span>Upload files</span>
-                              <input id="file-upload" name="file-upload" type="file" className="sr-only" multiple />
-                              </label>
-                              <p className="pl-1">or drag and drop</p>
+                  <FormField
+                    control={form.control}
+                    name="images"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Photos (Optional)</FormLabel>
+                        {imagePreviews.length > 0 && (
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 mb-4">
+                            {imagePreviews.map((src, index) => (
+                              <div key={index} className="relative group aspect-square">
+                                <Image
+                                  src={src}
+                                  alt={`Preview ${index + 1}`}
+                                  fill
+                                  className="rounded-md object-cover"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="icon"
+                                  className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => removeImage(index)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
                           </div>
-                          <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                        )}
+                        <FormControl>
+                           <div className="flex justify-center rounded-lg border border-dashed border-input px-6 py-10">
+                              <div className="text-center">
+                              <ImageIcon className="mx-auto h-12 w-12 text-gray-300" />
+                              <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                                  <label
+                                  htmlFor="file-upload"
+                                  className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
+                                  >
+                                  <span>Upload files</span>
+                                  <input 
+                                    id="file-upload" 
+                                    name="file-upload" 
+                                    type="file" 
+                                    className="sr-only" 
+                                    multiple 
+                                    onChange={handleImageChange}
+                                    accept="image/png, image/jpeg, image/gif"
+                                  />
+                                  </label>
+                                  <p className="pl-1">or drag and drop</p>
+                              </div>
+                              <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                              </div>
                           </div>
-                      </div>
-                  </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </fieldset>
 
                 <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod}>
