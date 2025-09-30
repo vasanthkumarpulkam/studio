@@ -7,16 +7,46 @@
       "imageHint": "happy person tablet"
     },
     {
-      "id": "feature-1",
-      "description": "A close-up of a person typing on a laptop.",
-      "imageUrl": "https://images.unsplash.com/photo-1499914485622-a88fac536970?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0eXBpbmclMjBsYXB0b3B8ZW58MHx8fHwxNzU5MjIwMDExfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "id": "feature-1-post",
+      "title": "Post Any Job, Big or Small",
+      "description": "From leaky faucets to full-scale renovations, describe your task and let qualified professionals come to you.",
+      "imageUrl": "https://images.unsplash.com/photo-1499914485622-a88fac536970?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0eXBpbmclMjBsYXB0b3B8ZW58MHx8fHwxNzU5MjIwMDExfDA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "typing laptop"
     },
     {
-      "id": "feature-2",
-      "description": "A person looking for work on a laptop.",
+      "id": "feature-1-bid",
+      "title": "Receive Private Bids",
+      "description": "No public bidding wars. Compare quotes, profiles, and reviews privately to choose the best provider for your needs.",
+      "imageUrl": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80",
+      "imageHint": "reviewing documents"
+    },
+    {
+      "id": "feature-1-escrow",
+      "title": "Pay Securely with Escrow",
+      "description": "Your payment is held securely in escrow and only released when you confirm the job is completed to your satisfaction.",
+      "imageUrl": "https://images.unsplash.com/photo-1560520655-5431d68f6343?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80",
+      "imageHint": "secure payment"
+    },
+    {
+      "id": "feature-2-browse",
+      "title": "Browse Local Jobs",
+      "description": "Find opportunities in your area that match your skills. Filter by category, location, and budget to find the perfect fit.",
       "imageUrl": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       "imageHint": "person working"
+    },
+    {
+      "id": "feature-2-bid",
+      "title": "Bid with Confidence",
+      "description": "Submit bids privately. Our AI-powered suggestion tool helps you create competitive bids based on job history.",
+      "imageUrl": "https://images.unsplash.com/photo-1521790797524-74b16b8b7625?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80",
+      "imageHint": "person negotiating"
+    },
+    {
+      "id": "feature-2-schedule",
+      "title": "Work On Your Schedule",
+      "description": "You are your own boss. Choose the jobs that fit your schedule and build your reputation with every completed task.",
+      "imageUrl": "https://images.unsplash.com/photo-1486308510493-aa6483363744?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80",
+      "imageHint": "flexible schedule"
     },
     {
       "id": "feature-3",
@@ -75,7 +105,7 @@
     {
       "id": "job-floor",
       "description": "Scratched wooden floor.",
-      "imageUrl": "https://images.unsplash.com/photo-1721704988929-58b5f64c9266?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1721704988929-58b5f64c9266?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "scratched floor"
     }
   ]

@@ -1,15 +1,65 @@
+
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowUpRight } from 'lucide-react';
 import Testimonials from '@/components/testimonials';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 export default function Home() {
-  const userPostingJobImage = PlaceHolderImages.find(p => p.id === 'feature-1');
-  const providerFindingWorkImage = PlaceHolderImages.find(p => p.id === 'feature-2');
+
+  const customerFeatures = PlaceHolderImages.filter(p => p.id.startsWith('feature-1'));
+  const providerFeatures = PlaceHolderImages.filter(p => p.id.startsWith('feature-2'));
+
+  const FeatureCarousel = ({ features, link, cta }: { features: any[], link: string, cta: string }) => (
+    <Carousel className="w-full max-w-md mx-auto">
+        <CarouselContent>
+            {features.map((feature, index) => (
+                <CarouselItem key={index}>
+                    <div className="p-1">
+                        <Card className="overflow-hidden rounded-xl">
+                            <CardHeader className="p-0 relative h-48">
+                                {feature.imageUrl && (
+                                    <Image
+                                        src={feature.imageUrl}
+                                        alt={feature.title}
+                                        fill
+                                        className="object-cover"
+                                        data-ai-hint={feature.imageHint}
+                                    />
+                                )}
+                            </CardHeader>
+                            <CardContent className="p-6 bg-card min-h-[160px]">
+                                <CardTitle className="font-headline text-2xl">{feature.title}</CardTitle>
+                                <CardDescription className="mt-2">
+                                    {feature.description}
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </CarouselItem>
+            ))}
+        </CarouselContent>
+        <CarouselPrevious className="left-[-10px] sm:left-[-40px]" />
+        <CarouselNext className="right-[-10px] sm:right-[-40px]" />
+         <div className="text-center mt-6">
+            <Button asChild size="lg">
+                <Link href={link}>{cta}</Link>
+            </Button>
+        </div>
+    </Carousel>
+);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -44,57 +94,9 @@ export default function Home() {
                 Post your job and get bids from trusted local providers. Or find flexible work opportunities in your area — fast, simple, secure.
               </p>
             </div>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <Link href="/dashboard/jobs/new">
-                <Card className="group overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                    <CardHeader className="p-0 relative">
-                        {userPostingJobImage && (
-                            <Image
-                                src={userPostingJobImage.imageUrl}
-                                alt="Post a job"
-                                width={600}
-                                height={340}
-                                className="object-cover w-full h-48"
-                                data-ai-hint={userPostingJobImage.imageHint}
-                            />
-                        )}
-                        <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm rounded-full p-2">
-                           <ArrowUpRight className="w-6 h-6 text-primary transition-transform group-hover:rotate-45" />
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-6 bg-card">
-                        <CardTitle className="font-headline text-2xl">Post a Job</CardTitle>
-                        <CardDescription className="mt-2">
-                         Describe your task, set a budget, and get bids instantly from verified providers.
-                        </CardDescription>
-                    </CardContent>
-                </Card>
-              </Link>
-              <Link href="/dashboard">
-                <Card className="group overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                    <CardHeader className="p-0 relative">
-                        {providerFindingWorkImage && (
-                            <Image
-                                src={providerFindingWorkImage.imageUrl}
-                                alt="Find work"
-                                width={600}
-                                height={340}
-                                className="object-cover w-full h-48"
-                                data-ai-hint={providerFindingWorkImage.imageHint}
-                            />
-                        )}
-                         <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm rounded-full p-2">
-                           <ArrowUpRight className="w-6 h-6 text-primary transition-transform group-hover:rotate-45" />
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-6 bg-card">
-                        <CardTitle className="font-headline text-2xl">Find Work</CardTitle>
-                        <CardDescription className="mt-2">
-                         Browse nearby jobs, bid privately, and grow your income on your own schedule.
-                        </CardDescription>
-                    </CardContent>
-                </Card>
-              </Link>
+             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
+                <FeatureCarousel features={customerFeatures} link="/dashboard/jobs/new" cta="Post a Job" />
+                <FeatureCarousel features={providerFeatures} link="/dashboard" cta="Find Work" />
             </div>
           </div>
         </section>
