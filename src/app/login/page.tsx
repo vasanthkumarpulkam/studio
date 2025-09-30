@@ -13,13 +13,11 @@ import Logo from '@/components/logo';
 
 export default function LoginPage() {
   return (
-    <div className="w-full h-screen flex items-center justify-center p-4">
+    <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
-            <div className='mb-4'>
-                <Link href="/">
-                    <Logo />
-                </Link>
+            <div className='mb-4 flex justify-center'>
+                <Logo />
             </div>
           <CardTitle className="text-2xl font-headline">Welcome Back!</CardTitle>
           <CardDescription>

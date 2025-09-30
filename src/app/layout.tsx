@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'ServiceHub',
+  title: 'HandyConnect',
   description: 'Connects daily workers and repair service providers with customers.',
 };
 
