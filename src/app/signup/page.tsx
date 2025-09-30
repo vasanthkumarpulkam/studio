@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -119,6 +120,9 @@ export default function SignupPage() {
                 </div>
                 <Button type="submit" className="w-full">
                   Create Account
+                </Button>
+                 <Button variant="link" asChild>
+                    <Link href="/">Back</Link>
                 </Button>
               </div>
             </form>
