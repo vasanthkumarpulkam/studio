@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -53,6 +54,8 @@ export default function NewJobPage() {
       description: '',
       location: '',
       isCashOnly: false,
+      category: '',
+      budget: undefined,
     },
   });
 
@@ -189,7 +192,7 @@ export default function NewJobPage() {
                       <FormItem>
                           <FormLabel>Budget (Optional)</FormLabel>
                           <FormControl>
-                          <Input type="number" placeholder="e.g., 150" {...field} />
+                          <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} onChange={field.onChange} />
                           </FormControl>
                           <FormDescription>
                               Provide an estimated budget to guide providers.
