@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/carousel';
 import { getCurrentUser } from '@/lib/data';
 import type { User, Provider } from '@/types';
+import { Footer } from '@/components/footer';
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
@@ -147,13 +148,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-4 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-card">
-        <p className="text-xs text-foreground/60">&copy; 2024 ServiceHub. All rights reserved.</p>
-        <nav className="sm:ml-auto flex flex-wrap justify-center gap-4 sm:gap-6">
-           <Link href="#" className="text-xs hover:underline underline-offset-4">Terms of Service</Link>
-           <Link href="#" className="text-xs hover:underline underline-offset-4">Privacy</Link>
-        </nav>
-      </footer>
+      <Footer />
     </div>
   );
 }
