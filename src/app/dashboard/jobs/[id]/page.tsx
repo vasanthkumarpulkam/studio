@@ -38,6 +38,7 @@ import {
   Briefcase,
   MessageSquare,
   ArrowLeft,
+  LogIn,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -171,6 +172,27 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
               )}
             </CardContent>
           </Card>
+
+          {!currentUser && job.status === 'open' && !isOwner && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline">Want to bid on this job?</CardTitle>
+                <CardDescription>
+                  Log in or create a provider account to submit your bid and chat with the poster.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex gap-4">
+                <Button asChild>
+                  <Link href="/login">
+                    <LogIn className="mr-2 h-4 w-4" /> Log In
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary">
+                  <Link href="/signup">Sign Up as a Provider</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {currentUserIsProvider && !isOwner && job.status === 'open' && (
             <Card>
