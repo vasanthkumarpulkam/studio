@@ -49,3 +49,14 @@ export type Notification = {
     isRead: boolean;
     createdAt: string; // ISO date string
 }
+
+export type ChatMessage = {
+  id: string;
+  jobId: string;
+  providerId: string;
+  senderId: string;
+  text: string;
+  timestamp: string; // ISO date string
+};
+
+    

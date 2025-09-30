@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -7,6 +8,7 @@ import {
   getBidsForJob,
   getProvider,
   getCurrentUser,
+  getChatMessages,
 } from '@/lib/data';
 import {
   Card,
@@ -33,6 +35,7 @@ import {
   Hammer,
   Clock,
   Briefcase,
+  MessageSquare,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,6 +47,7 @@ import MarkCompletedButton from '@/components/mark-completed-button';
 import LeaveReviewForm from '@/components/leave-review-form';
 import StartWorkButton from '@/components/start-work-button';
 import type { Provider, User as UserType } from '@/types';
+import ChatModal from '@/components/chat-modal';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
@@ -282,6 +286,9 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     {bids.map((bid) => {
                       const provider = getProvider(bid.providerId);
                       if (!provider) return null;
+                      
+                      const chatHistory = getChatMessages(job.id, bid.providerId);
+
                       return (
                         <div key={bid.id} className="p-4 border rounded-lg">
                           <div className="flex justify-between items-start">
@@ -310,7 +317,19 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                              <p className="text-lg font-bold text-primary">${bid.amount}</p>
                           </div>
                           {bid.message && <p className="text-sm text-muted-foreground mt-2 pl-11">{bid.message}</p>}
-                          <div className="flex justify-end mt-2">
+                          <div className="flex justify-end mt-3 gap-2">
+                             <ChatModal 
+                                triggerButton={
+                                  <Button variant="outline" size="sm">
+                                      <MessageSquare className="mr-2 h-4 w-4"/>
+                                      Message
+                                  </Button>
+                                }
+                                messages={chatHistory}
+                                jobTitle={job.title}
+                                providerName={provider.name}
+                                currentUser={currentUser}
+                             />
                              <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
                           </div>
                         </div>
@@ -331,3 +350,5 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+    

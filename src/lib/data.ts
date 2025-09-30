@@ -1,4 +1,4 @@
-import type { User, Provider, Job, Bid, Notification } from '@/types';
+import type { User, Provider, Job, Bid, Notification, ChatMessage } from '@/types';
 import { PlaceHolderImages } from './placeholder-images';
 import { notifications } from './notifications';
 
@@ -69,17 +69,26 @@ export const jobs: Job[] = [
 ];
 
 export const bids: Bid[] = [
-  { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, completionTime: '2-3 hours', submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I\'m a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
+  { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 120, completionTime: '2-3 hours', submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), message: "Hi Sarah, I'm a licensed plumber with 10 years of experience. I can take a look and fix that leak for you. I have all the necessary tools." },
   { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 140, completionTime: '4 hours', submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString() },
   { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 55, completionTime: '1 day', submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'bid-4', jobId: 'job-3', providerId: 'user-3', amount: 850, completionTime: '3-4 days', submittedOn: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), message: 'I specialize in hardwood floor refinishing and can make your floors look brand new.' },
 ];
 
+export const chats: ChatMessage[] = [
+    { id: 'chat-1', jobId: 'job-1', providerId: 'user-2', senderId: 'user-2', text: "Hello! I've reviewed your job posting for the leaky sink. I can come by tomorrow morning to take a look. Does that work for you?", timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-2', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Hi Mike, thanks for the quick response! Tomorrow morning works perfectly. What time are you thinking?", timestamp: new Date(Date.now() - 19 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-3', jobId: 'job-1', providerId: 'user-2', senderId: 'user-2', text: "Great. I can be there around 9 AM. I'll bring all the necessary tools to get it fixed right away.", timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-4', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Perfect, see you at 9 AM then. Thanks!", timestamp: new Date(Date.now() - 17 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-5', jobId: 'job-1', providerId: 'user-3', senderId: 'user-3', text: "Is the job still available? I can offer a competitive rate.", timestamp: new Date(Date.now() - 21 * 60 * 60 * 1000).toISOString() },
+];
+
+
 export { notifications };
 
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
-const MOCKED_CURRENT_USER_ID = 'user-2'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
+const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' (customer), 'user-2' (provider), 'user-3' (provider), 'user-4' (provider)
 
 export function getCurrentUser(): User {
   // Find in regular users
@@ -123,6 +132,11 @@ export function getBidsForJob(jobId: string): Bid[] {
 
 export function getNotificationsForUser(userId: string): Notification[] {
     return notifications.filter(n => n.userId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function getChatMessages(jobId: string, providerId: string): ChatMessage[] {
+    return chats.filter(c => c.jobId === jobId && c.providerId === providerId)
+                .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 }
 
 
@@ -170,3 +184,5 @@ export const jobCategories = [
     'Freelance Computer Work',
     'Other'
 ];
+
+    
