@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import type { User } from '@/types';
+import { CreditCard } from 'lucide-react';
 
 export function UserNav({ user }: { user: User }) {
   const getInitials = (name: string) => {
@@ -49,6 +50,12 @@ export function UserNav({ user }: { user: User }) {
           <Link href="/dashboard/settings">
             <DropdownMenuItem>
               Settings
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/dashboard/settings/payment">
+            <DropdownMenuItem>
+              <CreditCard className="mr-2 h-4 w-4" />
+              <span>Payment</span>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

@@ -12,16 +12,16 @@ const jobImage3 = PlaceHolderImages.find(p => p.id === 'job-floor')?.imageUrl ||
 
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Sarah Lee', email: 'sarah.lee@example.com', avatarUrl: avatar1, role: 'customer' },
-  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider' },
-  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider' },
-  { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider' },
+  { id: 'user-1', name: 'Sarah Lee', email: 'sarah.lee@example.com', avatarUrl: avatar1, role: 'customer', hasPaymentMethod: false },
+  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', hasPaymentMethod: true },
+  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', hasPaymentMethod: true },
+  { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', hasPaymentMethod: false },
 ];
 
 export const providers: Provider[] = [
-  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair'], location: 'San Francisco, CA' },
-  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting'], location: 'San Francisco, CA' },
-  { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening'], location: 'Oakland, CA' },
+  { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening'], location: 'Oakland, CA', hasPaymentMethod: false },
 ];
 
 export const jobs: Job[] = [
@@ -73,7 +73,7 @@ export const bids: Bid[] = [
 
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
-const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' is a customer, 'user-2' is a provider
+const MOCKED_CURRENT_USER_ID = 'user-1'; // 'user-1' (customer) hasPaymentMethod: false. 'user-2' (provider) hasPaymentMethod: true. 'user-4' (provider) hasPaymentMethod: false.
 
 export function getCurrentUser(): User {
   const user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);

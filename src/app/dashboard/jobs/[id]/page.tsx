@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   getJob,
@@ -23,6 +24,8 @@ import {
   ShieldCheck,
   Check,
   User,
+  AlertTriangle,
+  CreditCard
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,6 +47,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const bids = getBidsForJob(job.id);
   const isOwner = job.postedBy === currentUser.id;
   const isProvider = currentUser.role === 'provider';
+  const hasPaymentMethod = currentUser.hasPaymentMethod;
 
   const statusColors = {
     open: 'bg-green-100 text-green-800 border-green-200',
@@ -54,6 +58,22 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
 
   const acceptedBid = job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
   const acceptedProvider = acceptedBid ? getProvider(acceptedBid.providerId) : null;
+
+  const PaymentAlert = () => (
+     <Alert variant="destructive" className="mb-6">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Payment Method Required</AlertTitle>
+        <AlertDescription>
+          You must add a payment method to proceed.
+          <Button asChild variant="secondary" size="sm" className="mt-2 ml-auto block">
+            <Link href="/dashboard/settings/payment">
+              <CreditCard className="mr-2 h-4 w-4"/>
+              Add Payment Method
+            </Link>
+          </Button>
+        </AlertDescription>
+      </Alert>
+  );
 
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
@@ -109,7 +129,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                 <CardTitle className="font-headline">Interested in this job?</CardTitle>
               </CardHeader>
               <CardContent>
-                <BidForm job={job} />
+                {!hasPaymentMethod ? <PaymentAlert /> : <BidForm job={job} />}
               </CardContent>
             </Card>
           )}
@@ -187,6 +207,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                {!hasPaymentMethod && <PaymentAlert />}
                 {bids.length > 0 ? (
                   <div className="space-y-4">
                     {bids.map((bid) => {
@@ -213,7 +234,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                           </div>
                           {bid.message && <p className="text-sm text-muted-foreground mt-2 pl-11">{bid.message}</p>}
                           <div className="flex justify-end mt-2">
-                             <AcceptBidButton jobId={job.id} bidId={bid.id} />
+                             <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
                           </div>
                         </div>
                       );

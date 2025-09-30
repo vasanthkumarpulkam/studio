@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home,
-  Briefcase,
   FilePlus2,
   User,
   Settings,
   Search,
   Gavel,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,18 +21,22 @@ type SidebarNavProps = {
 export function SidebarNav({ userRole, isMobile = false }: SidebarNavProps) {
   const pathname = usePathname();
 
+  const baseNav = [
+    { href: '/dashboard/profile', label: 'Profile', icon: User },
+    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+    { href: '/dashboard/settings/payment', label: 'Payment', icon: CreditCard },
+  ];
+
   const customerNav = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
     { href: '/dashboard/jobs/new', label: 'Post a Job', icon: FilePlus2 },
-    { href: '/dashboard/profile', label: 'Profile', icon: User },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+    ...baseNav,
   ];
 
   const providerNav = [
     { href: '/dashboard', label: 'Find Jobs', icon: Search },
     { href: '/dashboard/my-bids', label: 'My Bids', icon: Gavel },
-    { href: '/dashboard/profile', label: 'Profile', icon: User },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+    ...baseNav,
   ];
 
   const navItems = userRole === 'customer' ? customerNav : providerNav;
