@@ -27,7 +27,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
-import { Camera, FilePlus2, AlertTriangle, CreditCard } from 'lucide-react';
+import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 const jobSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -35,6 +36,7 @@ const jobSchema = z.object({
   category: z.string({ required_error: 'Please select a category.' }),
   location: z.string().min(2, 'Location is required.'),
   budget: z.coerce.number().positive().optional(),
+  isCashOnly: z.boolean().default(false),
 });
 
 type JobFormValues = z.infer<typeof jobSchema>;
@@ -50,6 +52,7 @@ export default function NewJobPage() {
       title: '',
       description: '',
       location: '',
+      isCashOnly: false,
     },
   });
 
@@ -186,6 +189,29 @@ export default function NewJobPage() {
                           <FormMessage />
                       </FormItem>
                       )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="isCashOnly"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base flex items-center gap-2">
+                             <Banknote className="w-5 h-5"/> Pay with cash
+                          </FormLabel>
+                          <FormDescription>
+                            Select this if you plan to pay the provider in cash. The 10% platform fee will be charged to the provider's saved payment method.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
                   />
 
                   <div>

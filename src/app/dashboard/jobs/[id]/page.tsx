@@ -26,7 +26,8 @@ import {
   User,
   AlertTriangle,
   CreditCard,
-  ShieldAlert
+  ShieldAlert,
+  Banknote,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -83,7 +84,14 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           <Card className="bg-white">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <Badge variant="outline">{job.category}</Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">{job.category}</Badge>
+                   {job.isCashOnly && (
+                    <Badge variant="secondary" className="flex items-center gap-1.5">
+                      <Banknote className="w-4 h-4"/> Cash Payment
+                    </Badge>
+                  )}
+                </div>
                 <Badge className={statusColors[job.status]}>{job.status}</Badge>
               </div>
               <CardTitle className="font-headline text-3xl pt-2">{job.title}</CardTitle>
@@ -177,7 +185,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                         <Check className="h-4 w-4 text-blue-600"/>
                         <AlertTitle className="text-blue-800">Job In Progress</AlertTitle>
                         <AlertDescription className="text-blue-700">
-                         Payment of ${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.
+                         {job.isCashOnly ? 'This is a cash job. Payment will be made directly to the provider. The platform fee will be charged to the provider\'s saved payment method upon completion.' : `Payment of $${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.`}
                         </AlertDescription>
                     </Alert>
                   )}
@@ -198,7 +206,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                         <Check className="h-4 w-4 text-green-600"/>
                         <AlertTitle className="text-green-800">Job Completed!</AlertTitle>
                         <AlertDescription className="text-green-700">
-                          Payment has been released to the provider. You can now leave a review.
+                          {job.isCashOnly ? 'The provider has received cash payment. You can now leave a review.' : 'Payment has been released to the provider. You can now leave a review.'}
                         </AlertDescription>
                     </Alert>
                   )}

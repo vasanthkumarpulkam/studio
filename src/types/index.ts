@@ -28,6 +28,7 @@ export type Job = {
   status: 'open' | 'in-progress' | 'completed' | 'disputed';
   images: string[];
   acceptedBid?: string; // bidId
+  isCashOnly?: boolean;
 };
 
 export type Bid = {

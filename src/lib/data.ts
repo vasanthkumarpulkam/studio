@@ -36,6 +36,7 @@ export const jobs: Job[] = [
     postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'open',
     images: [jobImage1],
+    isCashOnly: false,
   },
   {
     id: 'job-2',
@@ -49,6 +50,7 @@ export const jobs: Job[] = [
     status: 'in-progress',
     acceptedBid: 'bid-3',
     images: [jobImage2],
+    isCashOnly: true,
   },
   {
     id: 'job-3',
