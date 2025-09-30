@@ -9,6 +9,7 @@ import {
   getProvider,
   getCurrentUser,
   getChatMessages,
+  getUser,
 } from '@/lib/data';
 import {
   Card,
@@ -54,8 +55,10 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   
   // This is a hack to get the full user object, which might be a provider
   const currentUser = getCurrentUser() as UserType | Provider | null;
+  const jobPoster = getUser(job?.postedBy || '');
 
-  if (!job) {
+
+  if (!job || !jobPoster) {
     notFound();
   }
 
@@ -176,7 +179,28 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                   </Alert>
                 )}
                 {canProviderBid && !hasPaymentMethod && <PaymentAlert />}
-                {canProviderBid && hasPaymentMethod && <BidForm job={job} />}
+                {canProviderBid && hasPaymentMethod && (
+                  <div className="space-y-6">
+                    <div className="flex justify-end">
+                      <ChatModal 
+                        triggerButton={
+                          <Button variant="outline">
+                              <MessageSquare className="mr-2 h-4 w-4"/>
+                              Message Poster
+                          </Button>
+                        }
+                        messages={getChatMessages(job.id, currentUser.id)}
+                        jobTitle={job.title}
+                        recipient={jobPoster}
+                        currentUser={currentUser}
+                        jobId={job.id}
+                        providerId={currentUser.id}
+                      />
+                    </div>
+                    <Separator />
+                    <BidForm job={job} />
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -327,8 +351,10 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                 }
                                 messages={chatHistory}
                                 jobTitle={job.title}
-                                providerName={provider.name}
+                                recipient={provider}
                                 currentUser={currentUser}
+                                jobId={job.id}
+                                providerId={provider.id}
                              />}
                              <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
                           </div>
@@ -350,5 +376,3 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    

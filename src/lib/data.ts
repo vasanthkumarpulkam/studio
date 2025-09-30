@@ -186,9 +186,9 @@ export const bids: Bid[] = [
   { id: 'bid-4', jobId: 'job-3', providerId: 'user-3', amount: 850, completionTime: '3-4 days', submittedOn: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), message: 'I specialize in hardwood floor refinishing and can make your floors look brand new.' },
 ];
 
-export const chats: ChatMessage[] = [
+export let chats: ChatMessage[] = [
     { id: 'chat-1', jobId: 'job-1', providerId: 'user-2', senderId: 'user-2', text: "Hello! I've reviewed your job posting for the leaky sink. I can come by tomorrow morning to take a look. Does that work for you?", timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString() },
-    { id: 'chat-2', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Hi Mike, thanks for the quick response! Tomorrow morning works perfectly. What time are you thinking?", timestamp: new Date(Date.now() - 19 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-2', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Hi Mike, thanks for the quick response! Tomorrow morning works perfectly. What time are you thinking?", timestamp: new Date(Date-now() - 19 * 60 * 60 * 1000).toISOString() },
     { id: 'chat-3', jobId: 'job-1', providerId: 'user-2', senderId: 'user-2', text: "Great. I can be there around 9 AM. I'll bring all the necessary tools to get it fixed right away.", timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString() },
     { id: 'chat-4', jobId: 'job-1', providerId: 'user-2', senderId: 'user-1', text: "Perfect, see you at 9 AM then. Thanks!", timestamp: new Date(Date.now() - 17 * 60 * 60 * 1000).toISOString() },
     { id: 'chat-5', jobId: 'job-1', providerId: 'user-3', senderId: 'user-3', text: "Is the job still available? I can offer a competitive rate.", timestamp: new Date(Date.now() - 21 * 60 * 60 * 1000).toISOString() },
@@ -200,23 +200,27 @@ export { notifications };
 // In a real app, this would involve authentication. Here, we'll just mock it.
 // We can switch the current user by changing the ID here.
 // Set to null to simulate a logged-out user
-const MOCKED_CURRENT_USER_ID: string | null = null; // 'user-1' (customer), 'user-2' (provider)
+const MOCKED_CURRENT_USER_ID: string | null = 'user-2'; // 'user-1' (customer), 'user-2' (provider)
 
-export function getCurrentUser(): User | null {
+export function getCurrentUser(): User | Provider | null {
   if (!MOCKED_CURRENT_USER_ID) {
     return null;
   }
   
-  // Find in regular users or providers
-  let user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
-  if (user) {
-    const providerDetails = providers.find(p => p.id === user?.id);
-    return { ...user, ...providerDetails };
+  const user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
+  if (!user) return null;
+
+  if (user.role === 'provider') {
+    const providerDetails = providers.find(p => p.id === user.id);
+    return { ...user, ...providerDetails } as Provider;
   }
 
-  return null;
+  return user;
 }
 
+export function getUser(id: string): User | undefined {
+  return users.find(u => u.id === id);
+}
 
 export function getProvider(id: string): Provider | undefined {
   return providers.find(p => p.id === id);
@@ -245,7 +249,7 @@ export function getBidsForJob(jobId: string): Bid[] {
   return bids.filter(b => b.jobId === jobId);
 }
 
-export function getNotificationsForUser(userId: string): Notification[] {
+export function getNotificationsForUser(userId:string): Notification[] {
     return notifications.filter(n => n.userId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 

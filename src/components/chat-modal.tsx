@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,46 +13,67 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, User, Provider } from '@/types';
+import { moderateChat } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 type ChatModalProps = {
   triggerButton: React.ReactNode;
   messages: ChatMessage[];
   jobTitle: string;
-  providerName: string;
+  recipient: User | Provider;
   currentUser: User | Provider;
+  jobId: string;
+  providerId: string;
 };
 
 export default function ChatModal({
   triggerButton,
   messages: initialMessages,
   jobTitle,
-  providerName,
+  recipient,
   currentUser,
+  jobId,
+  providerId,
 }: ChatModalProps) {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() === '') return;
+    if (newMessage.trim() === '' || isPending) return;
 
-    const optimisticMessage: ChatMessage = {
-      id: `temp-${Date.now()}`,
-      jobId: initialMessages[0]?.jobId || 'job-1', // Fallback for safety
-      providerId: initialMessages[0]?.providerId || 'user-2', // Fallback
-      senderId: currentUser.id,
-      text: newMessage,
-      timestamp: new Date().toISOString(),
-    };
+    startTransition(async () => {
+      try {
+        const moderatedText = await moderateChat(newMessage);
+        
+        const optimisticMessage: ChatMessage = {
+          id: `temp-${Date.now()}`,
+          jobId,
+          providerId,
+          senderId: currentUser.id,
+          text: moderatedText,
+          timestamp: new Date().toISOString(),
+        };
 
-    // In a real app, you would send this to your backend/Firestore
-    // and receive the new message via a real-time subscription.
-    setMessages((prev) => [...prev, optimisticMessage]);
-    setNewMessage('');
+        // In a real app, you would send this to your backend/Firestore
+        // and receive the new message via a real-time subscription.
+        setMessages((prev) => [...prev, optimisticMessage]);
+        setNewMessage('');
+
+      } catch (error) {
+         toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to send message. Please try again.',
+        });
+      }
+    });
   };
 
   return (
@@ -61,13 +82,14 @@ export default function ChatModal({
       <DialogContent className="sm:max-w-[425px] md:max-w-[600px] grid-rows-[auto_1fr_auto] p-0 max-h-[90vh]">
         <DialogHeader className="p-4 border-b">
           <DialogTitle>
-            Chat with {providerName} about "{jobTitle}"
+            Chat with {recipient.name} about "{jobTitle}"
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-96 p-4">
           <div className="space-y-4">
             {messages.map((message) => {
               const isCurrentUser = message.senderId === currentUser.id;
+              const sender = isCurrentUser ? currentUser : recipient;
               return (
                 <div
                   key={message.id}
@@ -78,8 +100,8 @@ export default function ChatModal({
                 >
                   {!isCurrentUser && (
                     <Avatar className="h-8 w-8">
-                      <AvatarImage alt={providerName} />
-                      <AvatarFallback>{providerName.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={sender.avatarUrl} alt={sender.name} />
+                      <AvatarFallback>{sender.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   )}
                   <div
@@ -121,9 +143,10 @@ export default function ChatModal({
               autoComplete="off"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              disabled={isPending}
             />
-            <Button type="submit" size="icon">
-              <Send className="h-4 w-4" />
+            <Button type="submit" size="icon" disabled={isPending}>
+              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               <span className="sr-only">Send</span>
             </Button>
           </form>
@@ -132,5 +155,3 @@ export default function ChatModal({
     </Dialog>
   );
 }
-
-    

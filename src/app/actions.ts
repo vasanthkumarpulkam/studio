@@ -2,8 +2,9 @@
 
 import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
 import type { SuggestInitialBidOutput } from '@/ai/flows/suggest-initial-bid';
-import { jobs, bids as allBids, notifications as allNotifications } from '@/lib/data';
-import type { Bid } from '@/types';
+import { moderateChatFlow } from '@/ai/flows/moderate-chat';
+import { jobs, bids as allBids, notifications as allNotifications, chats } from '@/lib/data';
+import type { Bid, ChatMessage } from '@/types';
 import { revalidatePath } from 'next/cache';
 
 export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<SuggestInitialBidOutput> {
@@ -114,4 +115,26 @@ export async function markAllNotificationsAsRead(userId: string) {
         }
     });
     revalidatePath('/dashboard'); // Revalidate a common path to trigger data refetch
+}
+
+export async function moderateChat(message: string): Promise<string> {
+    try {
+        const result = await moderateChatFlow(message);
+        return result.moderatedText;
+    } catch (error) {
+        console.error('Chat moderation failed:', error);
+        return message; // Fallback to original message on error
+    }
+}
+
+export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>): Promise<ChatMessage> {
+    const newMessage: ChatMessage = {
+        ...message,
+        id: `chat-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+    };
+    chats.push(newMessage);
+    // In a real app with websockets, you'd revalidate/push to clients here
+    revalidatePath(`/dashboard/jobs/${message.jobId}`);
+    return newMessage;
 }
