@@ -43,7 +43,7 @@ import { Slider } from '@/components/ui/slider';
 
 
 export default function DashboardPage() {
-  const currentUser = getCurrentUser();
+  const currentUser = useMemo(() => getCurrentUser(), []);
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -54,7 +54,7 @@ export default function DashboardPage() {
   const providerJobs = useMemo(() => currentUser ? getOpenJobsForProvider(currentUser.id) : [], [currentUser]);
   const customerJobs = useMemo(() => currentUser ? getJobsForCustomer(currentUser.id) : [], [currentUser]);
 
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>(allJobs);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
 
   useEffect(() => {
     const jobsToFilter = currentUser?.role === 'provider' ? providerJobs : allJobs;
@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, currentUser, sortBy, radius]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
