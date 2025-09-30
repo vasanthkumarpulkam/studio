@@ -1,15 +1,13 @@
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   getCurrentUser,
   getJobsForCustomer,
   getOpenJobsForProvider,
   jobCategories,
+  getAllOpenJobs,
 } from '@/lib/data';
 import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
@@ -23,8 +21,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ListFilter, Search } from 'lucide-react';
-import { FilePlus2 } from 'lucide-react';
+import { ListFilter, Search, FilePlus2, Briefcase } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
@@ -92,43 +91,74 @@ export default function DashboardPage() {
   }
 
   // Customer View
-  const jobs = getJobsForCustomer(currentUser.id);
+  const myJobs = getJobsForCustomer(currentUser.id);
+  const availableJobs = getAllOpenJobs();
+  
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold font-headline">My Jobs</h1>
-          <p className="text-muted-foreground">
-            Manage your job postings and view bids.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/dashboard/jobs/new">
-            <FilePlus2 className="mr-2 h-4 w-4" />
-            Post New Job
-          </Link>
-        </Button>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome, {currentUser.name}!</h1>
+        <p className="text-muted-foreground">Find the perfect service providers for your needs.</p>
       </div>
 
-      {jobs.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} role="customer" />
-          ))}
-        </div>
-      ) : (
-        <Card className="bg-white/80">
-          <CardContent className="py-12 text-center">
-            <h3 className="text-xl font-semibold">You haven't posted any jobs yet.</h3>
-            <p className="text-muted-foreground mt-2">
-              Get started by posting a job and find the right help.
-            </p>
-            <Button asChild className="mt-4">
-              <Link href="/dashboard/jobs/new">Post Your First Job</Link>
+       <Tabs defaultValue="browse" className="w-full">
+        <div className='flex justify-between items-center flex-wrap gap-4'>
+            <TabsList>
+                <TabsTrigger value="browse"><Search className='mr-2'/>Browse Jobs</TabsTrigger>
+                <TabsTrigger value="my-jobs"><Briefcase className='mr-2' />My Jobs ({myJobs.length})</TabsTrigger>
+            </TabsList>
+            <Button asChild>
+                <Link href="/dashboard/jobs/new">
+                    <FilePlus2 className="mr-2 h-4 w-4" />
+                    Post a New Job
+                </Link>
             </Button>
-          </CardContent>
-        </Card>
-      )}
+        </div>
+        <TabsContent value="browse">
+             <div className="mt-6">
+                <h2 className="text-2xl font-bold font-headline mb-4">Available Jobs</h2>
+                {availableJobs.length > 0 ? (
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {availableJobs.map((job) => (
+                        <JobCard key={job.id} job={job} role="customer" />
+                    ))}
+                    </div>
+                ) : (
+                    <Card>
+                    <CardContent className="py-12 text-center">
+                        <h3 className="text-xl font-semibold">No Jobs Available</h3>
+                        <p className="text-muted-foreground mt-2">
+                        There are no jobs posted right now. Check back later!
+                        </p>
+                    </CardContent>
+                    </Card>
+                )}
+            </div>
+        </TabsContent>
+        <TabsContent value="my-jobs">
+            <div className="mt-6">
+                 {myJobs.length > 0 ? (
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {myJobs.map((job) => (
+                        <JobCard key={job.id} job={job} role="customer" />
+                    ))}
+                    </div>
+                ) : (
+                    <Card>
+                    <CardContent className="py-12 text-center">
+                        <h3 className="text-xl font-semibold">You haven't posted any jobs yet.</h3>
+                        <p className="text-muted-foreground mt-2">
+                        Get started by posting a job and find the right help.
+                        </p>
+                        <Button asChild className="mt-4">
+                        <Link href="/dashboard/jobs/new">Post Your First Job</Link>
+                        </Button>
+                    </CardContent>
+                    </Card>
+                )}
+            </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -13,7 +13,7 @@ const jobImage3 = PlaceHolderImages.find(p => p.id === 'job-floor')?.imageUrl ||
 
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Sarah Lee', email: 'sarah.lee@example.com', avatarUrl: avatar1, role: 'customer', hasPaymentMethod: true },
+  { id: 'user-1', name: 'Vasanth Kumar', email: 'vasanth.kumar@example.com', avatarUrl: avatar1, role: 'customer', hasPaymentMethod: true },
   { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', hasPaymentMethod: true },
   { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', hasPaymentMethod: true },
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', hasPaymentMethod: false },
@@ -21,34 +21,34 @@ export const users: User[] = [
 
 export const providers: Provider[] = [
   { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs'], location: 'San Francisco, CA', hasPaymentMethod: true },
-  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling'], location: 'San Francisco, CA', hasPaymentMethod: true },
+  { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling', 'Electrical'], location: 'San Francisco, CA', hasPaymentMethod: true },
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening', 'Landscaping'], location: 'Oakland, CA', hasPaymentMethod: false },
 ];
 
 export const jobs: Job[] = [
   {
     id: 'job-1',
-    title: 'Fix leaky kitchen sink',
-    description: 'My kitchen sink faucet has been dripping for a week and it\'s starting to get on my nerves. It seems to be coming from the base of the faucet. Looking for an experienced plumber to fix it.',
+    title: 'Test Frontend Job',
+    description: 'This is a test job created from frontend testing',
     category: 'Plumbing',
-    location: 'San Francisco, CA',
-    budget: 150,
+    location: 'Test Location',
+    budget: 100,
     postedBy: 'user-1',
-    postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    postedOn: "2025-09-29T12:00:00.000Z",
     status: 'open',
     images: [jobImage1],
     isCashOnly: false,
   },
   {
     id: 'job-2',
-    title: 'Mow my front and back lawn',
-    description: 'The grass is getting really long and I don\'t have time to mow it myself this week. The total area is about 1/4 acre. Need someone to mow and clean up the clippings.',
-    category: 'Grass Cutting',
-    location: 'Oakland, CA',
-    budget: 60,
-    postedBy: 'user-1',
-    postedOn: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'working',
+    title: 'Bid Test Job',
+    description: 'This job is created to test the bidding system',
+    category: 'Electrical',
+    location: 'Bid Test Location',
+    budget: 200,
+    postedBy: 'user-3',
+    postedOn: "2025-09-29T12:00:00.000Z",
+    status: 'open',
     acceptedBid: 'bid-3',
     images: [jobImage2],
     isCashOnly: true,

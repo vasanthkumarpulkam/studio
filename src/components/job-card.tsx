@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, CircleDollarSign } from 'lucide-react';
+import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight } from 'lucide-react';
 import type { Job } from '@/types';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 
 type JobCardProps = {
   job: Job;
@@ -21,41 +21,42 @@ export function JobCard({ job, role }: JobCardProps) {
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow duration-300 bg-white">
+    <Card className="hover:shadow-lg transition-shadow duration-300 bg-card flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
-          <div>
-            <Badge variant="outline" className="mb-2">{job.category}</Badge>
-            <CardTitle className="font-headline text-lg">
-              <Link href={`/dashboard/jobs/${job.id}`} className="hover:text-primary transition-colors">
+            <CardTitle className="font-bold text-lg">
                 {job.title}
-              </Link>
             </CardTitle>
-          </div>
-          <Badge className={statusColors[job.status]}>{job.status}</Badge>
+            <Badge className={statusColors[job.status]}>{job.status}</Badge>
         </div>
-        <CardDescription className="flex items-center gap-4 pt-2">
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <MapPin className="w-3 h-3" /> {job.location}
-          </span>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Calendar className="w-3 h-3" /> Posted {formatDistanceToNow(new Date(job.postedOn), { addSuffix: true })}
-          </span>
+        <CardDescription className="flex items-center gap-2 pt-1">
+            <Tag className="w-3.5 h-3.5" /> 
+            <span className="text-sm">{job.category}</span>
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-foreground/80 line-clamp-2">{job.description}</p>
+      <CardContent className="flex-grow space-y-3">
+        <p className="text-sm text-muted-foreground line-clamp-2">{job.description}</p>
+        <div className='space-y-2 text-sm'>
+            <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="w-4 h-4" /> 
+                <span>{job.location}</span>
+            </div>
+            {job.budget && (
+                 <div className="flex items-center gap-2 text-muted-foreground">
+                    <CircleDollarSign className="w-4 h-4" />
+                    <span>{job.budget}</span>
+                </div>
+            )}
+            <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="w-4 h-4" /> 
+                <span>Posted {format(new Date(job.postedOn), 'PP')}</span>
+            </div>
+        </div>
       </CardContent>
-      <CardFooter className="flex justify-between items-center">
-        {job.budget ? (
-          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-            <CircleDollarSign className="w-4 h-4" />
-            <span>Budget: ${job.budget}</span>
-          </div>
-        ) : <div />}
-        <Button asChild variant="secondary" size="sm">
+      <CardFooter>
+        <Button asChild className="w-full">
           <Link href={`/dashboard/jobs/${job.id}`}>
-            {role === 'customer' ? 'View Bids' : 'View & Bid'}
+            View Details <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
       </CardFooter>
