@@ -1,4 +1,5 @@
 
+
 import {
   Card,
   CardContent,
@@ -22,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ListFilter, Search, FilePlus2, Briefcase } from 'lucide-react';
+import { ListFilter, Search, FilePlus2, Briefcase, MapPin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from '@/components/header';
 
@@ -40,7 +41,7 @@ export default function DashboardPage() {
           <aside className="hidden lg:block">
              <Card>
               <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex flex-col gap-4">
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -49,14 +50,22 @@ export default function DashboardPage() {
                           className="w-full rounded-lg bg-background pl-10"
                           />
                       </div>
+                      <div className="relative flex-1 w-full">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                          type="search"
+                          placeholder="Location"
+                          className="w-full rounded-lg bg-background pl-10"
+                          />
+                      </div>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="w-full sm:w-auto">
-                          <ListFilter className="mr-2 h-4 w-4" />
-                          Category
+                          <Button variant="outline" className="w-full justify-between">
+                            <span>Category</span>
+                            <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
+                      <DropdownMenuContent align="end" className="w-[240px] max-h-60 overflow-y-auto">
                           <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {jobCategories.map(cat => (
@@ -117,7 +126,15 @@ export default function DashboardPage() {
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                           type="search"
-                          placeholder="Search by keyword, location..."
+                          placeholder="Search by keyword..."
+                          className="w-full rounded-lg bg-background pl-10"
+                          />
+                      </div>
+                       <div className="relative flex-1 w-full">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                          type="search"
+                          placeholder="Location"
                           className="w-full rounded-lg bg-background pl-10"
                           />
                       </div>
