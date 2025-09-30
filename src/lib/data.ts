@@ -6,6 +6,9 @@ const avatar1 = PlaceHolderImages.find(p => p.id === 'user-avatar-1')?.imageUrl 
 const avatar2 = PlaceHolderImages.find(p => p.id === 'user-avatar-2')?.imageUrl || '';
 const avatar3 = PlaceHolderImages.find(p => p.id === 'user-avatar-3')?.imageUrl || '';
 const avatar4 = PlaceHolderImages.find(p => p.id === 'user-avatar-4')?.imageUrl || '';
+const avatar5 = PlaceHolderImages.find(p => p.id === 'user-avatar-5')?.imageUrl || '';
+const avatar6 = PlaceHolderImages.find(p => p.id === 'user-avatar-6')?.imageUrl || '';
+
 
 const jobImage1 = PlaceHolderImages.find(p => p.id === 'job-plumbing')?.imageUrl || '';
 const jobImage2 = PlaceHolderImages.find(p => p.id === 'job-lawn')?.imageUrl || '';
@@ -17,12 +20,16 @@ export const users: User[] = [
   { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', hasPaymentMethod: true },
   { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', hasPaymentMethod: true },
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', hasPaymentMethod: false },
+  { id: 'user-5', name: 'James Brown', email: 'james.brown@example.com', avatarUrl: avatar5, role: 'provider', hasPaymentMethod: true },
+  { id: 'user-6', name: 'Jessica Williams', email: 'jessica.w@example.com', avatarUrl: avatar6, role: 'provider', hasPaymentMethod: true },
 ];
 
 export const providers: Provider[] = [
   { id: 'user-2', name: 'Mike Johnson', email: 'mike.j@example.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs', 'Electrical'], location: 'San Francisco, CA', hasPaymentMethod: true },
   { id: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling', 'Electrical', 'Furniture Assembly'], location: 'San Francisco, CA', hasPaymentMethod: true },
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening', 'Landscaping'], location: 'Oakland, CA', hasPaymentMethod: false },
+  { id: 'user-5', name: 'James Brown', email: 'james.brown@example.com', avatarUrl: avatar5, role: 'provider', rating: 4.9, reviews: 55, isVerified: true, skills: ['Movers', 'Packing', 'Storage Help', 'General Labor'], location: 'New York, NY', hasPaymentMethod: true },
+  { id: 'user-6', name: 'Jessica Williams', email: 'jessica.w@example.com', avatarUrl: avatar6, role: 'provider', rating: 4.8, reviews: 33, isVerified: true, skills: ['Cleaning', 'Cooking', 'Babysitting', 'Laundry'], location: 'Chicago, IL', hasPaymentMethod: true },
 ];
 
 export const jobs: Job[] = [
@@ -105,6 +112,71 @@ export const jobs: Job[] = [
     images: [],
     isCashOnly: true,
   },
+  {
+    id: 'job-7',
+    title: 'Apartment deep cleaning',
+    description: 'Need a deep clean for a 2-bedroom apartment in Manhattan before a new tenant moves in. Includes kitchen, bathrooms, and windows.',
+    category: 'Cleaning',
+    location: 'New York, NY',
+    budget: 250,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: false,
+  },
+  {
+    id: 'job-8',
+    title: 'Paint interior of a studio apartment',
+    description: 'Looking for a painter to paint a ~500 sq ft studio apartment. Walls and ceiling. Paint will be provided. Job is in downtown Chicago.',
+    category: 'Painting',
+    location: 'Chicago, IL',
+    budget: 400,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: false,
+  },
+  {
+    id: 'job-9',
+    title: 'Mount a 65-inch TV on the wall',
+    description: 'I need a 65-inch TV mounted on a drywall wall. I have the TV and the wall mount. Need a handyman with the right tools and experience.',
+    category: 'Handyman Work',
+    location: 'Austin, TX',
+    budget: 90,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: true,
+  },
+  {
+    id: 'job-10',
+    title: 'AC unit not cooling',
+    description: 'My central AC unit is running but not blowing cold air. Need an HVAC technician to diagnose and repair the issue. Located in Miami.',
+    category: 'AC/Heating',
+    location: 'Miami, FL',
+    budget: 300,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: false,
+  },
+  {
+    id: 'job-11',
+    title: 'Help moving boxes to a storage unit',
+    description: 'Need one strong person for 3 hours to help me load boxes into a van and unload them at a storage unit 5 miles away. No heavy furniture.',
+    category: 'Movers',
+    location: 'Seattle, WA',
+    budget: 100,
+    postedBy: 'user-1',
+    postedOn: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'open',
+    images: [],
+    isCashOnly: true,
+  }
 ];
 
 export const bids: Bid[] = [
