@@ -179,7 +179,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                   </Alert>
                 )}
                 {canProviderBid && !hasPaymentMethod && <PaymentAlert />}
-                {canProviderBid && hasPaymentMethod && (
+                {canProviderBid && hasPaymentMethod && currentUser && (
                   <div className="space-y-6">
                     <div className="flex justify-end">
                       <ChatModal 
