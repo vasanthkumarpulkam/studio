@@ -7,18 +7,16 @@
       "imageHint": "happy person tablet"
     },
     {
-      "id": "feature-ride",
-      "title": "Find a Ride",
-      "description": "Find or post affordable rides to your destination.",
-      "imageUrl": "https://storage.googleapis.com/aifirebase-7c645.appspot.com/templates/grofyy/ride.png",
-      "imageHint": "car illustration"
+      "id": "feature-1",
+      "description": "A magnifying glass over a job listing.",
+      "imageUrl": "https://images.unsplash.com/photo-1583410700344-f9038d4a83a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYWduaWZ5aW5nJTIwZ2xhc3MlMjBqb2J8ZW58MHx8fHwxNzU5MjU2NjUwfDA&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageHint": "job search"
     },
     {
-      "id": "feature-accommodation",
-      "title": "Find Accommodation",
-      "description": "Find or Post affordable student friendly accommodation.",
-      "imageUrl": "https://storage.googleapis.com/aifirebase-7c645.appspot.com/templates/grofyy/accommodation.png",
-      "imageHint": "people illustration"
+      "id": "feature-2",
+      "description": "A person receiving multiple bids on a phone.",
+      "imageUrl": "https://images.unsplash.com/photo-1628191136453-2638a6a3b2b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiaWRkaW5nJTIwYXBwfGVufDB8fHx8MTc1OTI1NjY1MXww&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageHint": "bidding app"
     },
     {
       "id": "feature-3",
@@ -59,7 +57,7 @@
     {
       "id": "user-avatar-6",
       "description": "Avatar for Jessica Williams",
-      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8fDE3NjAxMTc0MjV8MA&ixlib.rb-4.0.3&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8fDE3NjAxMTc0MjV8MA&ixlib=rb-4.0.3&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
@@ -77,7 +75,7 @@
     {
       "id": "job-plumbing-3",
       "description": "Close up of pipe fitting.",
-      "imageUrl": "https://images.unsplash.com/photo-1709980378474-d5c30c4edbd3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwaXBlJTIwZml0dGluZ3xlbnwwfHx8fDE3NTkyNjg4NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1709980378474-d5c30c4edbd3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwaXBlJTIwZml0dGluZ3xlbnwwfHx8fDE3NTkyNjg4NTl8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "pipe fitting"
     },
     {
@@ -89,7 +87,7 @@
     {
       "id": "job-floor-1",
       "description": "Scratched wooden floor.",
-      "imageUrl": "https://images.unsplash.com/photo-1645568093134-30e78cf6c23f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1645568093134-30e78cf6c23f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzY3JhdGNoZWQlMjBmbG9vcnxlbnwwfHx8fDE3NTkyNTY2NTF8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "scratched floor"
     },
     {
@@ -101,13 +99,13 @@
     {
       "id": "job-ikea-1",
       "description": "IKEA furniture box",
-      "imageUrl": "https://images.unsplash.com/photo-1594025016972-061595066373?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpa2VhJTIwYm94fGVufDB8fHx8MTc2MDM3MzU2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1594025016972-061595066373?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpa2VhJTIwYm94fGVufDB8fHx8MTc2MDM3MzU2N3ww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "ikea box"
     },
     {
       "id": "job-ikea-2",
       "description": "Another IKEA furniture box",
-      "imageUrl": "https://images.unsplash.com/photo-1567016376408-322106322923?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpa2VhJTIwZnVybml0dXJlfGVufDB8fHx8MTc2MDM3MzU2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1567016376408-322106322923?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpa2VhJTIwZnVybml0dXJlfGVufDB8fHx8MTc2MDM3MzU2N3ww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "ikea furniture"
     }
   ]
