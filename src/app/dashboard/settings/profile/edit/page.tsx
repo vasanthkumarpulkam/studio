@@ -21,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
-import { ArrowLeft, Save, Trash2, PlusCircle, Loader2, User, Briefcase, Globe, Camera } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, PlusCircle, Loader2, User, Briefcase, Globe, Camera, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -124,6 +124,11 @@ export default function EditProfilePage() {
     setAvatarPreview(URL.createObjectURL(file));
   };
 
+  const handleRemoveAvatar = () => {
+    form.setValue('avatar', null); // Use null to signify removal
+    setAvatarPreview(null);
+  }
+
 
   function onSubmit(values: ProfileFormValues) {
     if (!currentUser) return;
@@ -197,21 +202,29 @@ export default function EditProfilePage() {
                                   {currentUser.name.split(' ').map((n) => n[0]).join('')}
                                 </AvatarFallback>
                               </Avatar>
-                              <FormControl>
-                                <Button asChild variant="outline">
-                                  <label htmlFor="avatar-upload">
-                                    <Camera className="mr-2 h-4 w-4" />
-                                    {t('profile_edit_avatar_button')}
-                                    <input 
-                                      id="avatar-upload" 
-                                      type="file" 
-                                      className="sr-only" 
-                                      onChange={handleAvatarChange}
-                                      accept="image/png, image/jpeg, image/gif"
-                                    />
-                                  </label>
-                                </Button>
-                              </FormControl>
+                              <div className="flex flex-col gap-2">
+                                <FormControl>
+                                  <Button asChild variant="outline">
+                                    <label htmlFor="avatar-upload">
+                                      <Camera className="mr-2 h-4 w-4" />
+                                      {t('profile_edit_avatar_button')}
+                                      <input 
+                                        id="avatar-upload" 
+                                        type="file" 
+                                        className="sr-only" 
+                                        onChange={handleAvatarChange}
+                                        accept="image/png, image/jpeg, image/gif"
+                                      />
+                                    </label>
+                                  </Button>
+                                </FormControl>
+                                {avatarPreview && (
+                                  <Button type="button" variant="ghost" size="sm" onClick={handleRemoveAvatar}>
+                                    <X className="mr-2 h-4 w-4" />
+                                    {t('profile_edit_avatar_remove_button')}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                             <FormDescription>{t('profile_edit_avatar_desc')}</FormDescription>
                             <FormMessage />
@@ -381,5 +394,3 @@ export default function EditProfilePage() {
     </>
   );
 }
-
-    

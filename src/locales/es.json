@@ -333,6 +333,7 @@
   "profile_edit_avatar_placeholder": "https://example.com/su-imagen.png",
   "profile_edit_avatar_desc": "Suba una foto de perfil (PNG, JPG, GIF de hasta 5MB).",
   "profile_edit_avatar_button": "Subir Imagen",
+  "profile_edit_avatar_remove_button": "Eliminar",
   "profile_edit_bio_label": "Sobre Mí / Biografía",
   "profile_edit_bio_placeholder": "Cuéntenos un poco sobre usted o su negocio...",
   "profile_edit_bio_desc": "Una breve descripción que aparecerá en su perfil público.",
@@ -352,5 +353,3 @@
   "profile_edit_error_title": "Error al Actualizar",
   "profile_edit_error_desc": "No se pudieron guardar sus cambios. Por favor, inténtelo de nuevo."
 }
-
-    

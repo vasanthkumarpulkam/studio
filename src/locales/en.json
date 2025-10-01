@@ -333,6 +333,7 @@
   "profile_edit_avatar_placeholder": "https://example.com/your-image.png",
   "profile_edit_avatar_desc": "Upload a profile picture (PNG, JPG, GIF up to 5MB).",
   "profile_edit_avatar_button": "Upload Image",
+  "profile_edit_avatar_remove_button": "Remove",
   "profile_edit_bio_label": "About Me / Bio",
   "profile_edit_bio_placeholder": "Tell us a little about yourself or your business...",
   "profile_edit_bio_desc": "A brief description that will appear on your public profile.",
@@ -352,5 +353,3 @@
   "profile_edit_error_title": "Update Failed",
   "profile_edit_error_desc": "Could not save your changes. Please try again."
 }
-
-    

@@ -229,7 +229,7 @@ export async function getAiBidSuggestion(jobDescription: string, jobCategory: st
 }
 
 
-export async function updateUserProfile(userId: string, data: Partial<User & Provider> & { avatar?: File }) {
+export async function updateUserProfile(userId: string, data: Partial<User & Provider> & { avatar?: File | null }) {
   const userIndex = users.findIndex(u => u.id === userId);
   if (userIndex === -1) {
     throw new Error("User not found");
@@ -237,12 +237,15 @@ export async function updateUserProfile(userId: string, data: Partial<User & Pro
 
   // Handle avatar upload mock
   let avatarUrl = users[userIndex].avatarUrl;
-  if (data.avatar) {
+  if (data.avatar) { // New file uploaded
     // In a real app, you'd upload this to a storage service and get a URL.
     // For this mock, we'll just store it in memory for the session.
     // This won't persist across server restarts.
     avatarUrl = `/mock-avatar-${userId}-${Date.now()}.jpg`;
     console.log(`Mock avatar uploaded for user ${userId} to ${avatarUrl}`);
+  } else if (data.avatar === null) { // Avatar removed
+    avatarUrl = '';
+    console.log(`Avatar removed for user ${userId}`);
   }
 
   const { avatar, ...restOfData } = data;
@@ -264,5 +267,3 @@ export async function updateUserProfile(userId: string, data: Partial<User & Pro
   revalidatePath('/dashboard/settings/profile');
   redirect('/dashboard/settings/profile');
 }
-
-    
