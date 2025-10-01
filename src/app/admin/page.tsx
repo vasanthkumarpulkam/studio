@@ -12,6 +12,16 @@ export default function AdminDashboard() {
   const totalUsers = getAllUsers().length;
   const totalProviders = providers.length;
   const openJobs = getAllOpenJobs().length;
+  const totalRevenue = jobs
+    .filter(job => job.status === 'completed' && job.acceptedBid)
+    .reduce((acc, job) => {
+        const bid = job.acceptedBid ? b.find(b => b.id === job.acceptedBid) : null;
+        if(bid) {
+            return acc + (bid.amount * 0.10); // 10% platform fee
+        }
+        return acc;
+    }, 0);
+
 
   const jobStatusCounts = jobs.reduce((acc, job) => {
     acc[job.status] = (acc[job.status] || 0) + 1;
@@ -31,6 +41,14 @@ export default function AdminDashboard() {
     return { month, signups };
   });
 
+  const revenueData = Array.from({ length: 6 }).map((_, i) => {
+    const date = subMonths(new Date(), 5 - i);
+    const month = format(date, 'MMM');
+    // Mock data for revenue
+    const revenue = Math.floor(Math.random() * 500 + 100);
+    return { month, revenue };
+  });
+
   const statusColors = {
     open: 'hsl(var(--chart-1))',
     'pending-confirmation': 'hsl(var(--chart-2))',
@@ -44,7 +62,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -73,6 +91,16 @@ export default function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{openJobs}</div>
             <p className="text-xs text-muted-foreground">+5 since last week</p>
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue (Platform Fee)</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">+10% since last month</p>
           </CardContent>
         </Card>
       </div>
@@ -121,6 +149,27 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+          <CardHeader>
+            <CardTitle>Job Revenue</CardTitle>
+            <CardDescription>Monthly revenue from platform fees.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{}} className="h-[300px] w-full">
+              <ResponsiveContainer>
+                <BarChart data={revenueData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Revenue ($)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
     </div>
   );
 }
