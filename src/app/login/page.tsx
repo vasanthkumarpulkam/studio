@@ -36,15 +36,14 @@ function LoginContent() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-        // This is a mock, in a real app you'd get the user role from Firestore/custom claims
-        const userRole = email.startsWith('admin') ? 'admin' : 'customer';
+        const userRole = user.role ?? 'customer';
         if (userRole === 'admin') {
             router.replace('/admin');
         } else {
             router.replace(redirectUrl || '/dashboard');
         }
     }
-  }, [user, isUserLoading, router, redirectUrl, email]);
+  }, [user, isUserLoading, router, redirectUrl]);
 
 
   const handleLogin = (e: React.FormEvent) => {
