@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { getAllUsers, getJobsForCustomer, getAllOpenJobs, providers, jobs } from '@/lib/data';
+import { getAllUsers, getAllOpenJobs, providers, jobs, bids as allBids } from '@/lib/data';
 import { BarChart, Users, Briefcase, FileText, LineChart, PieChart } from 'lucide-react';
 import { Line, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend, Cell, Bar } from 'recharts';
 import { subMonths, format } from 'date-fns';
@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const totalRevenue = jobs
     .filter(job => job.status === 'completed' && job.acceptedBid)
     .reduce((acc, job) => {
-        const bid = job.acceptedBid ? b.find(b => b.id === job.acceptedBid) : null;
+        const bid = job.acceptedBid ? allBids.find(b => b.id === job.acceptedBid) : null;
         if(bid) {
             return acc + (bid.amount * 0.10); // 10% platform fee
         }
