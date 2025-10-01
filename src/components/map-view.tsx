@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -7,7 +8,7 @@ import {
   Marker,
   InfoWindow,
 } from '@react-google-maps/api';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import type { Job } from '@/types';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -16,6 +17,8 @@ import { ArrowRight } from 'lucide-react';
 
 interface MapViewProps {
   jobs: Job[];
+  location: string;
+  radius: number;
 }
 
 const containerStyle = {
@@ -23,7 +26,7 @@ const containerStyle = {
   height: '100%',
 };
 
-const center = {
+const defaultCenter = {
   lat: 39.8283,
   lng: -98.5795,
 };
@@ -31,26 +34,38 @@ const center = {
 // Mock function to geocode addresses
 // In a real app, you would use the Google Geocoding API
 const geocodeMock = (location: string): { lat: number; lng: number } | null => {
-  // This is a very simple mock. A real implementation would be more robust.
-  if (location.toLowerCase().includes('san francisco'))
-    return { lat: 37.7749, lng: -122.4194 };
-  if (location.toLowerCase().includes('oakland'))
-    return { lat: 37.8044, lng: -122.2712 };
-  if (location.toLowerCase().includes('new york'))
-    return { lat: 40.7128, lng: -74.006 };
-  if (location.toLowerCase().includes('chicago'))
-    return { lat: 41.8781, lng: -87.6298 };
-  // Add more mock locations as needed
+  const loc = location.toLowerCase();
+  if (loc.includes('san francisco')) return { lat: 37.7749, lng: -122.4194 };
+  if (loc.includes('oakland')) return { lat: 37.8044, lng: -122.2712 };
+  if (loc.includes('new york')) return { lat: 40.7128, lng: -74.006 };
+  if (loc.includes('chicago')) return { lat: 41.8781, lng: -87.6298 };
+  if (loc.includes('los angeles')) return { lat: 34.0522, lng: -118.2437 };
+  if (loc.includes('houston')) return { lat: 29.7604, lng: -95.3698 };
+  if (loc.includes('phoenix')) return { lat: 33.4484, lng: -112.0740 };
   return null;
 };
 
-export default function MapView({ jobs }: MapViewProps) {
+// Calculate zoom level based on radius in miles
+const getZoomLevel = (radius: number) => {
+  if (radius > 200) return 5;
+  if (radius > 100) return 6;
+  if (radius > 50) return 7;
+  if (radius > 25) return 8;
+  if (radius > 10) return 9;
+  return 10;
+};
+
+export default function MapView({ jobs, location, radius }: MapViewProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+    libraries: ['places'],
   });
 
+  const mapRef = useRef<google.maps.Map | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [mapCenter, setMapCenter] = useState(defaultCenter);
+  const [zoom, setZoom] = useState(4);
 
   const jobLocations = useMemo(() => {
     return jobs
@@ -64,6 +79,22 @@ export default function MapView({ jobs }: MapViewProps) {
       .filter((job) => job !== null) as (Job & { position: { lat: number; lng: number } })[];
   }, [jobs]);
 
+  useEffect(() => {
+    setZoom(getZoomLevel(radius));
+  }, [radius]);
+
+  useEffect(() => {
+    if (location) {
+      const userCoords = geocodeMock(location);
+      if (userCoords) {
+        setMapCenter(userCoords);
+      }
+    } else if (jobLocations.length > 0) {
+      setMapCenter(jobLocations[0].position);
+    } else {
+        setMapCenter(defaultCenter);
+    }
+  }, [location, jobLocations]);
 
   if (loadError) {
     return (
@@ -84,8 +115,9 @@ export default function MapView({ jobs }: MapViewProps) {
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={jobLocations.length > 0 ? jobLocations[0].position : center}
-      zoom={jobLocations.length > 0 ? 10 : 4}
+      center={mapCenter}
+      zoom={zoom}
+      onLoad={(map) => { mapRef.current = map; }}
       options={{
         disableDefaultUI: true,
         zoomControl: true,

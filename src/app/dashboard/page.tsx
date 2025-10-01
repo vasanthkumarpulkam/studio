@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -407,7 +408,7 @@ export default function DashboardPage() {
                 )}
               </TabsContent>
               <TabsContent value="map-view" className="flex-grow rounded-lg overflow-hidden">
-                  <MapView jobs={filteredJobs} />
+                  <MapView jobs={filteredJobs} location={location} radius={radius[0]} />
               </TabsContent>
             </Tabs>
           </main>
