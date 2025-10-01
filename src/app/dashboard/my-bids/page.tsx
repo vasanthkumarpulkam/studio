@@ -22,6 +22,7 @@ import { getCurrentUser, getBidsForJob, getJob } from '@/lib/data';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { bids as allBids } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import type { User, Provider } from '@/types';
@@ -29,7 +30,7 @@ import { useTranslation } from '@/hooks/use-translation';
 
 export default function MyBidsPage() {
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
-  const { t, isTranslationReady } = useTranslation();
+  const { t, isTranslationReady, language } = useTranslation();
 
   useEffect(() => {
     setCurrentUser(getCurrentUser());
@@ -93,7 +94,7 @@ export default function MyBidsPage() {
                             {job.title}
                         </Link>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">{format(new Date(bid.submittedOn), 'PPP')}</TableCell>
+                      <TableCell className="hidden md:table-cell">{format(new Date(bid.submittedOn), 'PPP', { locale: language === 'es' ? es : undefined })}</TableCell>
                       <TableCell className="text-right font-semibold">${bid.amount.toFixed(2)}</TableCell>
                       <TableCell className="text-center">{getStatusForBid(job.id, bid.id)}</TableCell>
                       <TableCell className="text-right">
