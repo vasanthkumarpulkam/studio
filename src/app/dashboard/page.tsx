@@ -69,10 +69,6 @@ export default function DashboardPage() {
     setIsLoading(false);
 
     if (user) {
-        if (user.role === 'admin') {
-            router.replace('/admin');
-            return;
-        }
         if (user.role === 'provider') {
             const provider = getProvider(user.id);
             if (provider) {
@@ -82,7 +78,7 @@ export default function DashboardPage() {
         }
         setCustomerJobs(getJobsForCustomer(user.id));
     }
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     // Only run filter if not loading
