@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -19,34 +19,49 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, User, Provider } from '@/types';
-import { moderateChat, sendMessage } from '@/app/actions';
+import { sendMessage } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/use-translation';
+import { useCollection } from '@/firebase';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { db } from '@/firebase/config';
 
 type ChatModalProps = {
   triggerButton: React.ReactNode;
-  messages: ChatMessage[];
   jobTitle: string;
   recipient: User | Provider;
-  currentUser: User | Provider;
+  currentUser: User & Provider;
   jobId: string;
   providerId: string;
 };
 
 export default function ChatModal({
   triggerButton,
-  messages: initialMessages,
   jobTitle,
   recipient,
   currentUser,
   jobId,
   providerId,
 }: ChatModalProps) {
-  const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const { language } = useTranslation();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const messagesQuery = query(
+      collection(db, 'chats'), 
+      where('jobId', '==', jobId), 
+      where('providerId', '==', providerId),
+      orderBy('timestamp', 'asc')
+    );
+  const { data: messages, isLoading } = useCollection<ChatMessage>(messagesQuery);
+  
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight });
+    }
+  }, [messages])
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,24 +69,15 @@ export default function ChatModal({
 
     startTransition(async () => {
       try {
-        const moderatedText = await moderateChat(newMessage);
-        
         const optimisticMessage: Omit<ChatMessage, 'id' | 'timestamp'> = {
           jobId,
           providerId,
-          senderId: currentUser.id,
-          text: moderatedText,
+          senderId: currentUser.uid,
+          text: newMessage,
         };
 
         setNewMessage('');
-        
-        // In a real app, you would send this to your backend/Firestore
-        // and receive the new message via a real-time subscription.
-        // For this mock, we'll call a server action and update the state.
-        const sentMessage = await sendMessage(optimisticMessage);
-
-        setMessages((prev) => [...prev, sentMessage]);
-
+        await sendMessage(optimisticMessage);
       } catch (error) {
          toast({
           variant: 'destructive',
@@ -91,10 +97,11 @@ export default function ChatModal({
             Chat with {recipient.name} about "{jobTitle}"
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-96 p-4">
+        <ScrollArea className="h-96 p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
-            {messages.map((message) => {
-              const isCurrentUser = message.senderId === currentUser.id;
+            {isLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
+            {messages && messages.map((message) => {
+              const isCurrentUser = message.senderId === currentUser.uid;
               const sender = isCurrentUser ? currentUser : recipient;
               return (
                 <div
@@ -107,7 +114,7 @@ export default function ChatModal({
                   {!isCurrentUser && (
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={sender.avatarUrl} alt={sender.name} />
-                      <AvatarFallback>{sender.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>{sender.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                   )}
                   <div
@@ -129,7 +136,7 @@ export default function ChatModal({
                   {isCurrentUser && (
                      <Avatar className="h-8 w-8">
                       <AvatarImage alt={currentUser.name} src={currentUser.avatarUrl} />
-                      <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>{currentUser.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                   )}
                 </div>

@@ -5,22 +5,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, CreditCard, Shield, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getCurrentUser } from '@/lib/data';
-import { useEffect, useState } from 'react';
-import type { User as UserType, Provider } from '@/types';
+import { useUser } from '@/firebase';
 import { useTranslation } from '@/hooks/use-translation';
 
 
 export function SettingsNav() {
   const pathname = usePathname();
-  const [user, setUser] = useState<UserType | Provider | null>(null);
+  const { user } = useUser();
   const { t } = useTranslation();
   
-  useEffect(() => {
-    setUser(getCurrentUser());
-  }, [])
-
-
   const navItems = [
     { href: '/dashboard/settings/profile', label: t('settings_nav_profile'), icon: User },
     { href: '/dashboard/settings/account', label: t('settings_nav_account'), icon: Shield },

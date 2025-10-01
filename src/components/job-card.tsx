@@ -7,32 +7,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight, Loader2 } from 'lucide-react';
-import type { Job, User, Provider } from '@/types';
+import type { Job } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getMockUser } from '@/lib/data';
-import { useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
 import { useUser } from '@/firebase';
 
 type JobCardProps = {
   job: Job;
-  role: 'customer' | 'provider';
   isGrid?: boolean;
 };
 
-export function JobCard({ job, role, isGrid = false }: JobCardProps) {
-  const { user: firebaseUser } = useUser();
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+export function JobCard({ job, isGrid = false }: JobCardProps) {
+  const { user: currentUser } = useUser();
   const { t, isTranslationReady, language } = useTranslation();
-
-  useEffect(() => {
-    if (firebaseUser) {
-        setCurrentUser(getMockUser(firebaseUser.uid));
-    } else {
-        setCurrentUser(null);
-    }
-  }, [firebaseUser]);
 
   const statusColors: { [key: string]: string } = {
     open: 'bg-green-100 text-green-800 border-green-200',
@@ -162,7 +150,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                     </div>
                     <Button asChild size="sm" className="mt-2 md:mt-0">
                         <Link href={`/dashboard/jobs/${job.id}`}>
-                            {currentUser && role === 'provider' ? t('job_card_view_bid') : t('job_card_view_details')}
+                            {currentUser && currentUser.role === 'provider' ? t('job_card_view_bid') : t('job_card_view_details')}
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>

@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Check, Users } from 'lucide-react';
+import { ArrowRight, Users } from 'lucide-react';
 import Testimonials from '@/components/testimonials';
 import {
   Carousel,
@@ -18,7 +17,6 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { useUser } from '@/firebase';
-import type { User as AppUser, Provider } from '@/types';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/hooks/use-translation';
 import LanguageSwitcher from '@/components/language-switcher';

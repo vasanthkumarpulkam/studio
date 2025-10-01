@@ -10,23 +10,24 @@ import {
 import { Button } from '@/components/ui/button';
 import { Bell, Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/card';
-import { getNotificationsForUser } from '@/lib/data';
 import NotificationCard from './notification-card';
 import { markAllNotificationsAsRead } from '@/app/actions';
 import { ScrollArea } from './ui/scroll-area';
 import { useTranslation } from '@/hooks/use-translation';
+import { useCollection } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
+import { db } from '@/firebase/config';
+import type { Notification } from '@/types';
 
 export default function NotificationBell({ userId }: { userId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
 
-
-  // In a real app with a database, you'd likely use a server action
-  // or an API route with SWR/React Query for fetching data.
-  // For this mock, we'll fetch it directly.
-  const notifications = getNotificationsForUser(userId);
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const notificationsQuery = query(collection(db, 'notifications'), where('userId', '==', userId));
+  const { data: notifications } = useCollection<Notification>(notificationsQuery);
+  
+  const unreadCount = notifications?.filter((n) => !n.isRead).length ?? 0;
 
   const handleMarkAllRead = () => {
     startTransition(async () => {
@@ -71,7 +72,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-72">
-              {notifications.length > 0 ? (
+              {notifications && notifications.length > 0 ? (
                 <div className="divide-y">
                   {notifications.map((notification) => (
                     <NotificationCard

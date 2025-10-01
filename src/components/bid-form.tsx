@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,8 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Sparkles, Loader2, HandCoins } from 'lucide-react';
 import { getAiBidSuggestion, submitBid } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import type { Job, Provider, User } from '@/types';
-import { getMockUser } from '@/lib/data';
+import type { Job } from '@/types';
 import { Separator } from './ui/separator';
 import { useUser } from '@/firebase';
 
@@ -34,22 +32,13 @@ const bidSchema = z.object({
 
 type BidFormValues = z.infer<typeof bidSchema>;
 
-export default function BidForm({ job }: { job: Job }) {
+export default function BidForm({ job }: { job: Job & { id: string } }) {
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   const [isSubmitting, startSubmitting] = useTransition();
   const [suggestion, setSuggestion] = useState<{ suggestedBid: number; reasoning: string } | null>(null);
   const { toast } = useToast();
-  const { user: firebaseUser, isUserLoading } = useUser();
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
-
-  useEffect(() => {
-    if (firebaseUser) {
-      setCurrentUser(getMockUser(firebaseUser.uid));
-    } else if (!isUserLoading) {
-      setCurrentUser(null);
-    }
-  }, [firebaseUser, isUserLoading]);
-
+  const { user: currentUser, isUserLoading } = useUser();
+  
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
   const form = useForm<BidFormValues>({
@@ -65,7 +54,7 @@ export default function BidForm({ job }: { job: Job }) {
     setLoadingSuggestion(true);
     setSuggestion(null);
     try {
-      const result = await getAiBidSuggestion(job.description, job.category);
+      const result = await getAiBidSuggestion(job.description, job.category, '', '');
       setSuggestion(result);
       form.setValue('amount', result.suggestedBid);
     } catch (error) {
@@ -102,7 +91,7 @@ export default function BidForm({ job }: { job: Job }) {
         await submitBid({
           ...values,
           jobId: job.id,
-          providerId: currentUser.id,
+          providerId: currentUser.uid,
         });
         toast({
           title: 'Bid Submitted!',

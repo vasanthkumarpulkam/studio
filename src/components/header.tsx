@@ -8,7 +8,6 @@ import { Menu, Shield } from 'lucide-react';
 import Logo from '@/components/logo';
 import { SidebarNav } from '@/components/sidebar-nav';
 import { UserNav } from '@/components/user-nav';
-import { getMockUser } from '@/lib/data';
 import NotificationBell from './notification-bell';
 import { useUser } from '@/firebase';
 import { usePathname } from 'next/navigation';
@@ -17,11 +16,9 @@ import LanguageSwitcher from './language-switcher';
 export function Header() {
   const { user } = useUser();
   const pathname = usePathname();
-  
-  const mockUser = user ? getMockUser(user.uid) : null;
 
   const isAdminSection = pathname.startsWith('/admin');
-  const userRole = mockUser?.role;
+  const userRole = user?.role;
 
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-40">

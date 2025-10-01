@@ -1,5 +1,4 @@
 
-
 export type User = {
   id: string; // doc id
   uid: string; // auth id
@@ -64,7 +63,7 @@ export type Bid = {
 export type Notification = {
     id: string;
     userId: string;
-    message: string; // Fallback for old notifications
+    message?: string; // Fallback for old notifications
     messageKey: string;
     messageParams?: { [key: string]: string | number };
     link: string;

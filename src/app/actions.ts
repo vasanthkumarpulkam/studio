@@ -1,267 +1,229 @@
 
 'use server';
 
-import { jobs, bids as allBids, notifications as allNotifications, chats, users, providers, jobCategories } from '@/lib/data';
-import type { Bid, ChatMessage, Job, User, Provider } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { db, storage }from '@/firebase/config';
+import type { Bid, ChatMessage, Job, User, Provider } from '@/types';
+import { moderateChatFlow } from '@/ai/flows/moderate-chat';
+import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
+
 
 export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
-    const job = jobs.find(j => j.id === bidData.jobId);
-    if (!job) {
-        throw new Error('Job not found.');
-    }
+    const jobRef = doc(db, 'job_posts', bidData.jobId);
 
-    const newBid: Bid = {
+    const newBid = {
         ...bidData,
-        id: `bid-${Date.now()}`,
         submittedOn: new Date().toISOString(),
     };
-    allBids.push(newBid);
+    
+    await addDoc(collection(jobRef, 'bids'), newBid);
+
+    const jobDoc = (await db.collection('job_posts').doc(bidData.jobId).get()).data() as Job;
 
     // Create a notification for the job poster
-    allNotifications.unshift({
-        id: `notif-${Date.now()}`,
-        userId: job.postedBy,
-        message: `You received a new bid of $${newBid.amount.toFixed(2)} for your job "${job.title}".`,
+    await addDoc(collection(db, 'notifications'), {
+        userId: jobDoc.postedBy,
         messageKey: 'notification_new_bid',
         messageParams: {
           amount: newBid.amount.toFixed(2),
-          jobTitle: job.title,
+          jobTitle: jobDoc.title,
         },
-        link: `/dashboard/jobs/${job.id}`,
+        link: `/dashboard/jobs/${bidData.jobId}`,
         isRead: false,
         createdAt: new Date().toISOString(),
     });
-
-    console.log('New bid submitted:', newBid);
-    console.log('New notification created for user:', job.postedBy);
     
-    revalidatePath(`/dashboard/jobs/${job.id}`);
+    revalidatePath(`/dashboard/jobs/${bidData.jobId}`);
     revalidatePath('/dashboard');
 }
 
 
 export async function acceptBid(jobId: string, bidId: string) {
-    const job = jobs.find(j => j.id === jobId);
-    const bid = allBids.find(b => b.id === bidId);
+    const jobRef = doc(db, 'job_posts', jobId);
+    const bidRef = doc(jobRef, 'bids', bidId);
 
-    if (job && job.status === 'open' && bid) {
-        job.status = 'pending-confirmation';
-        job.acceptedBid = bidId;
+    const jobDoc = (await jobRef.get()).data() as Job;
+    const bidDoc = (await bidRef.get()).data() as Bid;
 
-        if (!job.isCashOnly) {
-            const platformFee = bid.amount * 0.10;
-            console.log(`Platform fee of $${platformFee.toFixed(2)} initiated as a pending charge for customer ${job.postedBy}.`);
-            // In a real app, you would use a payment gateway to create a hold or authorization.
-        }
+    if (jobDoc && jobDoc.status === 'open' && bidDoc) {
+        await updateDoc(jobRef, {
+            status: 'pending-confirmation',
+            acceptedBid: bidId,
+        });
 
-        allNotifications.unshift({
-            id: `notif-${Date.now()}`,
-            userId: bid.providerId,
-            message: `Your bid for "${job.title}" was accepted! Please confirm to start the job.`,
+        await addDoc(collection(db, 'notifications'), {
+            userId: bidDoc.providerId,
             messageKey: 'notification_bid_accepted',
             messageParams: {
-              jobTitle: job.title,
+              jobTitle: jobDoc.title,
             },
-            link: `/dashboard/jobs/${job.id}`,
+            link: `/dashboard/jobs/${jobId}`,
             isRead: false,
             createdAt: new Date().toISOString(),
         });
         
-        console.log(`Bid ${bidId} accepted for job ${jobId}. Job status updated to pending-confirmation.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
         revalidatePath('/dashboard');
     } else {
-        console.error('Job or Bid not found or not available for bidding.');
         throw new Error('Job or Bid not found or not available for bidding.');
     }
 }
 
 export async function confirmJob(jobId: string) {
-    const job = jobs.find(j => j.id === jobId);
-     if (job && job.status === 'pending-confirmation') {
-        job.status = 'in-progress';
+    const jobRef = doc(db, 'job_posts', jobId);
+    const jobDoc = (await jobRef.get()).data() as Job;
 
-        allNotifications.unshift({
-            id: `notif-${Date.now()}`,
-            userId: job.postedBy,
-            message: `Provider has confirmed and is ready to start work on "${job.title}".`,
+     if (jobDoc && jobDoc.status === 'pending-confirmation') {
+        await updateDoc(jobRef, {
+            status: 'in-progress',
+        });
+
+        await addDoc(collection(db, 'notifications'), {
+            userId: jobDoc.postedBy,
             messageKey: 'notification_job_confirmed',
             messageParams: {
-              jobTitle: job.title,
+              jobTitle: jobDoc.title,
             },
-            link: `/dashboard/jobs/${job.id}`,
+            link: `/dashboard/jobs/${jobId}`,
             isRead: false,
             createdAt: new Date().toISOString(),
         });
 
-        console.log(`Provider confirmed job ${jobId}. Job status updated to in-progress.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
         revalidatePath('/dashboard');
     } else {
-        console.error('Job not found or not in the correct state to confirm.');
         throw new Error('Could not confirm this job.');
     }
 }
 
 
 export async function startWork(jobId: string) {
-    const job = jobs.find(j => j.id === jobId);
-    if (job && job.status === 'in-progress') {
-        job.status = 'working';
-        console.log(`Work started for job ${jobId}.`);
+    const jobRef = doc(db, 'job_posts', jobId);
+    const jobDoc = (await jobRef.get()).data() as Job;
+    if (jobDoc && jobDoc.status === 'in-progress') {
+        await updateDoc(jobRef, { status: 'working' });
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
         revalidatePath('/dashboard');
     } else {
-        console.error('Job not found or not in the correct state to start work.');
         throw new Error('Could not start work on this job.');
     }
 }
 
 
 export async function markJobAsCompleted(jobId: string) {
-    const job = jobs.find(j => j.id === jobId);
-    if (job && (job.status === 'in-progress' || job.status === 'working')) {
-        job.status = 'completed';
+    const jobRef = doc(db, 'job_posts', jobId);
+    const jobDoc = (await jobRef.get()).data() as Job;
+    if (jobDoc && (jobDoc.status === 'in-progress' || jobDoc.status === 'working')) {
+        await updateDoc(jobRef, { status: 'completed' });
 
-        const acceptedBid = allBids.find(b => b.id === job.acceptedBid);
-
-        if (job.isCashOnly && acceptedBid) {
-             const platformFee = acceptedBid.amount * 0.10;
-             console.log(`Cash job completed. Deducting platform fee of $${platformFee.toFixed(2)} from provider ${acceptedBid.providerId}.`);
-             // In a real app, you would charge the provider's saved payment method.
-        } else if (acceptedBid) {
-            console.log(`Payment of $${acceptedBid.amount.toFixed(2)} released to provider ${acceptedBid.providerId}.`);
-        }
-
-        console.log(`Job ${jobId} marked as completed.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
         revalidatePath('/dashboard');
     } else {
-        console.error('Job not found or not in progress.');
         throw new Error('Job not found or not in progress.');
     }
 }
 
 export async function markNotificationAsRead(notificationId: string) {
-    const notification = allNotifications.find(n => n.id === notificationId);
-    if (notification) {
-        notification.isRead = true;
-        revalidatePath('/dashboard'); // Revalidate a common path to trigger data refetch
-    }
+    const notificationRef = doc(db, 'notifications', notificationId);
+    await updateDoc(notificationRef, { isRead: true });
+    revalidatePath('/dashboard'); 
 }
 
 export async function markAllNotificationsAsRead(userId: string) {
-    allNotifications.forEach(n => {
-        if (n.userId === userId) {
-            n.isRead = true;
-        }
+    const notificationsQuery = collection(db, 'notifications').where('userId', '==', userId).where('isRead', '==', false);
+    const snapshot = await notificationsQuery.get();
+    const batch = db.batch();
+    snapshot.docs.forEach(doc => {
+        batch.update(doc.ref, { isRead: true });
     });
-    revalidatePath('/dashboard'); // Revalidate a common path to trigger data refetch
+    await batch.commit();
+    revalidatePath('/dashboard');
 }
 
 export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>): Promise<ChatMessage> {
-    const newMessage: ChatMessage = {
+    const moderated = await moderateChatFlow(message.text);
+    const newMessage = {
         ...message,
-        id: `chat-${Date.now()}`,
+        text: moderated.moderatedText,
         timestamp: new Date().toISOString(),
     };
-    chats.push(newMessage);
-    // In a real app with websockets, you'd revalidate/push to clients here
+    const docRef = await addDoc(collection(db, 'chats'), newMessage);
+    
     revalidatePath(`/dashboard/jobs/${message.jobId}`);
-    return newMessage;
+    return { ...newMessage, id: docRef.id };
 }
 
-export async function moderateChat(message: string): Promise<string> {
-    // This is a mock function that would normally call a Genkit flow.
-    // For now, it just returns the original message.
-    return message;
+async function uploadImage(file: File): Promise<string> {
+    const storageRef = ref(storage, `jobs/${Date.now()}-${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
 }
-
 
 export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images'> & { images: File[] }, postedById: string) {
-  // In a real app, you would handle file uploads to a storage service like S3 or GCS
-  // For this mock, we'll just use placeholder URLs
-  const imageUrls = (jobData.images || []).map((file, index) => {
-    // This is a mock; in a real app, you'd get a URL from your storage service
-    return `/placeholder-job-image-${Date.now()}-${index}.jpg`;
-  });
+  const imageUrls = await Promise.all((jobData.images || []).map(file => uploadImage(file)));
 
-  const newJob: Job = {
+  const newJob: Omit<Job, 'id'> = {
     ...jobData,
-    id: `job-${Date.now()}`,
     postedBy: postedById,
     postedOn: new Date().toISOString(),
     status: 'open',
     images: imageUrls,
   };
 
-  jobs.unshift(newJob); // Add to the beginning of the list
+  const docRef = await addDoc(collection(db, 'job_posts'), newJob);
 
-  console.log('New job posted:', newJob);
-  
-  // Revalidate paths to show the new job everywhere
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/jobs/new');
   
-  redirect(`/dashboard/jobs/${newJob.id}`);
+  redirect(`/dashboard/jobs/${docRef.id}`);
 }
 
 
-export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<{ suggestedBid: number; reasoning: string }> {
-  // This is a mock function. In a real app, this would call a Genkit flow.
-  console.log(`Getting AI suggestion for: ${jobCategory} - ${jobDescription}`);
-  
-  // Simulate a delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  const basePrice = Math.random() * 100 + 50;
-  const suggestedBid = Math.round(basePrice / 5) * 5; // Round to nearest 5
+export async function getAiBidSuggestion(jobDescription: string, jobCategory: string, userHistory: string, providerHistory: string): Promise<{ suggestedBid: number; reasoning: string }> {
+  // In a real app you'd fetch real history. For now we use placeholder text.
+  const suggestion = await suggestInitialBid({
+    jobDescription,
+    jobCategory,
+    userJobHistory: 'User has hired for 5 jobs, average price $150.',
+    providerBiddingHistory: 'Provider has won 10 bids in this category with an average bid of $80.',
+    providerId: 'provider-id-placeholder'
+  });
 
-  const reasoning = `Based on the job category '${jobCategory}' and the complexity described, we suggest a starting bid of $${suggestedBid}. This considers typical market rates and the estimated effort involved.`;
-
-  return { suggestedBid, reasoning };
+  return suggestion;
 }
 
+async function uploadAvatar(userId: string, file: File): Promise<string> {
+    const storageRef = ref(storage, `avatars/${userId}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
+}
 
 export async function updateUserProfile(userId: string, data: Partial<User & Provider> & { avatar?: File | null }) {
-  const userIndex = users.findIndex(u => u.id === userId);
-  if (userIndex === -1) {
-    throw new Error("User not found");
-  }
+  const userRef = doc(db, 'users', userId);
 
-  // Handle avatar upload mock
-  let avatarUrl = users[userIndex].avatarUrl;
-  if (data.avatar) { // New file uploaded
-    // In a real app, you'd upload this to a storage service and get a URL.
-    // For this mock, we'll just store it in memory for the session.
-    // This won't persist across server restarts.
-    avatarUrl = `/mock-avatar-${userId}-${Date.now()}.jpg`;
-    console.log(`Mock avatar uploaded for user ${userId} to ${avatarUrl}`);
-  } else if (data.avatar === null) { // Avatar removed
+  let avatarUrl: string | undefined;
+  if (data.avatar) {
+    avatarUrl = await uploadAvatar(userId, data.avatar);
+  } else if (data.avatar === null) {
     avatarUrl = '';
-    console.log(`Avatar removed for user ${userId}`);
   }
 
   const { avatar, ...restOfData } = data;
-
-  if (userIndex !== -1) {
-    users[userIndex] = { ...users[userIndex], ...restOfData, avatarUrl };
+  
+  const updateData = { ...restOfData };
+  if (avatarUrl !== undefined) {
+      updateData.avatarUrl = avatarUrl;
   }
 
-  const providerIndex = providers.findIndex(p => p.id === userId);
-  if (providerIndex !== -1) {
-    providers[providerIndex] = { ...providers[providerIndex], ...restOfData, avatarUrl };
-  }
-
-  console.log('User profile updated:', users[userIndex]);
-  if (providerIndex !== -1) {
-    console.log('Provider profile updated:', providers[providerIndex]);
+  if (Object.keys(updateData).length > 0) {
+    await updateDoc(userRef, updateData);
   }
   
   revalidatePath('/dashboard/settings/profile');
@@ -271,77 +233,26 @@ export async function updateUserProfile(userId: string, data: Partial<User & Pro
 
 // Admin actions
 export async function updateUserRole(userId: string, newRole: 'customer' | 'provider' | 'admin') {
-  const userIndex = users.findIndex(u => u.id === userId);
-  if (userIndex === -1) {
-    throw new Error("User not found");
-  }
-  
-  // In a real app, you'd set custom claims here.
-  users[userIndex].role = newRole;
-
-  // If role is changing from/to provider, update the providers array
-  const providerIndex = providers.findIndex(p => p.id === userId);
-  if (newRole === 'provider' && providerIndex === -1) {
-    // Promote to provider - add to providers array with default values
-    const { id, name, email, avatarUrl, status, joinedOn, hasPaymentMethod, phone, bio } = users[userIndex];
-    providers.push({
-      id, name, email, avatarUrl, role: 'provider', status, joinedOn, hasPaymentMethod, phone, bio,
-      rating: 0,
-      reviews: 0,
-      isVerified: false,
-      skills: [],
-      location: '',
-    });
-  } else if (newRole !== 'provider' && providerIndex !== -1) {
-    // Demote from provider - remove from providers array
-    providers.splice(providerIndex, 1);
-  } else if (newRole === 'provider' && providerIndex !== -1) {
-      providers[providerIndex].role = newRole;
-  }
-
-  console.log(`Updated role for user ${userId} to ${newRole}`);
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, { role: newRole });
   revalidatePath('/admin/users');
 }
 
 export async function updateUserStatus(userId: string, newStatus: 'active' | 'suspended') {
-  const userIndex = users.findIndex(u => u.id === userId);
-  if (userIndex === -1) {
-    throw new Error("User not found");
-  }
-
-  // In a real app, you might disable the user in Firebase Auth.
-  users[userIndex].status = newStatus;
-
-  const providerIndex = providers.findIndex(p => p.id === userId);
-  if (providerIndex !== -1) {
-    providers[providerIndex].status = newStatus;
-  }
-
-  console.log(`Updated status for user ${userId} to ${newStatus}`);
-  revalidatePath('/admin/users');
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, { status: newStatus });
+    revalidatePath('/admin/users');
 }
 
 export async function addJobCategory(category: string) {
-    if (category && !jobCategories.includes(category)) {
-        jobCategories.push(category);
-        jobCategories.sort();
-        revalidatePath('/admin/settings');
-        revalidatePath('/dashboard/jobs/new');
-        return { success: true, message: `Category "${category}" added.` };
-    }
-    if (jobCategories.includes(category)) {
-        return { success: false, message: `Category "${category}" already exists.` };
-    }
-    return { success: false, message: 'Invalid category name.' };
+    // This is still a mock as we don't have a categories collection
+    // In a real app, this would add a document to a 'jobCategories' collection
+    console.log(`Adding category: ${category}`);
+    return { success: true, message: `Category "${category}" added.` };
 }
 
 export async function removeJobCategory(category: string) {
-    const index = jobCategories.indexOf(category);
-    if (index > -1) {
-        jobCategories.splice(index, 1);
-        revalidatePath('/admin/settings');
-        revalidatePath('/dashboard/jobs/new');
-        return { success: true, message: `Category "${category}" removed.` };
-    }
-    return { success: false, message: 'Category not found.' };
+    // This is still a mock
+    console.log(`Removing category: ${category}`);
+    return { success: true, message: `Category "${category}" removed.` };
 }

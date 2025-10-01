@@ -4,9 +4,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Table,
@@ -18,36 +15,38 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getCurrentUser, getBidsForJob, getJob } from '@/lib/data';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { bids as allBids } from '@/lib/data';
 import { useEffect, useState } from 'react';
-import type { User, Provider } from '@/types';
+import type { User, Provider, Bid, Job } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
+import { useUser, useCollection, useDoc } from '@/firebase';
+import { collection, query, where, doc } from 'firebase/firestore';
+import { db } from '@/firebase/config';
 
-export default function MyBidsPage() {
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+function BidRow({ bid }: { bid: Bid & { id: string } }) {
   const { t, isTranslationReady, language } = useTranslation();
-
-  useEffect(() => {
-    setCurrentUser(getCurrentUser());
-  }, []);
+  const { data: job, isLoading } = useDoc<Job>(doc(db, 'job_posts', bid.jobId));
   
-  if (!currentUser || !isTranslationReady) {
-    return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (isLoading || !isTranslationReady) {
+    return (
+      <TableRow>
+        <TableCell colSpan={5} className="text-center">
+          <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+        </TableCell>
+      </TableRow>
+    );
   }
 
-  const providerBids = allBids.filter(bid => bid.providerId === currentUser.id);
+  if (!job) return null;
 
-  const getStatusForBid = (jobId: string, bidId: string) => {
-    const job = getJob(jobId);
+  const getStatusForBid = () => {
     if (!job) return <Badge variant="destructive">Error</Badge>;
 
     if (job.status === 'completed' || job.status === 'in-progress' || job.status === 'working' || job.status === 'pending-confirmation') {
-      if (job.acceptedBid === bidId) {
+      if (job.acceptedBid === bid.id) {
         return <Badge className="bg-green-100 text-green-800 border-green-200">{t('my_bids_status_won')}</Badge>;
       }
       return <Badge variant="secondary">{t('my_bids_status_not_selected')}</Badge>;
@@ -61,6 +60,38 @@ export default function MyBidsPage() {
   };
 
   return (
+    <TableRow key={bid.id}>
+      <TableCell className="font-medium">
+        <Link href={`/dashboard/jobs/${job.id}`} className="hover:text-primary">
+            {job.title}
+        </Link>
+      </TableCell>
+      <TableCell className="hidden md:table-cell">{format(new Date(bid.submittedOn), 'PPP', { locale: language === 'es' ? es : undefined })}</TableCell>
+      <TableCell className="text-right font-semibold">${bid.amount.toFixed(2)}</TableCell>
+      <TableCell className="text-center">{getStatusForBid()}</TableCell>
+      <TableCell className="text-right">
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/dashboard/jobs/${job.id}`}>
+            {t('my_bids_view_job_button')} <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </TableCell>
+    </TableRow>
+  )
+}
+
+export default function MyBidsPage() {
+  const { user: currentUser, isUserLoading } = useUser();
+  const { t, isTranslationReady } = useTranslation();
+  
+  const bidsQuery = currentUser ? query(collection(db, 'bids'), where('providerId', '==', currentUser.uid)) : null;
+  const { data: providerBids, isLoading: isLoadingBids } = useCollection<Bid>(bidsQuery);
+  
+  if (isUserLoading || !isTranslationReady || isLoadingBids) {
+    return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  return (
     <div>
         <div className="mb-6">
             <h1 className="text-3xl font-bold font-headline">{t('my_bids_title')}</h1>
@@ -71,7 +102,7 @@ export default function MyBidsPage() {
 
       <Card>
         <CardContent className="pt-6">
-          {providerBids.length > 0 ? (
+          {(providerBids && providerBids.length > 0) ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -83,30 +114,7 @@ export default function MyBidsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {providerBids.map((bid) => {
-                  const job = getJob(bid.jobId);
-                  if (!job) return null;
-
-                  return (
-                    <TableRow key={bid.id}>
-                      <TableCell className="font-medium">
-                        <Link href={`/dashboard/jobs/${job.id}`} className="hover:text-primary">
-                            {job.title}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">{format(new Date(bid.submittedOn), 'PPP', { locale: language === 'es' ? es : undefined })}</TableCell>
-                      <TableCell className="text-right font-semibold">${bid.amount.toFixed(2)}</TableCell>
-                      <TableCell className="text-center">{getStatusForBid(job.id, bid.id)}</TableCell>
-                      <TableCell className="text-right">
-                        <Button asChild variant="outline" size="sm">
-                          <Link href={`/dashboard/jobs/${job.id}`}>
-                            {t('my_bids_view_job_button')} <ArrowRight className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {providerBids.map((bid) => <BidRow key={bid.id} bid={bid} />)}
               </TableBody>
             </Table>
           ) : (
@@ -125,5 +133,3 @@ export default function MyBidsPage() {
     </div>
   );
 }
-
-    

@@ -6,7 +6,6 @@ import { Header } from '@/components/header';
 import { redirect } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@/firebase';
-import { getMockUser } from '@/lib/data';
 
 export default function Layout({
   children,
@@ -27,10 +26,7 @@ export default function Layout({
     return redirect('/login');
   }
 
-  // This is a temporary solution to get user role from mock data
-  // In a real app, this would come from Firestore or custom claims
-  const mockUser = getMockUser(user.uid);
-  if (mockUser?.role === 'admin') {
+  if (user?.role === 'admin') {
       return redirect('/admin');
   }
 
