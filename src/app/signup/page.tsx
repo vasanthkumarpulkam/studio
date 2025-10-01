@@ -15,13 +15,15 @@ import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
 
   const handleFirstStep = (e: React.FormEvent) => {
@@ -41,7 +43,7 @@ export default function SignupPage() {
         title: 'Account Created!',
         description: 'You can now log in.',
     });
-    router.push('/dashboard');
+    router.push(redirectUrl || '/dashboard');
   };
 
   return (

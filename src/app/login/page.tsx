@@ -11,16 +11,18 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Logo from '@/components/logo';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { login } from '@/lib/data';
 import { User, Briefcase } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
 
   const handleLogin = (userId: string) => {
     login(userId);
-    router.push('/dashboard');
+    router.push(redirectUrl || '/dashboard');
   };
 
   return (

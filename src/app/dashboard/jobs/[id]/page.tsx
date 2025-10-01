@@ -1,8 +1,9 @@
 
+'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
 import {
   getJob,
   getBidsForJob,
@@ -54,11 +55,16 @@ import StartWorkButton from '@/components/start-work-button';
 import type { Provider, User as UserType } from '@/types';
 import ChatModal from '@/components/chat-modal';
 import ConfirmJobButton from '@/components/confirm-job-button';
+import { useEffect, useState } from 'react';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
-  const job = getJob(params.id);
+  const [currentUser, setCurrentUser] = useState<UserType | Provider | null>(null);
   
-  const currentUser = getCurrentUser();
+  useEffect(() => {
+    setCurrentUser(getCurrentUser());
+  }, []);
+
+  const job = getJob(params.id);
   const jobPoster = getUser(job?.postedBy || '');
 
 
@@ -187,12 +193,12 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
               </CardHeader>
               <CardContent className="flex gap-4">
                 <Button asChild>
-                  <Link href="/login">
+                  <Link href={`/login?redirect=/dashboard/jobs/${job.id}`}>
                     <LogIn className="mr-2 h-4 w-4" /> Log In
                   </Link>
                 </Button>
                 <Button asChild variant="secondary">
-                  <Link href="/signup">Sign Up as a Provider</Link>
+                  <Link href={`/signup?redirect=/dashboard/jobs/${job.id}`}>Sign Up as a Provider</Link>
                 </Button>
               </CardContent>
             </Card>
