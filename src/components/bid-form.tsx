@@ -22,8 +22,9 @@ import { Sparkles, Loader2, HandCoins } from 'lucide-react';
 import { getAiBidSuggestion, submitBid } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Job, Provider, User } from '@/types';
-import { getCurrentUser } from '@/lib/data';
+import { getMockUser } from '@/lib/data';
 import { Separator } from './ui/separator';
+import { useUser } from '@/firebase';
 
 const bidSchema = z.object({
   amount: z.coerce.number().positive('Must be a positive number.'),
@@ -38,11 +39,16 @@ export default function BidForm({ job }: { job: Job }) {
   const [isSubmitting, startSubmitting] = useTransition();
   const [suggestion, setSuggestion] = useState<{ suggestedBid: number; reasoning: string } | null>(null);
   const { toast } = useToast();
+  const { user: firebaseUser, isUserLoading } = useUser();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
 
   useEffect(() => {
-    setCurrentUser(getCurrentUser());
-  }, []);
+    if (firebaseUser) {
+      setCurrentUser(getMockUser(firebaseUser.uid));
+    } else if (!isUserLoading) {
+      setCurrentUser(null);
+    }
+  }, [firebaseUser, isUserLoading]);
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
@@ -171,7 +177,7 @@ export default function BidForm({ job }: { job: Job }) {
           </fieldset>
             
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isSubmitting}>
+            <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isSubmitting || isUserLoading}>
                 {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -179,7 +185,7 @@ export default function BidForm({ job }: { job: Job }) {
                 )}
                 {isSubmitting ? 'Submitting...' : 'Submit Bid'}
             </Button>
-            <Button variant="outline" type="button" className="w-full sm:w-auto" onClick={handleSuggestion} disabled={loadingSuggestion || !hasPaymentMethod || isSubmitting}>
+            <Button variant="outline" type="button" className="w-full sm:w-auto" onClick={handleSuggestion} disabled={loadingSuggestion || !hasPaymentMethod || isSubmitting || isUserLoading}>
                 {loadingSuggestion ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

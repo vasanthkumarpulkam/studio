@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { jobCategories, getCurrentUser } from '@/lib/data';
+import { jobCategories, getMockUser } from '@/lib/data';
 import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, X, Image as ImageIcon } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
@@ -38,6 +38,7 @@ import { postJob } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
 import type { User, Provider } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
+import { useUser } from '@/firebase';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -57,18 +58,21 @@ type JobFormValues = z.infer<typeof jobSchema>;
 export default function NewJobPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const { user: firebaseUser, isUserLoading } = useUser();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
 
   useEffect(() => {
-    const user = getCurrentUser();
-    setCurrentUser(user);
-    if (!user) {
-      router.push('/login');
+    if (!isUserLoading) {
+      if (firebaseUser) {
+        setCurrentUser(getMockUser(firebaseUser.uid));
+      } else {
+        router.push('/login');
+      }
     }
-  }, [router]);
+  }, [firebaseUser, isUserLoading, router]);
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
@@ -153,7 +157,7 @@ export default function NewJobPage() {
     });
   }
 
-  if (!currentUser || !isTranslationReady) {
+  if (isUserLoading || !currentUser || !isTranslationReady) {
     // Render a loading state or null while redirecting
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
@@ -394,4 +398,5 @@ export default function NewJobPage() {
   );
 }
 
+    
     
