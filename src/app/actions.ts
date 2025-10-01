@@ -320,5 +320,3 @@ export async function updateUserStatus(userId: string, newStatus: 'active' | 'su
   console.log(`Updated status for user ${userId} to ${newStatus}`);
   revalidatePath('/admin/users');
 }
-
-    
