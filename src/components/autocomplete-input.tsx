@@ -4,7 +4,7 @@
 
 import { useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { useJsApiLoader } from '@react-google-maps/api';
+import { useGoogleMaps } from '@/context/google-maps-provider';
 import { cn } from '@/lib/utils';
 
 interface AutocompleteInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -14,12 +14,7 @@ interface AutocompleteInputProps extends React.InputHTMLAttributes<HTMLInputElem
 
 export default function AutocompleteInput({ onValueChange, value, className, ...props }: AutocompleteInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
-    preventGoogleFontsLoading: true,
-  });
+  const { isLoaded, apiKeyMissing } = useGoogleMaps();
 
   useEffect(() => {
     if (isLoaded && inputRef.current) {
@@ -37,7 +32,7 @@ export default function AutocompleteInput({ onValueChange, value, className, ...
     }
   }, [isLoaded, onValueChange]);
 
-  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+  if (apiKeyMissing) {
     return (
       <Input
         value={value}

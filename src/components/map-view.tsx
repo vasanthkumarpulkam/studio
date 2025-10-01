@@ -1,19 +1,18 @@
 
-
 'use client';
 
 import {
   GoogleMap,
-  useJsApiLoader,
   Marker,
   InfoWindow,
 } from '@react-google-maps/api';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Job } from '@/types';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useGoogleMaps } from '@/context/google-maps-provider';
 
 interface MapViewProps {
   jobs: Job[];
@@ -37,7 +36,7 @@ const MissingApiKeyError = () => (
       <AlertTriangle className="h-8 w-8" />
       <div>
         <h3 className="font-bold">Google Maps API Key is Missing</h3>
-        <p className="text-sm">Please add your Google Maps API key to the `.env.local` file to enable map features.</p>
+        <p className="text-sm">Please add your Google Maps API key to the `.env` file to enable map features.</p>
         <code className="mt-2 block bg-destructive/20 p-2 rounded-md text-xs">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY_HERE</code>
       </div>
     </div>
@@ -50,6 +49,10 @@ const geocodeMock = (location: string): Promise<{ lat: number; lng: number } | n
   return new Promise((resolve) => {
     // Simulate network delay
     setTimeout(() => {
+      if (typeof window.google === 'undefined') {
+        resolve(null);
+        return;
+      }
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ address: location }, (results, status) => {
         if (status === 'OK' && results && results[0]) {
@@ -80,15 +83,7 @@ const getZoomLevel = (radius: number) => {
 };
 
 export default function MapView({ jobs, location, radius }: MapViewProps) {
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: googleMapsApiKey || '',
-    libraries: ['places', 'geocoding'],
-    preventGoogleFontsLoading: true,
-  });
-
+  const { isLoaded, loadError } = useGoogleMaps();
   const mapRef = useRef<google.maps.Map | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
@@ -137,17 +132,9 @@ export default function MapView({ jobs, location, radius }: MapViewProps) {
 
     updateUserCenter();
   }, [location, jobLocations, isLoaded]);
-
-  if (!googleMapsApiKey) {
-    return <MissingApiKeyError />;
-  }
   
   if (loadError) {
-    return (
-      <div className="flex h-full items-center justify-center bg-destructive/10 text-destructive">
-        Error loading maps. Please check your API key and configuration.
-      </div>
-    );
+    return <MissingApiKeyError />;
   }
 
   if (!isLoaded) {

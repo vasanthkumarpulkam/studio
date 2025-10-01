@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { LanguageProvider } from '@/context/language-context';
 import { FirebaseClientProvider } from '@/firebase';
+import { GoogleMapsProvider } from '@/context/google-maps-provider';
 
 export const metadata: Metadata = {
   title: 'ServiceHub',
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body className="font-body antialiased" suppressHydrationWarning>
         <LanguageProvider>
           <FirebaseClientProvider>
-            {children}
+            <GoogleMapsProvider>
+              {children}
+            </GoogleMapsProvider>
           </FirebaseClientProvider>
         </LanguageProvider>
         <Toaster />
