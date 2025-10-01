@@ -6,6 +6,8 @@ export type User = {
   avatarUrl: string;
   role: 'customer' | 'provider';
   hasPaymentMethod: boolean;
+  phone?: string;
+  bio?: string;
 };
 
 export type Provider = User & {
@@ -15,6 +17,7 @@ export type Provider = User & {
   isVerified: boolean;
   skills: string[];
   location: string;
+  website?: string;
 };
 
 export type Job = {

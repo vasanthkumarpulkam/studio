@@ -1,8 +1,8 @@
 
 'use server';
 
-import { jobs, bids as allBids, notifications as allNotifications, chats } from '@/lib/data';
-import type { Bid, ChatMessage, Job } from '@/types';
+import { jobs, bids as allBids, notifications as allNotifications, chats, users, providers } from '@/lib/data';
+import type { Bid, ChatMessage, Job, User, Provider } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -226,4 +226,25 @@ export async function getAiBidSuggestion(jobDescription: string, jobCategory: st
   const reasoning = `Based on the job category '${jobCategory}' and the complexity described, we suggest a starting bid of $${suggestedBid}. This considers typical market rates and the estimated effort involved.`;
 
   return { suggestedBid, reasoning };
+}
+
+
+export async function updateUserProfile(userId: string, data: Partial<User & Provider>) {
+  const userIndex = users.findIndex(u => u.id === userId);
+  if (userIndex !== -1) {
+    users[userIndex] = { ...users[userIndex], ...data };
+  }
+
+  const providerIndex = providers.findIndex(p => p.id === userId);
+  if (providerIndex !== -1) {
+    providers[providerIndex] = { ...providers[providerIndex], ...data };
+  }
+
+  console.log('User profile updated:', users[userIndex]);
+  if (providerIndex !== -1) {
+    console.log('Provider profile updated:', providers[providerIndex]);
+  }
+  
+  revalidatePath('/dashboard/settings/profile');
+  redirect('/dashboard/settings/profile');
 }
