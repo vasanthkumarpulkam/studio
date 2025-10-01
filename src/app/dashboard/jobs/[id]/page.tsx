@@ -39,6 +39,8 @@ import {
   MessageSquare,
   ArrowLeft,
   LogIn,
+  Hourglass,
+  ThumbsUp,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,12 +53,12 @@ import LeaveReviewForm from '@/components/leave-review-form';
 import StartWorkButton from '@/components/start-work-button';
 import type { Provider, User as UserType } from '@/types';
 import ChatModal from '@/components/chat-modal';
+import ConfirmJobButton from '@/components/confirm-job-button';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = getJob(params.id);
   
-  // This is a hack to get the full user object, which might be a provider
-  const currentUser = getCurrentUser() as UserType | Provider | null;
+  const currentUser = getCurrentUser();
   const jobPoster = getUser(job?.postedBy || '');
 
 
@@ -77,8 +79,9 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
-  const statusColors = {
+  const statusColors: { [key: string]: string } = {
     open: 'bg-green-100 text-green-800 border-green-200',
+    'pending-confirmation': 'bg-amber-100 text-amber-800 border-amber-200',
     'in-progress': 'bg-blue-100 text-blue-800 border-blue-200',
     working: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     completed: 'bg-gray-100 text-gray-800 border-gray-200',
@@ -86,7 +89,8 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   };
 
   const statusIcons = {
-      'in-progress': <Check className="h-4 w-4 text-blue-600"/>,
+      'pending-confirmation': <Hourglass className="h-4 w-4 text-amber-600"/>,
+      'in-progress': <ThumbsUp className="h-4 w-4 text-blue-600"/>,
       working: <Hammer className="h-4 w-4 text-yellow-600"/>,
       completed: <Check className="h-4 w-4 text-green-600"/>,
   }
@@ -274,12 +278,22 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     </div>
                   </div>
 
+                  {job.status === 'pending-confirmation' && (
+                     <Alert variant="default" className="bg-amber-50 border-amber-200">
+                        {statusIcons[job.status]}
+                        <AlertTitle className="text-amber-800">Pending Provider Confirmation</AlertTitle>
+                        <AlertDescription className="text-amber-700">
+                         The provider has been notified. Waiting for them to confirm and begin the job.
+                        </AlertDescription>
+                    </Alert>
+                  )}
+
                   {job.status === 'in-progress' && (
                      <Alert variant="default" className="bg-blue-50 border-blue-200">
                         {statusIcons[job.status]}
-                        <AlertTitle className="text-blue-800">Job Accepted</AlertTitle>
+                        <AlertTitle className="text-blue-800">Job Confirmed</AlertTitle>
                         <AlertDescription className="text-blue-700">
-                         The provider has been selected. Waiting for work to begin.
+                         The provider is ready to start.
                         </AlertDescription>
                     </Alert>
                   )}
@@ -289,16 +303,22 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                         {statusIcons[job.status]}
                         <AlertTitle className="text-yellow-800">Job In Progress</AlertTitle>
                         <AlertDescription className="text-yellow-700">
-                          {job.isCashOnly ? 'This is a cash job. Payment will be made directly to the provider. The platform fee will be charged to the provider\'s saved payment method upon completion.' : `Payment of $${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.`}
+                          {job.isCashOnly ? `This is a cash job. Payment will be made directly to the provider. The 10% platform fee will be charged to the provider's saved payment method upon completion.` : `Payment of $${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.`}
                         </AlertDescription>
                     </Alert>
                   )}
 
-                  {isOwner && (job.status === 'in-progress' || job.status === 'working') && (
+                  {isOwner && (job.status === 'in-progress' || job.status === 'working' || job.status === 'pending-confirmation') && (
                     <div className="flex flex-col space-y-2">
-                      <MarkCompletedButton jobId={job.id} />
+                       {job.status !== 'pending-confirmation' && <MarkCompletedButton jobId={job.id} />}
                       <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
                     </div>
+                  )}
+                  
+                  {currentUser?.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'pending-confirmation' && (
+                     <div className="flex flex-col space-y-2">
+                        <ConfirmJobButton jobId={job.id} />
+                     </div>
                   )}
 
                   {currentUser?.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'in-progress' && (

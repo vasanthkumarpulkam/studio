@@ -1,32 +1,10 @@
+
 'use server';
 
-import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
-import type { SuggestInitialBidOutput } from '@/ai/flows/suggest-initial-bid';
-import { moderateChatFlow } from '@/ai/flows/moderate-chat';
 import { jobs, bids as allBids, notifications as allNotifications, chats } from '@/lib/data';
 import type { Bid, ChatMessage, Job } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-
-export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<SuggestInitialBidOutput> {
-  // In a real app, you'd fetch this data from your database
-  const dummyData = {
-    providerId: 'provider-123',
-    userJobHistory: 'User has previously paid $50 for grass cutting and $200 for a small plumbing repair. Tends to accept bids slightly below the average.',
-    providerBiddingHistory: 'Provider has successfully bid on 5 similar jobs in the last month, with an average bid of $70. Win rate is 60% when bidding in the $65-$75 range.',
-    jobDescription,
-    jobCategory,
-  };
-
-  try {
-    const suggestion = await suggestInitialBid(dummyData);
-    return suggestion;
-  } catch (error) {
-    console.error('AI suggestion failed:', error);
-    // Return a structured error or re-throw
-    throw new Error('Failed to get AI suggestion.');
-  }
-}
 
 export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
     const job = jobs.find(j => j.id === bidData.jobId);
@@ -42,7 +20,7 @@ export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
     allBids.push(newBid);
 
     // Create a notification for the job poster
-    allNotifications.push({
+    allNotifications.unshift({
         id: `notif-${Date.now()}`,
         userId: job.postedBy,
         message: `You received a new bid of $${newBid.amount.toFixed(2)} for your job "${job.title}".`,
@@ -60,20 +38,62 @@ export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
 
 
 export async function acceptBid(jobId: string, bidId: string) {
-    // In a real app, you would update this in your database
     const job = jobs.find(j => j.id === jobId);
-    if (job && job.status === 'open') {
-        job.status = 'in-progress';
+    const bid = allBids.find(b => b.id === bidId);
+
+    if (job && job.status === 'open' && bid) {
+        job.status = 'pending-confirmation';
         job.acceptedBid = bidId;
-        console.log(`Bid ${bidId} accepted for job ${jobId}. Job status updated to in-progress.`);
+
+        if (!job.isCashOnly) {
+            const platformFee = bid.amount * 0.10;
+            console.log(`Platform fee of $${platformFee.toFixed(2)} initiated as a pending charge for customer ${job.postedBy}.`);
+            // In a real app, you would use a payment gateway to create a hold or authorization.
+        }
+
+        allNotifications.unshift({
+            id: `notif-${Date.now()}`,
+            userId: bid.providerId,
+            message: `Your bid for "${job.title}" was accepted! Please confirm to start the job.`,
+            link: `/dashboard/jobs/${job.id}`,
+            isRead: false,
+            createdAt: new Date().toISOString(),
+        });
+        
+        console.log(`Bid ${bidId} accepted for job ${jobId}. Job status updated to pending-confirmation.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
         revalidatePath('/dashboard');
     } else {
-        console.error('Job not found or not available for bidding.');
-        throw new Error('Job not found or not available for bidding.');
+        console.error('Job or Bid not found or not available for bidding.');
+        throw new Error('Job or Bid not found or not available for bidding.');
     }
 }
+
+export async function confirmJob(jobId: string) {
+    const job = jobs.find(j => j.id === jobId);
+     if (job && job.status === 'pending-confirmation') {
+        job.status = 'in-progress';
+
+        allNotifications.unshift({
+            id: `notif-${Date.now()}`,
+            userId: job.postedBy,
+            message: `Provider has confirmed and is ready to start work on "${job.title}".`,
+            link: `/dashboard/jobs/${job.id}`,
+            isRead: false,
+            createdAt: new Date().toISOString(),
+        });
+
+        console.log(`Provider confirmed job ${jobId}. Job status updated to in-progress.`);
+        revalidatePath(`/dashboard/jobs/${jobId}`);
+        revalidatePath('/dashboard/my-bids');
+        revalidatePath('/dashboard');
+    } else {
+        console.error('Job not found or not in the correct state to confirm.');
+        throw new Error('Could not confirm this job.');
+    }
+}
+
 
 export async function startWork(jobId: string) {
     const job = jobs.find(j => j.id === jobId);
@@ -94,6 +114,17 @@ export async function markJobAsCompleted(jobId: string) {
     const job = jobs.find(j => j.id === jobId);
     if (job && (job.status === 'in-progress' || job.status === 'working')) {
         job.status = 'completed';
+
+        const acceptedBid = allBids.find(b => b.id === job.acceptedBid);
+
+        if (job.isCashOnly && acceptedBid) {
+             const platformFee = acceptedBid.amount * 0.10;
+             console.log(`Cash job completed. Deducting platform fee of $${platformFee.toFixed(2)} from provider ${acceptedBid.providerId}.`);
+             // In a real app, you would charge the provider's saved payment method.
+        } else if (acceptedBid) {
+            console.log(`Payment of $${acceptedBid.amount.toFixed(2)} released to provider ${acceptedBid.providerId}.`);
+        }
+
         console.log(`Job ${jobId} marked as completed.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
@@ -121,16 +152,6 @@ export async function markAllNotificationsAsRead(userId: string) {
     revalidatePath('/dashboard'); // Revalidate a common path to trigger data refetch
 }
 
-export async function moderateChat(message: string): Promise<string> {
-    try {
-        const result = await moderateChatFlow(message);
-        return result.moderatedText;
-    } catch (error) {
-        console.error('Chat moderation failed:', error);
-        return message; // Fallback to original message on error
-    }
-}
-
 export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>): Promise<ChatMessage> {
     const newMessage: ChatMessage = {
         ...message,
@@ -146,7 +167,10 @@ export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>
 export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images'> & { images: File[] }, postedById: string) {
   // In a real app, you would handle file uploads to a storage service like S3 or GCS
   // For this mock, we'll just use placeholder URLs
-  const imageUrls = jobData.images.map((_, index) => `/placeholder-job-image-${index}.jpg`);
+  const imageUrls = (jobData.images || []).map((file, index) => {
+    // This is a mock; in a real app, you'd get a URL from your storage service
+    return `/placeholder-job-image-${Date.now()}-${index}.jpg`;
+  });
 
   const newJob: Job = {
     ...jobData,
@@ -164,7 +188,6 @@ export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 
   // Revalidate paths to show the new job everywhere
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/jobs/new');
-  revalidatePath(`/dashboard/jobs/${newJob.id}`);
   
   redirect(`/dashboard/jobs/${newJob.id}`);
 }

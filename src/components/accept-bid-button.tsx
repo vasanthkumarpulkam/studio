@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useTransition } from 'react';
@@ -25,7 +26,7 @@ export default function AcceptBidButton({ jobId, bidId, disabled }: { jobId: str
         await acceptBid(jobId, bidId);
         toast({
           title: 'Bid Accepted!',
-          description: 'The provider has been notified and payment is now in escrow.',
+          description: 'The provider has been notified. Waiting for them to confirm.',
         });
       } catch (error) {
         toast({
