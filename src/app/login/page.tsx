@@ -24,13 +24,9 @@ export default function LoginPage() {
   const redirectUrl = searchParams.get('redirect');
   const { t, isTranslationReady } = useTranslation();
 
-  const handleLogin = (userId: string, role: 'customer' | 'provider' | 'admin') => {
+  const handleLogin = (userId: string) => {
     login(userId);
-    if (role === 'admin') {
-      router.replace('/admin');
-    } else {
-      router.replace(redirectUrl || '/dashboard');
-    }
+    router.replace(redirectUrl || '/dashboard');
   };
   
   if (!isTranslationReady) {
@@ -59,15 +55,15 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
             <div className="grid gap-4">
-              <Button type="button" className="w-full" onClick={() => handleLogin('user-1', 'customer')}>
+              <Button type="button" className="w-full" onClick={() => handleLogin('user-1')}>
                 <User className="mr-2 h-4 w-4"/>
                 {t('login_as_customer')}
               </Button>
-              <Button type="button" variant="secondary" className="w-full" onClick={() => handleLogin('user-2', 'provider')}>
+              <Button type="button" variant="secondary" className="w-full" onClick={() => handleLogin('user-2')}>
                 <Briefcase className="mr-2 h-4 w-4"/>
                 {t('login_as_provider')}
               </Button>
-               <Button type="button" variant="destructive" className="w-full" onClick={() => handleLogin('admin-user', 'admin')}>
+               <Button type="button" variant="destructive" className="w-full" onClick={() => handleLogin('admin-user')}>
                 <Shield className="mr-2 h-4 w-4"/>
                 {t('login_as_admin')}
               </Button>

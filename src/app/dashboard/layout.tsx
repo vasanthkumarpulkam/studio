@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from '@/components/dashboard-layout';
 import { Header } from '@/components/header';
 import { getCurrentUser } from '@/lib/data';
@@ -10,7 +11,11 @@ export default function Layout({
 }) {
   const user = getCurrentUser();
 
-  if (user?.role === 'admin') {
+  if (!user) {
+    redirect('/login');
+  }
+
+  if (user.role === 'admin') {
     redirect('/admin');
   }
 
