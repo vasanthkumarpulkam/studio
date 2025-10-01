@@ -66,7 +66,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     setCurrentUser(getCurrentUser());
     const jobData = getJob(params.id);
     setJob(jobData);
-  }, [params]);
+  }, [params.id]);
 
   if (job === null) {
      return (
