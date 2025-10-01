@@ -19,26 +19,41 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import LanguageSwitcher from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
+import { createUserProfile } from '@/services/user-service';
 
 export default function SignupPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'customer' | 'provider'>('customer');
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
   const { t, isTranslationReady } = useTranslation();
   const auth = useAuth();
+  const firestore = useFirestore();
   const [isPending, startTransition] = useTransition();
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Create user profile in Firestore
+        await createUserProfile(firestore, userCredential.user.uid, {
+            uid: userCredential.user.uid,
+            name,
+            email,
+            role,
+            joinedOn: new Date().toISOString(),
+            status: 'active',
+        });
+
         toast({
           title: t('signup_toast_account_created_title'),
           description: t('signup_toast_account_created_desc'),
@@ -85,7 +100,14 @@ export default function SignupPage() {
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="full-name">{t('signup_fullname_label')}</Label>
-                  <Input id="full-name" placeholder="Max Robinson" required disabled={isPending} />
+                  <Input 
+                    id="full-name"
+                    placeholder="Max Robinson"
+                    required
+                    disabled={isPending}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">{t('signup_email_label')}</Label>
@@ -110,6 +132,8 @@ export default function SignupPage() {
                     defaultValue="customer"
                     className="grid grid-cols-2 gap-4"
                     disabled={isPending}
+                    onValueChange={(value) => setRole(value as 'customer' | 'provider')}
+                    value={role}
                   >
                     <div>
                       <RadioGroupItem

@@ -1,25 +1,26 @@
 
 
 export type User = {
-  id: string;
+  id: string; // doc id
+  uid: string; // auth id
   name: string;
   email: string;
   avatarUrl?: string;
   role: 'customer' | 'provider' | 'admin';
-  hasPaymentMethod: boolean;
+  hasPaymentMethod?: boolean;
   phone?: string;
   bio?: string;
   status: 'active' | 'suspended';
   joinedOn: string; // ISO date string
+  location?: string;
 };
 
 export type Provider = User & {
   role: 'provider';
-  rating: number;
-  reviews: number;
-  isVerified: boolean;
-  skills: string[];
-  location: string;
+  rating?: number;
+  reviews?: number;
+  isVerified?: boolean;
+  skills?: string[];
   website?: string;
 };
 

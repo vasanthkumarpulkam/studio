@@ -7,35 +7,40 @@
       "type": "object",
       "description": "Represents a user of the HandyConnect platform, either a customer or a service provider.",
       "properties": {
-        "id": {
+        "uid": {
           "type": "string",
-          "description": "Unique identifier for the User entity."
+          "description": "Unique identifier for the User entity, matches Firebase Auth UID."
         },
-        "userType": {
+        "name": {
           "type": "string",
-          "description": "The type of user: 'customer' or 'provider'.",
-          "format": "string"
-        },
-        "firstName": {
-          "type": "string",
-          "description": "User's first name."
-        },
-        "lastName": {
-          "type": "string",
-          "description": "User's last name."
+          "description": "User's full name."
         },
         "email": {
           "type": "string",
           "description": "User's email address.",
           "format": "email"
         },
-        "phoneNumber": {
+        "role": {
           "type": "string",
-          "description": "User's phone number."
+          "description": "The type of user: 'customer' or 'provider'.",
+          "enum": ["customer", "provider", "admin"]
+        },
+        "avatarUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "phone": {
+            "type": "string"
+        },
+        "bio": {
+            "type": "string"
         },
         "location": {
           "type": "string",
           "description": "User's geographical location represented as coordinates, address, or geohash."
+        },
+        "hasPaymentMethod": {
+            "type": "boolean"
         },
         "kycVerified": {
           "type": "boolean",
@@ -43,14 +48,10 @@
         }
       },
       "required": [
-        "id",
-        "userType",
-        "firstName",
-        "lastName",
+        "uid",
+        "name",
         "email",
-        "phoneNumber",
-        "location",
-        "kycVerified"
+        "role"
       ]
     },
     "JobPost": {
@@ -251,92 +252,25 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profiles.  Path-based ownership for private user data.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/job_posts/{jobPostId}",
-        "definition": {
-          "entityName": "JobPost",
-          "schema": {
-            "$ref": "#/backend/entities/JobPost"
-          },
-          "description": "Stores job postings. Includes denormalized 'userId' for authorization independence.",
-          "params": [
-            {
-              "name": "jobPostId",
-              "description": "The unique identifier for the job post."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/job_posts/{jobPostId}/bids/{bidId}",
-        "definition": {
-          "entityName": "Bid",
-          "schema": {
-            "$ref": "#/backend/entities/Bid"
-          },
-          "description": "Stores bids for job posts. Includes denormalized 'providerId' for authorization independence.",
-          "params": [
-            {
-              "name": "jobPostId",
-              "description": "The unique identifier for the job post."
-            },
-            {
-              "name": "bidId",
-              "description": "The unique identifier for the bid."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/payments/{paymentId}",
-        "definition": {
-          "entityName": "Payment",
-          "schema": {
-            "$ref": "#/backend/entities/Payment"
-          },
-          "description": "Stores payment transactions.",
-          "params": [
-            {
-              "name": "paymentId",
-              "description": "The unique identifier for the payment."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/reviews/{reviewId}",
-        "definition": {
-          "entityName": "Review",
-          "schema": {
-            "$ref": "#/backend/entities/Review"
-          },
-          "description": "Stores reviews. Includes 'jobPostId', 'reviewerId' and 'revieweeId'.",
-          "params": [
-            {
-              "name": "reviewId",
-              "description": "The unique identifier for the review."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The Firestore structure is designed to provide a secure, scalable, and easily maintainable backend for the HandyConnect application, adhering to the principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). It leverages denormalization to avoid complex security rules and ensure atomic operations.  User data is stored in `/users/{userId}`. Job posts are stored in `/job_posts/{jobPostId}`, with a denormalized `userId` to associate the post with its creator for simplified querying and security. Bids are stored in `/job_posts/{jobPostId}/bids/{bidId}`, and include a denormalized `providerId` for direct association. Payments are stored in `/payments/{paymentId}`. Reviews are stored in `/reviews/{reviewId}`, which includes the `jobPostId`, `reviewerId` and `revieweeId`. To support the QAPs, job posts and bids are secured using path-based rules. The data structure avoids hierarchical authorization dependencies by denormalizing authorization-related data, such as ownership, directly into child documents. This approach ensures that authorization checks can be performed efficiently without requiring costly `get()` operations in the security rules."
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles, including customers and providers."
+    },
+    "/job_posts/{jobPostId}": {
+      "schema": { "$ref": "#/entities/JobPost" },
+      "description": "Stores all job postings."
+    },
+    "/job_posts/{jobPostId}/bids/{bidId}": {
+      "schema": { "$ref": "#/entities/Bid" },
+      "description": "Subcollection for bids on a specific job."
+    },
+    "/payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/Payment" },
+      "description": "Stores payment transaction records."
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Stores all reviews for jobs."
+    }
   }
 }
