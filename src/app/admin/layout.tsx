@@ -6,27 +6,35 @@ import { Home, Users, Settings } from 'lucide-react';
 import { Header } from '@/components/header';
 import { getCurrentUser } from '@/lib/data';
 import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-
-    const user = getCurrentUser();
+    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState<ReturnType<typeof getCurrentUser>>(null);
 
     useEffect(() => {
-        if (!user || user.role !== 'admin') {
+        const currentUser = getCurrentUser();
+        if (!currentUser || currentUser.role !== 'admin') {
             redirect('/login');
+        } else {
+            setUser(currentUser);
+            setIsLoading(false);
         }
-    }, [user]);
+    }, []);
 
-    if (!user || user.role !== 'admin') {
-        // Render a loading state or null while redirecting
-        return null;
+    if (isLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
     }
-
+    
     return (
         <SidebarProvider>
             <div className="flex h-screen flex-col">
