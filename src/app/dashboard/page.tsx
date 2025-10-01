@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal } from 'lucide-react';
+import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Job, Provider, User } from '@/types';
 import { Separator } from '@/components/ui/separator';
@@ -48,6 +48,7 @@ export default function DashboardPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
   const [radius, setRadius] = useState([50]);
+  const [isLoading, setIsLoading] = useState(true);
   
   const allJobs = useMemo(() => getAllOpenJobs(), []);
   const [providerJobs, setProviderJobs] = useState<Job[]>([]);
@@ -58,6 +59,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const user = getCurrentUser();
     setCurrentUser(user);
+    setIsLoading(false);
 
     if (user) {
         setProviderJobs(getOpenJobsForProvider(user.id));
@@ -66,7 +68,10 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    const jobsToFilter = currentUser?.role === 'provider' ? providerJobs : allJobs;
+    // Only run filter if not loading
+    if (isLoading) return;
+
+    const jobsToFilter = !currentUser || currentUser?.role === 'customer' ? allJobs : providerJobs;
     
     let results = jobsToFilter.filter(job => {
       const searchTermMatch = searchTerm.toLowerCase() 
@@ -103,7 +108,7 @@ export default function DashboardPage() {
 
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius, currentUser?.role]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius, currentUser, isLoading]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
@@ -121,6 +126,14 @@ export default function DashboardPage() {
   }
 
   const activeFilterCount = (searchTerm ? 1 : 0) + (location ? 1 : 0) + selectedCategories.length;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   // Logged-out public view
   if (!currentUser) {
@@ -244,6 +257,8 @@ export default function DashboardPage() {
 
   // Provider View
   if (isProvider) {
+    const providerProfile = getProvider(currentUser.id);
+    const providerSkills = providerProfile?.skills || [];
     return (
       <>
         <div className="grid lg:grid-cols-[320px_1fr] gap-8">
@@ -300,7 +315,7 @@ export default function DashboardPage() {
                       <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
                           <DropdownMenuLabel>Filter by your skills</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          {getProvider(currentUser.id)?.skills.map(cat => (
+                          {providerSkills.map(cat => (
                               <DropdownMenuCheckboxItem 
                                 key={cat}
                                 checked={selectedCategories.includes(cat)}
