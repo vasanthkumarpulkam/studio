@@ -38,6 +38,8 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
 
   const jobTitle = isTranslationReady && language === 'es' && job.i18n?.es?.title ? job.i18n.es.title : job.title;
   const jobDescription = isTranslationReady && language === 'es' && job.i18n?.es?.description ? job.i18n.es.description : job.description;
+  const jobLocation = isTranslationReady && language === 'es' && job.i18n?.es?.location ? job.i18n.es.location : job.location;
+
 
   if (!isTranslationReady) {
     return (
@@ -70,7 +72,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
           <div className='space-y-2 text-sm'>
               <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4" /> 
-                  <span>{job.location}</span>
+                  <span>{jobLocation}</span>
               </div>
               {job.budget && (
                    <div className="flex items-center gap-2 text-muted-foreground">
@@ -130,7 +132,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                         </span>
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <MapPin className="w-3.5 h-3.5" /> 
-                            {job.location}
+                            {jobLocation}
                         </span>
                     </CardDescription>
                 </CardHeader>

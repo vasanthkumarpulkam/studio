@@ -1,3 +1,4 @@
+
 import type { User, Provider, Job, Bid, Notification, ChatMessage } from '@/types';
 import { PlaceHolderImages } from './placeholder-images';
 import { notifications as initialNotifications } from './notifications';
@@ -46,6 +47,7 @@ export let jobs: Job[] = [
       es: {
         title: 'Arreglar el fregadero de la cocina que gotea',
         description: 'La tubería debajo del fregadero de mi cocina está goteando. Parece que viene de una de las juntas. Ahora tengo un balde debajo, but necesito una solución permanente. He adjuntado fotos de la configuración.',
+        location: 'San Francisco, CA',
       },
     },
     category: 'Plumbing',
@@ -64,6 +66,7 @@ export let jobs: Job[] = [
       es: {
         title: 'Cortar el césped y recortar los bordes',
         description: 'Mis céspedes delantero y trasero están cubiertos de maleza. Necesito que alguien los siegue, recorte los bordes a lo largo de la entrada y la acera, y embolse los recortes.',
+        location: 'Oakland, CA',
       },
     },
     category: 'Grass Cutting',
@@ -83,6 +86,7 @@ export let jobs: Job[] = [
       es: {
         title: 'Reparar piso de madera rayado',
         description: 'Mis transportistas rayaron una sección del piso de madera en mi sala de estar. Es un rasguño de aproximadamente 2 pies de largo, moderadamente profundo. Necesito que lo reparen y lo acaben para que coincida con el resto del piso.',
+        location: 'San Francisco, CA',
       },
     },
     category: 'Flooring',
@@ -100,6 +104,7 @@ export let jobs: Job[] = [
       es: {
         title: 'Montar estantería de IKEA',
         description: 'Tengo una nueva estantería IKEA BILLY en la caja que necesita ser ensamblada. Todas las piezas e instrucciones están incluidas. El trabajo debería ser rápido para alguien que sepa lo que está haciendo.',
+        location: 'San Francisco, CA',
       },
     },
     category: 'Furniture Assembly',

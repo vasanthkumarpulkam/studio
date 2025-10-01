@@ -62,7 +62,7 @@ interface JobDetailsViewProps {
 
 
 export default function JobDetailsView({ job, bids, currentUser, jobPoster, acceptedProvider, acceptedBid, chatMessages }: JobDetailsViewProps) {
-  const { t, isTranslationReady } = useTranslation();
+  const { t, isTranslationReady, language } = useTranslation();
   const isOwner = currentUser ? job.postedBy === currentUser.id : false;
   const currentUserIsProvider = currentUser?.role === 'provider';
   
@@ -107,6 +107,10 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
       </Alert>
   );
 
+  const jobTitle = isTranslationReady && language === 'es' && job.i18n?.es?.title ? job.i18n.es.title : job.title;
+  const jobDescription = isTranslationReady && language === 'es' && job.i18n?.es?.description ? job.i18n.es.description : job.description;
+  const jobLocation = isTranslationReady && language === 'es' && job.i18n?.es?.location ? job.i18n.es.location : job.location;
+
   if (!isTranslationReady) {
       return <div>{t('loading')}</div>
   }
@@ -136,10 +140,10 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                 </div>
                 <Badge className={statusColors[job.status]}>{t(`job_status_${job.status}`)}</Badge>
               </div>
-              <CardTitle className="font-headline text-3xl pt-2">{job.title}</CardTitle>
+              <CardTitle className="font-headline text-3xl pt-2">{jobTitle}</CardTitle>
               <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2">
                 <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4" /> {job.location}
+                  <MapPin className="w-4 h-4" /> {jobLocation}
                 </span>
                 <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Calendar className="w-4 h-4" /> {t('job_details_posted_on')} {format(new Date(job.postedOn), 'PPP')}
@@ -152,7 +156,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-foreground/80 whitespace-pre-wrap">{job.description}</p>
+              <p className="text-foreground/80 whitespace-pre-wrap">{jobDescription}</p>
               {job.images.length > 0 && (
                 <div className="mt-6">
                   <h3 className="font-semibold mb-2">{t('job_details_photos')}</h3>
