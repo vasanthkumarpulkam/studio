@@ -7,22 +7,27 @@ import {
   getJob,
   getBidsForJob,
   getProvider,
-  getCurrentUser,
   getChatMessages,
   getUser,
+  getMockUser,
 } from '@/lib/data';
 import JobDetailsView from '@/components/job-details-view';
 import type { User, Provider, Job, Bid, ChatMessage } from '@/types';
+import { useUser } from '@/firebase';
 
 export default function JobDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   // Correctly unwrap the promise for params using React.use()
   const { id } = React.use(params);
-  
+  const { user: firebaseUser, isUserLoading } = useUser();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   
   useEffect(() => {
-    setCurrentUser(getCurrentUser());
-  }, []);
+    if (firebaseUser) {
+      setCurrentUser(getMockUser(firebaseUser.uid));
+    } else if (!isUserLoading) {
+      setCurrentUser(null);
+    }
+  }, [firebaseUser, isUserLoading]);
 
   // Fetch data directly since `id` is now available synchronously
   const job = getJob(id);

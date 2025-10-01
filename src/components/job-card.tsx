@@ -10,9 +10,10 @@ import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight, Loader2 } from 'lu
 import type { Job, User, Provider } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getCurrentUser } from '@/lib/data';
+import { getMockUser } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
+import { useUser } from '@/firebase';
 
 type JobCardProps = {
   job: Job;
@@ -21,12 +22,17 @@ type JobCardProps = {
 };
 
 export function JobCard({ job, role, isGrid = false }: JobCardProps) {
+  const { user: firebaseUser } = useUser();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   const { t, isTranslationReady, language } = useTranslation();
 
   useEffect(() => {
-    setCurrentUser(getCurrentUser());
-  }, []);
+    if (firebaseUser) {
+        setCurrentUser(getMockUser(firebaseUser.uid));
+    } else {
+        setCurrentUser(null);
+    }
+  }, [firebaseUser]);
 
   const statusColors: { [key: string]: string } = {
     open: 'bg-green-100 text-green-800 border-green-200',
