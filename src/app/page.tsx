@@ -21,6 +21,7 @@ import { getCurrentUser } from '@/lib/data';
 import type { User, Provider } from '@/types';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/hooks/use-translation';
+import LanguageSwitcher from '@/components/language-switcher';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -53,6 +54,7 @@ export default function Home() {
           <Button variant="ghost" asChild>
              <Link href="#">{t('landing_how_it_works_button')}</Link>
           </Button>
+           <LanguageSwitcher />
           {currentUser ? (
             <Button asChild>
                 <Link href="/dashboard">Dashboard</Link>

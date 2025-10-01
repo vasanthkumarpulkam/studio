@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import LanguageSwitcher from '@/components/language-switcher';
 
 export default function SignupPage() {
   const [step, setStep] = useState(1);
@@ -48,6 +49,9 @@ export default function SignupPage() {
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">

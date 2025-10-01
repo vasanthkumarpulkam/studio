@@ -15,6 +15,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { login } from '@/lib/data';
 import { User, Briefcase } from 'lucide-react';
 import { useEffect } from 'react';
+import LanguageSwitcher from '@/components/language-switcher';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,6 +31,9 @@ export default function LoginPage() {
 
   return (
     <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
+       <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
