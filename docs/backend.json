@@ -1,0 +1,363 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the HandyConnect platform, either a customer or a service provider.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "userType": {
+          "type": "string",
+          "description": "The type of user: 'customer' or 'provider'.",
+          "format": "string"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The user's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The user's last name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "location": {
+          "type": "string",
+          "description": "The user's geographical location (e.g., 'latitude, longitude')."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "verificationStatus": {
+          "type": "string",
+          "description": "The status of the users KYC verification. Can be: pending, approved, rejected."
+        }
+      },
+      "required": [
+        "id",
+        "userType",
+        "firstName",
+        "lastName",
+        "email",
+        "phoneNumber",
+        "location",
+        "verificationStatus"
+      ]
+    },
+    "Job": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Job",
+      "type": "object",
+      "description": "Represents a job posted by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Job entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who created the job. (Relationship: User 1:N Job)"
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the job (e.g., 'plumbing', 'grass cutting')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the job."
+        },
+        "photoUrls": {
+          "type": "array",
+          "description": "URLs of photos related to the job.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string",
+          "description": "The job's location (e.g., 'latitude, longitude')."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the job (e.g., 'open', 'in progress', 'completed')."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the job was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "category",
+        "description",
+        "location",
+        "status",
+        "createdAt"
+      ]
+    },
+    "Bid": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bid",
+      "type": "object",
+      "description": "Represents a bid submitted by a provider for a job.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Bid entity."
+        },
+        "jobId": {
+          "type": "string",
+          "description": "Reference to the Job the bid is for. (Relationship: Job 1:N Bid)"
+        },
+        "providerId": {
+          "type": "string",
+          "description": "Reference to the User (provider) who submitted the bid. (Relationship: User 1:N Bid)"
+        },
+        "price": {
+          "type": "number",
+          "description": "The price offered in the bid."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes or details included in the bid."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the bid (e.g., 'pending', 'accepted', 'rejected')."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the bid was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "jobId",
+        "providerId",
+        "price",
+        "status",
+        "createdAt"
+      ]
+    },
+    "Payment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Payment",
+      "type": "object",
+      "description": "Represents a payment transaction on the platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Payment entity."
+        },
+        "jobId": {
+          "type": "string",
+          "description": "Reference to the Job associated with the payment. (Relationship: Job 1:N Payment)"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who initiated the payment (customer). (Relationship: User 1:N Payment)"
+        },
+        "providerId": {
+          "type": "string",
+          "description": "Reference to the User (provider) who received the payment. (Relationship: User 1:N Payment)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of the payment."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the payment (e.g., 'pending', 'completed', 'refunded')."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "The method of payment used (e.g., 'credit card', 'PayPal')."
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "The transaction ID from the payment gateway (e.g., Stripe, PayPal)."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the payment was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "jobId",
+        "userId",
+        "providerId",
+        "amount",
+        "status",
+        "paymentMethod",
+        "transactionId",
+        "createdAt"
+      ]
+    },
+    "Review": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Review",
+      "type": "object",
+      "description": "Represents a review given by a user to a provider after a job is completed.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Review entity."
+        },
+        "jobId": {
+          "type": "string",
+          "description": "Reference to the Job the review is for. (Relationship: Job 1:N Review)"
+        },
+        "reviewerId": {
+          "type": "string",
+          "description": "Reference to the User who wrote the review (customer). (Relationship: User 1:N Review)"
+        },
+        "revieweeId": {
+          "type": "string",
+          "description": "Reference to the User who received the review (provider). (Relationship: User 1:N Review)"
+        },
+        "rating": {
+          "type": "number",
+          "description": "The rating given in the review (e.g., 1-5 stars)."
+        },
+        "comment": {
+          "type": "string",
+          "description": "The text comment included in the review."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the review was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "jobId",
+        "reviewerId",
+        "revieweeId",
+        "rating",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Path-based ownership enforced by the userId parameter.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/jobs/{jobId}",
+        "definition": {
+          "entityName": "Job",
+          "schema": {
+            "$ref": "#/backend/entities/Job"
+          },
+          "description": "Stores jobs posted by users.  Includes denormalized 'userId' from the user who created the job for authorization independence. This collection includes denormalized 'verificationStatus' for filtering valid users. ",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user who created the job."
+            },
+            {
+              "name": "jobId",
+              "description": "The unique identifier for the job."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/jobs/{jobId}/bids/{bidId}",
+        "definition": {
+          "entityName": "Bid",
+          "schema": {
+            "$ref": "#/backend/entities/Bid"
+          },
+          "description": "Stores bids submitted for specific jobs.  Includes denormalized 'providerId' from the user who submitted the bid and 'userId' of job poster for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user who created the job."
+            },
+            {
+              "name": "jobId",
+              "description": "The unique identifier for the job."
+            },
+            {
+              "name": "bidId",
+              "description": "The unique identifier for the bid."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/payments/{paymentId}",
+        "definition": {
+          "entityName": "Payment",
+          "schema": {
+            "$ref": "#/backend/entities/Payment"
+          },
+          "description": "Stores payment information. Includes 'userId' of the user who initiated the payment and 'providerId' of the user who received the payment.",
+          "params": [
+            {
+              "name": "paymentId",
+              "description": "The unique identifier for the payment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/reviews/{reviewId}",
+        "definition": {
+          "entityName": "Review",
+          "schema": {
+            "$ref": "#/backend/entities/Review"
+          },
+          "description": "Stores reviews given by users to providers. Includes 'reviewerId' of the user who wrote the review and 'revieweeId' of the user who received the review.",
+          "params": [
+            {
+              "name": "reviewId",
+              "description": "The unique identifier for the review."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support the HandyConnect application's core features, including user registration, job posting, bidding, payments, and reviews. It prioritizes authorization independence by denormalizing access control data where necessary. The structure employs path-based ownership for user-related data (e.g., jobs, bids) and uses a 'Membership Map' pattern where collaborative access is required.\n\n*   **/users/{userId}:** Stores user profiles. This collection uses path-based ownership.\n*   **/users/{userId}/jobs/{jobId}:** Stores jobs created by users. The `userId` in the path enforces ownership. For authorization independence, consider denormalizing fields like the user's `verificationStatus` to enable rules to check the user's KYC status directly on job documents.\n*   **/users/{userId}/jobs/{jobId}/bids/{bidId}:** Stores bids submitted for a job.  The `userId` and `jobId` in the path provides access control based on the job owner and further restricts bids to a specific job. Additionally, denormalizing the `userId` (job poster) to the bid allows simple rules.\n*   **/payments/{paymentId}:**  Stores payment information.  The `userId` and `providerId` are stored in each payment document to clarify which users/providers are related. This collection avoids subcollections to simplify payment queries and reporting.\n*   **/reviews/{reviewId}:** Stores reviews given by users to providers.  The `reviewerId` and `revieweeId` are stored in each review document to clarify which users are related. This collection avoids subcollections to simplify review queries.\n\n**Authorization Independence:**\n\nAuthorization independence is achieved by denormalizing access-related data. For example, consider denormalizing the `User.verificationStatus` field into the `Job` document, or even into the `Bid` document. This allows security rules to validate a user's verification status without needing to perform a `get()` on the user document during job or bid creation. Similarly, the `Job` document itself can include the `userId` as a field within the document, enabling rules to check ownership even when the path isn't available.\n\n**QAPs (Rules are not Filters):**\n\nSecure `list` operations are supported by structural segregation and the path-based ownership model:\n\n*   **User Data:** Listing user data is restricted to the authenticated user's own data, enforced by the `/users/{userId}` path.\n*   **Jobs:** Listing jobs can be controlled based on the denormalized `verificationStatus` field. For instance, rules can allow listing jobs only if the user who created the job is verified.\n*   **Bids:**  Bids are nested under jobs, and listing can be restricted to the job poster.  Denormalizing the job poster's `userId` allows the rules to validate this without a `get()` call.\n\nThis design enables granular access control, enforces data integrity, and optimizes performance by minimizing the need for complex queries and `get()` calls in security rules. By adhering to the core design principles, the structure facilitates simple, robust, and easily debuggable security rules."
+  }
+}

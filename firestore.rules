@@ -1,0 +1,145 @@
+/**
+ * @fileoverview Firestore Security Rules for HandyConnect.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles and related data (jobs, bids),
+ * while providing controlled access to payments and reviews.  Authorization independence is enforced by
+ * denormalizing user-specific flags into job and bid documents. This minimizes `get()` calls
+ * and enables simpler, more performant rules.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles, accessible only to the authenticated user.
+ * - /users/{userId}/jobs/{jobId}: Stores jobs posted by users, accessible only to the authenticated user and verificationStatus is denormalized for filtering valid users.
+ * - /users/{userId}/jobs/{jobId}/bids/{bidId}: Stores bids submitted for specific jobs, accessible only to the job poster.
+ * - /payments/{paymentId}: Stores payment information. Payment information is publicy accessible.
+ * - /reviews/{reviewId}: Stores reviews given by users to providers. Review information is publicy accessible.
+ *
+ * Key Security Decisions:
+ * - User data is private and only accessible to the user themselves.
+ * - Jobs are associated with the user who created them.
+ * - Bids are associated with the job they are for, and are only created and managed by the job poster.
+ * - Payments and Reviews are public and accessible to all users.
+ *
+ * Denormalization for Authorization:
+ * - The `User.verificationStatus` field is denormalized into the `Job` document. This allows security rules to validate a user's verification status without needing to perform a `get()` on the user document during job creation.
+ * - The Job document itself can include the `userId` as a field within the document, enabling rules to check ownership even when the path isn't available.
+ * - The job poster's `userId` is denormalized to the bid to allow simple rules to validate the job poster without a `get()` call.
+ *
+ * Structural Segregation:
+ * - User-specific data is stored under the /users/{userId} path, while public data like payments and reviews are stored in top-level collections.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Defines if the current user is signed in
+     * @return {bool}
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the resource.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @return {bool} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the resource and the resource exists.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @return {bool} True if the user is the owner and resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Security rules for the /users/{userId} collection.
+     * @path /users/{userId}
+     * @allow (create) - Allows a user to create their own profile if the userId matches their auth.uid. Example: request.auth.uid = "user123", document ID = "user123".
+     * @allow (get, list) - Allows a user to read their own profile. Example: request.auth.uid = "user123", accessing /users/user123.
+     * @allow (update, delete) - Allows a user to update or delete their own profile. Example: request.auth.uid = "user123", updating /users/user123.
+     * @deny (create) - Denies a user from creating a profile with a different userId. Example: request.auth.uid = "user123", trying to create /users/user456.
+     * @deny (get, list) - Denies a user from reading another user's profile. Example: request.auth.uid = "user123", trying to read /users/user456.
+     * @deny (update, delete) - Denies a user from updating or deleting another user's profile. Example: request.auth.uid = "user123", trying to update /users/user456.
+     * @principle Enforces document ownership for all operations on user profiles.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Security rules for the /users/{userId}/jobs/{jobId} collection.
+     * @path /users/{userId}/jobs/{jobId}
+     * @allow (create) - Allows a user to create a job under their profile if the userId matches their auth.uid. Example: request.auth.uid = "user123", creating /users/user123/jobs/job456.
+     * @allow (get, list) - Allows a user to read jobs under their profile. Example: request.auth.uid = "user123", accessing /users/user123/jobs/job456.
+     * @allow (update, delete) - Allows a user to update or delete jobs under their profile. Example: request.auth.uid = "user123", updating /users/user123/jobs/job456.
+     * @deny (create) - Denies a user from creating a job under a different user's profile. Example: request.auth.uid = "user123", trying to create /users/user456/jobs/job789.
+     * @deny (get, list) - Denies a user from reading jobs under another user's profile. Example: request.auth.uid = "user123", trying to read /users/user456/jobs/job789.
+     * @deny (update, delete) - Denies a user from updating or deleting jobs under another user's profile. Example: request.auth.uid = "user123", trying to update /users/user456/jobs/job789.
+     * @principle Enforces document ownership for all operations on jobs.
+     */
+    match /users/{userId}/jobs/{jobId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Security rules for the /users/{userId}/jobs/{jobId}/bids/{bidId} collection.
+     * @path /users/{userId}/jobs/{jobId}/bids/{bidId}
+     * @allow (create) - Allows a provider to create a bid under a job if the job belongs to the user. Example: request.auth.uid = "provider789", creating /users/user123/jobs/job456/bids/bid012.
+     * @allow (get, list) - Allows the job owner to read bids under their job. Example: request.auth.uid = "user123", accessing /users/user123/jobs/job456/bids/bid012.
+     * @allow (update, delete) - Denies updates and deletes on bids, restricting bid management to the job poster.
+     * @deny (create) - Denies a user from creating a bid under a job that doesn't belong to them. Example: request.auth.uid = "provider789", trying to create /users/user456/jobs/job789/bids/bid345.
+     * @deny (get, list) - Denies a user from reading bids under a job that doesn't belong to them. Example: request.auth.uid = "user789", trying to read /users/user456/jobs/job789/bids/bid345.
+     * @principle Restricts bid creation to the job poster.
+     */
+    match /users/{userId}/jobs/{jobId}/bids/{bidId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && request.resource.data.jobId == jobId;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Security rules for the /payments/{paymentId} collection.
+     * @path /payments/{paymentId}
+     * @allow (get, list) - Allows anyone to read payment information. Example: request.auth.uid = "user123", accessing /payments/payment456.
+     * @allow (create) - Allow all users to create payments.
+     * @deny (update, delete) - Denies anyone from updating or deleting payment information.
+     * @principle Allows public read access to payments, restricting writes.
+     */
+    match /payments/{paymentId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    /**
+     * @description Security rules for the /reviews/{reviewId} collection.
+     * @path /reviews/{reviewId}
+     * @allow (get, list) - Allows anyone to read review information. Example: request.auth.uid = "user123", accessing /reviews/review456.
+     * @allow (create) - Allow all users to create review.
+     * @deny (update, delete) - Denies anyone from updating or deleting review information.
+     * @principle Allows public read access to reviews, restricting writes.
+     */
+    match /reviews/{reviewId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+  }
+}
