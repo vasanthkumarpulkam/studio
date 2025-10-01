@@ -47,6 +47,7 @@ import type { Job, Provider, User as UserType, Bid, ChatMessage } from '@/types'
 import ChatModal from '@/components/chat-modal';
 import ConfirmJobButton from '@/components/confirm-job-button';
 import { getProvider } from '@/lib/data';
+import { useTranslation } from '@/hooks/use-translation';
 
 
 interface JobDetailsViewProps {
@@ -61,7 +62,7 @@ interface JobDetailsViewProps {
 
 
 export default function JobDetailsView({ job, bids, currentUser, jobPoster, acceptedProvider, acceptedBid, chatMessages }: JobDetailsViewProps) {
-
+  const { t } = useTranslation();
   const isOwner = currentUser ? job.postedBy === currentUser.id : false;
   const currentUserIsProvider = currentUser?.role === 'provider';
   
@@ -350,7 +351,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
             <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-xl">
-                  {bids.length} {bids.length === 1 ? 'Bid' : 'Bids'} Received
+                  {bids.length} {t(bids.length === 1 ? 'job_details_bid' : 'job_details_bids')} {t('job_details_received')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -410,3 +411,5 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
+
+    

@@ -130,5 +130,10 @@
   "job_card_budget": "Presupuesto",
   "job_card_posted": "Publicado",
   "job_card_view_details": "Ver Detalles",
-  "job_card_view_bid": "Ver y Ofertar"
+  "job_card_view_bid": "Ver y Ofertar",
+  "job_details_bid": "Oferta",
+  "job_details_bids": "Ofertas",
+  "job_details_received": "Recibidas"
 }
+
+    

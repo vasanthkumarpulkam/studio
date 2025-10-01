@@ -130,5 +130,10 @@
   "job_card_budget": "Budget",
   "job_card_posted": "Posted",
   "job_card_view_details": "View Details",
-  "job_card_view_bid": "View & Bid"
+  "job_card_view_bid": "View & Bid",
+  "job_details_bid": "Bid",
+  "job_details_bids": "Bids",
+  "job_details_received": "Received"
 }
+
+    
