@@ -371,6 +371,8 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                       const provider = getProvider(bid.providerId);
                       if (!provider) return null;
 
+                      const bidMessage = isTranslationReady && language === 'es' && bid.i18n?.es?.message ? bid.i18n.es.message : bid.message;
+
                       return (
                         <div key={bid.id} className="p-4 border rounded-lg">
                           <div className="flex justify-between items-start">
@@ -398,7 +400,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                              </div>
                              <p className="text-lg font-bold text-primary">${bid.amount}</p>
                           </div>
-                          {bid.message && <p className="text-sm text-muted-foreground mt-2 pl-11">{bid.message}</p>}
+                          {bidMessage && <p className="text-sm text-muted-foreground mt-2 pl-11">{bidMessage}</p>}
                           <div className="flex justify-end mt-3 gap-2">
                              <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
                           </div>

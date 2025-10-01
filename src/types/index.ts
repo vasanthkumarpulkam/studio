@@ -47,6 +47,11 @@ export type Bid = {
   submittedOn: string; // ISO date string
   completionTime?: string; // e.g., "2-3 days"
   message?: string;
+  i18n?: {
+    [language: string]: {
+      message: string;
+    };
+  };
 };
 
 export type Notification = {

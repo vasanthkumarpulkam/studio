@@ -119,10 +119,10 @@ export let jobs: Job[] = [
 ];
 
 export let bids: Bid[] = [
-    { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 140, submittedOn: '2024-05-29T12:00:00.000Z', completionTime: '2-3 hours', message: 'I can take care of that for you this afternoon. I have all the necessary tools and parts.' },
-    { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 155, submittedOn: '2024-05-29T14:00:00.000Z', completionTime: 'Tomorrow morning', message: 'Hi, I\'m an experienced plumber and can fix your leaky sink quickly. My bid includes all materials.' },
+    { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 140, submittedOn: '2024-05-29T12:00:00.000Z', completionTime: '2-3 hours', message: 'I can take care of that for you this afternoon. I have all the necessary tools and parts.', i18n: { es: { message: 'Puedo encargarme de eso por ti esta tarde. Tengo todas las herramientas y piezas necesarias.' } } },
+    { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 155, submittedOn: '2024-05-29T14:00:00.000Z', completionTime: 'Tomorrow morning', message: 'Hi, I\'m an experienced plumber and can fix your leaky sink quickly. My bid includes all materials.', i18n: { es: { message: 'Hola, soy un fontanero experimentado y puedo arreglar tu fregadero que gotea rápidamente. Mi oferta incluye todos los materiales.' } } },
     { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 45, submittedOn: '2024-05-26T12:00:00.000Z' },
-    { id: 'bid-4', jobId: 'job-4', providerId: 'user-3', amount: 75, submittedOn: '2024-05-29T16:00:00.000Z', message: 'I build IKEA furniture all the time. I can get this done for you in about an hour.' },
+    { id: 'bid-4', jobId: 'job-4', providerId: 'user-3', amount: 75, submittedOn: '2024-05-29T16:00:00.000Z', message: 'I build IKEA furniture all the time. I can get this done for you in about an hour.', i18n: { es: { message: 'Construyo muebles de IKEA todo el tiempo. Puedo hacer esto por ti en aproximadamente una hora.' } } },
 ];
 
 export let chats: ChatMessage[] = [
