@@ -267,3 +267,58 @@ export async function updateUserProfile(userId: string, data: Partial<User & Pro
   revalidatePath('/dashboard/settings/profile');
   redirect('/dashboard/settings/profile');
 }
+
+
+// Admin actions
+export async function updateUserRole(userId: string, newRole: 'customer' | 'provider' | 'admin') {
+  const userIndex = users.findIndex(u => u.id === userId);
+  if (userIndex === -1) {
+    throw new Error("User not found");
+  }
+  
+  // In a real app, you'd set custom claims here.
+  users[userIndex].role = newRole;
+
+  // If role is changing from/to provider, update the providers array
+  const providerIndex = providers.findIndex(p => p.id === userId);
+  if (newRole === 'provider' && providerIndex === -1) {
+    // Promote to provider - add to providers array with default values
+    const { id, name, email, avatarUrl, status, joinedOn, hasPaymentMethod, phone, bio } = users[userIndex];
+    providers.push({
+      id, name, email, avatarUrl, role: 'provider', status, joinedOn, hasPaymentMethod, phone, bio,
+      rating: 0,
+      reviews: 0,
+      isVerified: false,
+      skills: [],
+      location: '',
+    });
+  } else if (newRole !== 'provider' && providerIndex !== -1) {
+    // Demote from provider - remove from providers array
+    providers.splice(providerIndex, 1);
+  } else if (newRole === 'provider' && providerIndex !== -1) {
+      providers[providerIndex].role = newRole;
+  }
+
+  console.log(`Updated role for user ${userId} to ${newRole}`);
+  revalidatePath('/admin/users');
+}
+
+export async function updateUserStatus(userId: string, newStatus: 'active' | 'suspended') {
+  const userIndex = users.findIndex(u => u.id === userId);
+  if (userIndex === -1) {
+    throw new Error("User not found");
+  }
+
+  // In a real app, you might disable the user in Firebase Auth.
+  users[userIndex].status = newStatus;
+
+  const providerIndex = providers.findIndex(p => p.id === userId);
+  if (providerIndex !== -1) {
+    providers[providerIndex].status = newStatus;
+  }
+
+  console.log(`Updated status for user ${userId} to ${newStatus}`);
+  revalidatePath('/admin/users');
+}
+
+    
