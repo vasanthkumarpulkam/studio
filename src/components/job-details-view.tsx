@@ -62,7 +62,7 @@ interface JobDetailsViewProps {
 
 
 export default function JobDetailsView({ job, bids, currentUser, jobPoster, acceptedProvider, acceptedBid, chatMessages }: JobDetailsViewProps) {
-  const { t } = useTranslation();
+  const { t, isTranslationReady } = useTranslation();
   const isOwner = currentUser ? job.postedBy === currentUser.id : false;
   const currentUserIsProvider = currentUser?.role === 'provider';
   
@@ -94,18 +94,22 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
   const PaymentAlert = () => (
      <Alert variant="destructive" className="mb-6">
         <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Payment Method Required</AlertTitle>
+        <AlertTitle>{t('payment_alert_title')}</AlertTitle>
         <AlertDescription>
-          You must add a payment method to proceed.
+          {t('job_details_payment_alert_desc')}
           <Button asChild variant="secondary" size="sm" className="mt-2 ml-auto block">
             <Link href="/dashboard/settings/payment">
               <CreditCard className="mr-2 h-4 w-4"/>
-              Add Payment Method
+              {t('payment_alert_button')}
             </Link>
           </Button>
         </AlertDescription>
       </Alert>
   );
+
+  if (!isTranslationReady) {
+      return <div>{t('loading')}</div>
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
@@ -113,7 +117,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
         <Button asChild variant="outline" size="sm">
           <Link href="/dashboard">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Jobs
+            {t('job_details_back_button')}
           </Link>
         </Button>
       </div>
@@ -126,11 +130,11 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   <Badge variant="outline">{job.category}</Badge>
                    {job.isCashOnly && (
                     <Badge variant="secondary" className="flex items-center gap-1.5">
-                      <Banknote className="w-4 h-4"/> Cash Payment
+                      <Banknote className="w-4 h-4"/> {t('job_details_cash_payment')}
                     </Badge>
                   )}
                 </div>
-                <Badge className={statusColors[job.status]}>{job.status}</Badge>
+                <Badge className={statusColors[job.status]}>{t(`job_status_${job.status}`)}</Badge>
               </div>
               <CardTitle className="font-headline text-3xl pt-2">{job.title}</CardTitle>
               <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2">
@@ -138,11 +142,11 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   <MapPin className="w-4 h-4" /> {job.location}
                 </span>
                 <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Calendar className="w-4 h-4" /> Posted on {format(new Date(job.postedOn), 'PPP')}
+                  <Calendar className="w-4 h-4" /> {t('job_details_posted_on')} {format(new Date(job.postedOn), 'PPP')}
                 </span>
                 {job.budget && (
                   <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <CircleDollarSign className="w-4 h-4" /> Budget: ${job.budget}
+                    <CircleDollarSign className="w-4 h-4" /> {t('job_details_budget')}: ${job.budget}
                   </span>
                 )}
               </CardDescription>
@@ -151,7 +155,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
               <p className="text-foreground/80 whitespace-pre-wrap">{job.description}</p>
               {job.images.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="font-semibold mb-2">Photos</h3>
+                  <h3 className="font-semibold mb-2">{t('job_details_photos')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {job.images.map((img, index) => (
                       <Image
@@ -173,19 +177,19 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
           {!currentUser && job.status === 'open' && !isOwner && (
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Want to bid on this job?</CardTitle>
+                <CardTitle className="font-headline">{t('job_details_want_to_bid_title')}</CardTitle>
                 <CardDescription>
-                  Log in or create a provider account to submit your bid.
+                  {t('job_details_want_to_bid_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex gap-4">
                 <Button asChild>
                   <Link href={`/login?redirect=/dashboard/jobs/${job.id}`}>
-                    <LogIn className="mr-2 h-4 w-4" /> Log In
+                    <LogIn className="mr-2 h-4 w-4" /> {t('login_button')}
                   </Link>
                 </Button>
                 <Button asChild variant="secondary">
-                  <Link href={`/signup?redirect=/dashboard/jobs/${job.id}`}>Sign Up as a Provider</Link>
+                  <Link href={`/signup?redirect=/dashboard/jobs/${job.id}`}>{t('job_details_signup_provider_button')}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -194,26 +198,26 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
           {currentUserIsProvider && !isOwner && job.status === 'open' && (
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Interested in this job?</CardTitle>
+                <CardTitle className="font-headline">{t('job_details_interested_title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {!canProviderBid && bids.some(b => b.providerId === currentUser.id) ? (
                   <Alert>
                     <Check className="h-4 w-4" />
-                    <AlertTitle>You've already placed a bid!</AlertTitle>
+                    <AlertTitle>{t('job_details_already_bid_title')}</AlertTitle>
                     <AlertDescription>
-                     Your bid is being reviewed by the customer. You can track its status on your "My Bids" page.
+                     {t('job_details_already_bid_desc')}
                      <Button asChild variant="link" className="p-0 h-auto mt-2">
-                       <Link href="/dashboard/my-bids">Go to My Bids</Link>
+                       <Link href="/dashboard/my-bids">{t('job_details_go_to_my_bids')}</Link>
                      </Button>
                     </AlertDescription>
                   </Alert>
                 ) : !canProviderBid ? (
                    <Alert>
                     <Briefcase className="h-4 w-4" />
-                    <AlertTitle>Outside Your Skillset</AlertTitle>
+                    <AlertTitle>{t('job_details_skillset_mismatch_title')}</AlertTitle>
                     <AlertDescription>
-                     This job is in the '{job.category}' category, which is not one of your registered skills. You can only bid on jobs that match your profile.
+                     {t('job_details_skillset_mismatch_desc', { category: job.category })}
                     </AlertDescription>
                   </Alert>
                 ) : !hasPaymentMethod ? (
@@ -228,8 +232,8 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
           {job.status === 'completed' && (isOwner || (acceptedProvider && currentUser && acceptedProvider.id === currentUser.id)) && currentUser && (
             <Card>
               <CardHeader>
-                <CardTitle className='font-headline'>Leave a Review</CardTitle>
-                <CardDescription>Rate your experience with the {isOwner ? 'provider' : 'customer'}.</CardDescription>
+                <CardTitle className='font-headline'>{t('job_details_leave_review_title')}</CardTitle>
+                <CardDescription>{t('job_details_leave_review_desc', { role: isOwner ? t('job_details_provider') : t('job_details_customer') })}</CardDescription>
               </CardHeader>
               <CardContent>
                 <LeaveReviewForm 
@@ -246,7 +250,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
           {(job.status !== 'open' && acceptedProvider && currentUser && jobPoster) && (
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline text-xl">Provider Selected</CardTitle>
+                <CardTitle className="font-headline text-xl">{t('job_details_provider_selected_title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                  <div className="flex items-center gap-4">
@@ -257,7 +261,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                     <div>
                       <p className="font-semibold">{acceptedProvider.name}</p>
                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <span>Bid:</span>
+                        <span>{t('job_details_bid_label')}:</span>
                         <span className="font-bold text-foreground">${acceptedBid?.amount.toFixed(2)}</span>
                       </div>
                     </div>
@@ -267,7 +271,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                     triggerButton={
                       <Button variant="outline" className="w-full">
                           <MessageSquare className="mr-2 h-4 w-4"/>
-                          Message {isOwner ? 'Provider' : 'Customer'}
+                          {t('job_details_message_button', { role: isOwner ? t('job_details_provider') : t('job_details_customer') })}
                       </Button>
                     }
                     messages={chatMessages}
@@ -281,9 +285,9 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   {job.status === 'pending-confirmation' && (
                      <Alert variant="default" className="bg-amber-50 border-amber-200">
                         {statusIcons[job.status]}
-                        <AlertTitle className="text-amber-800">Pending Provider Confirmation</AlertTitle>
+                        <AlertTitle className="text-amber-800">{t('job_details_pending_alert_title')}</AlertTitle>
                         <AlertDescription className="text-amber-700">
-                         The provider has been notified. Waiting for them to confirm and begin the job.
+                         {t('job_details_pending_alert_desc')}
                         </AlertDescription>
                     </Alert>
                   )}
@@ -291,9 +295,9 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   {job.status === 'in-progress' && (
                      <Alert variant="default" className="bg-blue-50 border-blue-200">
                         {statusIcons[job.status]}
-                        <AlertTitle className="text-blue-800">Job Confirmed</AlertTitle>
+                        <AlertTitle className="text-blue-800">{t('job_details_confirmed_alert_title')}</AlertTitle>
                         <AlertDescription className="text-blue-700">
-                         The provider is ready to start.
+                         {t('job_details_confirmed_alert_desc')}
                         </AlertDescription>
                     </Alert>
                   )}
@@ -301,9 +305,9 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   {job.status === 'working' && (
                      <Alert variant="default" className="bg-yellow-50 border-yellow-200">
                         {statusIcons[job.status]}
-                        <AlertTitle className="text-yellow-800">Job In Progress</AlertTitle>
+                        <AlertTitle className="text-yellow-800">{t('job_details_working_alert_title')}</AlertTitle>
                         <AlertDescription className="text-yellow-700">
-                          {job.isCashOnly ? `This is a cash job. Payment will be made directly to the provider. The 10% platform fee will be charged to the provider's saved payment method upon completion.` : `Payment of $${acceptedBid?.amount.toFixed(2)} is held in escrow. Mark the job as completed once the work is done.`}
+                          {job.isCashOnly ? t('job_details_working_alert_desc_cash') : t('job_details_working_alert_desc_escrow', { amount: acceptedBid?.amount.toFixed(2) })}
                         </AlertDescription>
                     </Alert>
                   )}
@@ -311,7 +315,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   {isOwner && (job.status === 'in-progress' || job.status === 'working' || job.status === 'pending-confirmation') && (
                     <div className="flex flex-col space-y-2">
                        {job.status !== 'pending-confirmation' && <MarkCompletedButton jobId={job.id} />}
-                      <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
+                      <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>{t('job_details_dispute_button')}</Button>
                     </div>
                   )}
                   
@@ -330,16 +334,16 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   {currentUser?.role === 'provider' && acceptedProvider.id === currentUser.id && job.status === 'working' && (
                      <div className="flex flex-col space-y-2">
                         <MarkCompletedButton jobId={job.id} />
-                        <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>Dispute</Button>
+                        <Button variant="outline" size="sm"><ShieldAlert className="mr-2 h-4 w-4"/>{t('job_details_dispute_button')}</Button>
                      </div>
                   )}
 
                   {job.status === 'completed' && (
                      <Alert variant="default" className="bg-green-50 border-green-200">
                         {statusIcons[job.status]}
-                        <AlertTitle className="text-green-800">Job Completed!</AlertTitle>
+                        <AlertTitle className="text-green-800">{t('job_details_completed_alert_title')}</AlertTitle>
                         <AlertDescription className="text-green-700">
-                          {job.isCashOnly ? 'The provider has received cash payment. You can now leave a review.' : 'Payment has been released to the provider. You can now leave a review.'}
+                          {job.isCashOnly ? t('job_details_completed_alert_desc_cash') : t('job_details_completed_alert_desc_escrow')}
                         </AlertDescription>
                     </Alert>
                   )}
@@ -375,7 +379,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                                    <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
                                      <span className="flex items-center gap-1">
                                         <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                                        {provider.rating} ({provider.reviews} reviews)
+                                        {provider.rating} ({provider.reviews} {t('job_details_reviews')})
                                      </span>
                                      {provider.isVerified && <ShieldCheck className="w-3 h-3 text-primary" />}
                                      {bid.completionTime && (
@@ -400,7 +404,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                 ) : (
                   <div className="text-center text-muted-foreground py-8">
                     <User className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="mt-2">No bids received yet. Check back soon!</p>
+                    <p className="mt-2">{t('job_details_no_bids_yet')}</p>
                   </div>
                 )}
               </CardContent>
@@ -411,5 +415,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
+
+    
 
     
