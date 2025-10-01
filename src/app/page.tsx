@@ -20,8 +20,10 @@ import {
 import { getCurrentUser } from '@/lib/data';
 import type { User, Provider } from '@/types';
 import { Footer } from '@/components/footer';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function Home() {
+  const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
 
   useEffect(() => {
@@ -36,16 +38,20 @@ export default function Home() {
   const feature2 = PlaceHolderImages.find(p => p.id === 'feature-2');
   const feature3 = PlaceHolderImages.find(p => p.id === 'feature-3');
 
+  if (!t) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="px-4 lg:px-6 h-16 flex items-center shadow-sm bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <Logo href="/" />
         <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
           <Button variant="ghost" asChild>
-            <Link href={findWorkHref}>Find Work</Link>
+            <Link href={findWorkHref}>{t('landing_find_work_button')}</Link>
           </Button>
           <Button variant="ghost" asChild>
-             <Link href="#">How it Works</Link>
+             <Link href="#">{t('landing_how_it_works_button')}</Link>
           </Button>
           {currentUser ? (
             <Button asChild>
@@ -54,10 +60,10 @@ export default function Home() {
           ) : (
             <>
               <Button variant="ghost" asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">{t('landing_login_button')}</Link>
               </Button>
               <Button asChild>
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/signup">{t('landing_signup_button')}</Link>
               </Button>
             </>
           )}
@@ -70,21 +76,21 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
                   <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl font-headline">
-                    Find skilled workers for any job, anytime.
+                    {t('landing_hero_title')}
                   </h1>
                   <p className="max-w-[600px] text-foreground/80 md:text-xl">
-                    Our platform connects you with trusted local professionals for everything from home repairs to event staffing. Post a job and get private bids in minutes.
+                    {t('landing_hero_subtitle')}
                   </p>
                 </div>
                 <div className="flex flex-col gap-4 min-[400px]:flex-row">
                   <Button asChild size="lg">
                     <Link href={postJobHref}>
-                      Post a Job <ArrowRight className="ml-2 h-5 w-5" />
+                      {t('landing_post_job_button')} <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
                   <Button asChild size="lg" variant="secondary">
                      <Link href={findWorkHref}>
-                      Find Work <Users className="ml-2 h-5 w-5" />
+                      {t('landing_find_work_button')} <Users className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
                 </div>
@@ -108,9 +114,9 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">How It Works</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">{t('landing_how_it_works_title')}</h2>
                 <p className="max-w-[900px] text-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  A simple, transparent, and secure process from start to finish.
+                  {t('landing_how_it_works_subtitle')}
                 </p>
               </div>
             </div>
@@ -120,9 +126,9 @@ export default function Home() {
                     <Image src={feature1.imageUrl} alt={feature1.description} fill className="object-contain" data-ai-hint={feature1.imageHint}/>
                 </div>}
                 <CardHeader className="p-0">
-                  <CardTitle className="font-headline">1. Post Your Job</CardTitle>
+                  <CardTitle className="font-headline">{t('landing_feature1_title')}</CardTitle>
                   <CardDescription>
-                    Describe what you need done. Add photos and your budget to get the most accurate bids.
+                    {t('landing_feature1_description')}
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -131,9 +137,9 @@ export default function Home() {
                     <Image src={feature2.imageUrl} alt={feature2.description} fill className="object-contain" data-ai-hint={feature2.imageHint}/>
                 </div>}
                 <CardHeader className="p-0">
-                  <CardTitle className="font-headline">2. Receive Private Bids</CardTitle>
+                  <CardTitle className="font-headline">{t('landing_feature2_title')}</CardTitle>
                   <CardDescription>
-                   Verified professionals send you private bids. Compare prices, profiles, and reviews.
+                   {t('landing_feature2_description')}
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -142,9 +148,9 @@ export default function Home() {
                     <Image src={feature3.imageUrl} alt={feature3.description} fill className="object-contain" data-ai-hint={feature3.imageHint}/>
                 </div>}
                 <CardHeader className="p-0">
-                  <CardTitle className="font-headline">3. Hire & Pay Securely</CardTitle>
+                  <CardTitle className="font-headline">{t('landing_feature3_title')}</CardTitle>
                   <CardDescription>
-                    Choose the best provider and fund the. Payment is held in escrow until the work is completed to your satisfaction.
+                    {t('landing_feature3_description')}
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -158,17 +164,17 @@ export default function Home() {
           <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">
-                Ready to Get Started?
+                {t('landing_cta_title')}
               </h2>
               <p className="max-w-[600px] mx-auto text-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Post a job today and connect with skilled professionals in your area.
+                {t('landing_cta_subtitle')}
               </p>
             </div>
             <div className="mx-auto w-full max-w-sm space-y-2">
               <div className="flex justify-center gap-4">
                 <Button size="lg" asChild>
                   <Link href={postJobHref}>
-                    Post a Job for Free
+                    {t('landing_cta_button')}
                   </Link>
                 </Button>
               </div>

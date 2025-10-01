@@ -13,6 +13,7 @@ import { getCurrentUser } from '@/lib/data';
 import NotificationBell from './notification-bell';
 import type { User, Provider } from '@/types';
 import { usePathname } from 'next/navigation';
+import LanguageSwitcher from './language-switcher';
 
 export function Header() {
   const [user, setUser] = useState<User | Provider | null>(null);
@@ -44,6 +45,7 @@ export function Header() {
         </Sheet>
       )}
       <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
+        <LanguageSwitcher />
         {user ? (
           <>
             <NotificationBell userId={user.id} />
