@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import React from 'react';
 import { notFound } from 'next/navigation';
 import {
@@ -13,29 +12,17 @@ import {
   getUser,
 } from '@/lib/data';
 import JobDetailsView from '@/components/job-details-view';
-import type { Job, Provider, User as UserType, Bid, ChatMessage } from '@/types';
-import { Loader2 } from 'lucide-react';
 
 export default function JobDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  // Correctly unwrap the promise for params using React.use()
   const { id } = React.use(params);
-  const [currentUser, setCurrentUser] = useState<UserType | Provider | null>(null);
-  const [job, setJob] = useState<Job | null | undefined>(null);
 
-  useEffect(() => {
-    setCurrentUser(getCurrentUser());
-    const jobData = getJob(id);
-    setJob(jobData);
-  }, [id]);
+  // Fetch data directly since `id` is now available synchronously
+  const job = getJob(id);
+  const currentUser = getCurrentUser();
 
-  if (job === null) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (job === undefined) {
+  // If the job doesn't exist after fetching, then show notFound
+  if (!job) {
     notFound();
   }
 
