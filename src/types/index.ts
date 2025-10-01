@@ -40,6 +40,8 @@ export type Job = {
       location: string;
     };
   };
+  // This is a client-side only property for map view
+  position?: { lat: number, lng: number };
 };
 
 export type Bid = {

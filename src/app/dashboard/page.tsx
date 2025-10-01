@@ -34,13 +34,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal, Loader2 } from 'lucide-react';
+import { ListFilter, Search, FilePlus2, Briefcase, MapPin, SlidersHorizontal, Loader2, LayoutList, Map } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Job, Provider, User } from '@/types';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
+import MapView from '@/components/map-view';
 
 
 export default function DashboardPage() {
@@ -279,7 +280,7 @@ export default function DashboardPage() {
   // Provider View
   if (isProvider) {
     return (
-      <>
+      <Tabs defaultValue="list-view" className="h-full flex flex-col">
         <div className="grid lg:grid-cols-[320px_1fr] gap-8">
           <aside className="hidden lg:block">
             <Card>
@@ -354,7 +355,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </aside>
-           <main>
+           <main className="flex flex-col">
             <div className="flex justify-between items-center mb-6">
                 <div>
                   <h1 className="text-3xl font-bold font-headline">{t('dashboard_provider_title')}</h1>
@@ -362,38 +363,49 @@ export default function DashboardPage() {
                     {t('dashboard_provider_subtitle')}
                   </p>
                 </div>
-                <Select onValueChange={setSortBy} defaultValue={sortBy}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
-                    <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
-                    <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
-                    <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-4">
+                  <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
+                      <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
+                      <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
+                      <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <TabsList>
+                      <TabsTrigger value="list-view"><LayoutList className="mr-2" />List View</TabsTrigger>
+                      <TabsTrigger value="map-view"><Map className="mr-2" />Map View</TabsTrigger>
+                  </TabsList>
+                </div>
             </div>
 
-            {filteredJobs.length > 0 ? (
-              <div className="space-y-6">
-                {filteredJobs.map((job) => (
-                  <JobCard key={job.id} job={job} role="provider" />
-                ))}
-              </div>
-            ) : (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
-                  <p className="text-muted-foreground mt-2">
-                    {t('dashboard_no_jobs_subtitle')}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            <TabsContent value="list-view" className="flex-grow">
+              {filteredJobs.length > 0 ? (
+                <div className="space-y-6">
+                  {filteredJobs.map((job) => (
+                    <JobCard key={job.id} job={job} role="provider" />
+                  ))}
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
+                    <p className="text-muted-foreground mt-2">
+                      {t('dashboard_no_jobs_subtitle')}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+            <TabsContent value="map-view" className="flex-grow rounded-lg overflow-hidden">
+                <MapView jobs={filteredJobs} />
+            </TabsContent>
           </main>
         </div>
-      </>
+      </Tabs>
     );
   }
 
@@ -448,11 +460,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
-
-    
-
-    
-
-    
