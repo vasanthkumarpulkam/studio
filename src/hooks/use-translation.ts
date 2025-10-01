@@ -10,14 +10,14 @@ const translations: Record<string, any> = { en, es };
 
 export function useTranslation() {
   const { language } = useLanguage();
-  const [t, setT] = useState<((key: string) => string) | null>(null);
+  const [t, setT] = useState<{ fn: (key: string) => string, ready: boolean }>({ fn: (key: string) => key, ready: false });
 
   useEffect(() => {
     const translate = (key: string): string => {
-      return translations[language][key] || key;
+      return translations[language]?.[key] || key;
     };
-    setT(() => translate);
+    setT({ fn: translate, ready: true });
   }, [language]);
 
-  return { t };
+  return { t: t.fn, isTranslationReady: t.ready };
 }

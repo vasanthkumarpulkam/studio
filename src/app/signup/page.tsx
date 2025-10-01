@@ -27,7 +27,7 @@ export default function SignupPage() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, isTranslationReady } = useTranslation();
 
   const handleFirstStep = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +49,7 @@ export default function SignupPage() {
     router.push(redirectUrl || '/dashboard');
   };
 
-  if (!t) {
+  if (!isTranslationReady) {
     return (
        <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
         <div>Loading...</div>

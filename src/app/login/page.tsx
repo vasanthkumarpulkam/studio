@@ -22,7 +22,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
-  const { t } = useTranslation();
+  const { t, isTranslationReady } = useTranslation();
 
   const handleLogin = (userId: string) => {
     login(userId);
@@ -31,7 +31,7 @@ export default function LoginPage() {
     router.replace(redirectUrl || '/dashboard');
   };
   
-  if (!t) {
+  if (!isTranslationReady) {
     return (
        <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
         <div>Loading...</div>

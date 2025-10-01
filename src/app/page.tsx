@@ -24,7 +24,7 @@ import { useTranslation } from '@/hooks/use-translation';
 import LanguageSwitcher from '@/components/language-switcher';
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, isTranslationReady } = useTranslation();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
 
   useEffect(() => {
@@ -39,8 +39,8 @@ export default function Home() {
   const feature2 = PlaceHolderImages.find(p => p.id === 'feature-2');
   const feature3 = PlaceHolderImages.find(p => p.id === 'feature-3');
 
-  if (!t) {
-    return <div>Loading...</div>;
+  if (!isTranslationReady) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
   return (
