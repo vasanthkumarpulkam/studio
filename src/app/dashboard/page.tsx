@@ -41,6 +41,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
 import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 
 
 export default function DashboardPage() {
@@ -52,6 +53,7 @@ export default function DashboardPage() {
   const [radius, setRadius] = useState([50]);
   const [isLoading, setIsLoading] = useState(true);
   const { t, isTranslationReady } = useTranslation();
+  const router = useRouter();
   
   const allJobs = useMemo(() => getAllOpenJobs(), []);
   const [providerJobs, setProviderJobs] = useState<Job[]>([]);
@@ -67,6 +69,10 @@ export default function DashboardPage() {
     setIsLoading(false);
 
     if (user) {
+        if (user.role === 'admin') {
+            router.replace('/admin');
+            return;
+        }
         if (user.role === 'provider') {
             const provider = getProvider(user.id);
             if (provider) {
@@ -76,7 +82,7 @@ export default function DashboardPage() {
         }
         setCustomerJobs(getJobsForCustomer(user.id));
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     // Only run filter if not loading
