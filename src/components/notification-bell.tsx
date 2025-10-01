@@ -14,7 +14,7 @@ import NotificationCard from './notification-card';
 import { markAllNotificationsAsRead } from '@/app/actions';
 import { ScrollArea } from './ui/scroll-area';
 import { useTranslation } from '@/hooks/use-translation';
-import { useCollection } from '@/firebase';
+import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import type { Notification } from '@/types';
@@ -24,7 +24,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
 
-  const notificationsQuery = query(collection(db, 'notifications'), where('userId', '==', userId));
+  const notificationsQuery = useMemoFirebase(() => query(collection(db, 'notifications'), where('userId', '==', userId)), [userId]);
   const { data: notifications } = useCollection<Notification>(notificationsQuery);
   
   const unreadCount = notifications?.filter((n) => !n.isRead).length ?? 0;
@@ -99,3 +99,5 @@ export default function NotificationBell({ userId }: { userId: string }) {
     </Popover>
   );
 }
+
+    

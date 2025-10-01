@@ -22,7 +22,7 @@ import type { ChatMessage, User, Provider } from '@/types';
 import { sendMessage } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/use-translation';
-import { useCollection } from '@/firebase';
+import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
@@ -49,12 +49,13 @@ export default function ChatModal({
   const { language } = useTranslation();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const messagesQuery = query(
+  const messagesQuery = useMemoFirebase(() => query(
       collection(db, 'chats'), 
       where('jobId', '==', jobId), 
       where('providerId', '==', providerId),
       orderBy('timestamp', 'asc')
-    );
+    ), [jobId, providerId]);
+
   const { data: messages, isLoading } = useCollection<ChatMessage>(messagesQuery);
   
   useEffect(() => {
@@ -168,3 +169,5 @@ export default function ChatModal({
     </Dialog>
   );
 }
+
+    

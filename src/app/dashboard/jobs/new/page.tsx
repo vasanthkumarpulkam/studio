@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { jobCategories, getMockUser } from '@/lib/data';
+import { jobCategories } from '@/lib/data';
 import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, X, Image as ImageIcon } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
@@ -58,21 +58,16 @@ type JobFormValues = z.infer<typeof jobSchema>;
 export default function NewJobPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const { user: firebaseUser, isUserLoading } = useUser();
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+  const { user: currentUser, isUserLoading } = useUser();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
 
   useEffect(() => {
-    if (!isUserLoading) {
-      if (firebaseUser) {
-        setCurrentUser(getMockUser(firebaseUser.uid));
-      } else {
-        router.push('/login');
-      }
+    if (!isUserLoading && !currentUser) {
+      router.push('/login');
     }
-  }, [firebaseUser, isUserLoading, router]);
+  }, [currentUser, isUserLoading, router]);
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
@@ -399,4 +394,6 @@ export default function NewJobPage() {
 }
 
     
+    
+
     

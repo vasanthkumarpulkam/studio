@@ -22,13 +22,14 @@ import { es } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import type { User, Provider, Bid, Job } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
-import { useUser, useCollection, useDoc } from '@/firebase';
+import { useUser, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, query, where, doc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
 function BidRow({ bid }: { bid: Bid & { id: string } }) {
   const { t, isTranslationReady, language } = useTranslation();
-  const { data: job, isLoading } = useDoc<Job>(doc(db, 'job_posts', bid.jobId));
+  const jobRef = useMemoFirebase(() => doc(db, 'job_posts', bid.jobId), [bid.jobId]);
+  const { data: job, isLoading } = useDoc<Job>(jobRef);
   
   if (isLoading || !isTranslationReady) {
     return (
@@ -84,7 +85,7 @@ export default function MyBidsPage() {
   const { user: currentUser, isUserLoading } = useUser();
   const { t, isTranslationReady } = useTranslation();
   
-  const bidsQuery = currentUser ? query(collection(db, 'bids'), where('providerId', '==', currentUser.uid)) : null;
+  const bidsQuery = useMemoFirebase(() => currentUser ? query(collection(db, 'bids'), where('providerId', '==', currentUser.uid)) : null, [currentUser]);
   const { data: providerBids, isLoading: isLoadingBids } = useCollection<Bid>(bidsQuery);
   
   if (isUserLoading || !isTranslationReady || isLoadingBids) {
@@ -133,3 +134,5 @@ export default function MyBidsPage() {
     </div>
   );
 }
+
+    

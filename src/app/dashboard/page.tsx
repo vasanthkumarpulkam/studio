@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card';
 import {
   jobCategories,
-  getProvider,
 } from '@/lib/data';
 import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
@@ -38,7 +37,7 @@ import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { useUser, useCollection } from '@/firebase';
+import { useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
@@ -54,14 +53,14 @@ export default function DashboardPage() {
   const router = useRouter();
   
   // Queries for jobs
-  const customerJobsQuery = currentUser ? query(collection(db, 'job_posts'), where('postedBy', '==', currentUser.uid)) : null;
+  const customerJobsQuery = useMemoFirebase(() => currentUser ? query(collection(db, 'job_posts'), where('postedBy', '==', currentUser.uid)) : null, [currentUser]);
   const { data: customerJobs } = useCollection<Job>(customerJobsQuery);
 
   const providerSkills = useMemo(() => (currentUser as Provider)?.skills || [], [currentUser]);
-  const providerJobsQuery = currentUser?.role === 'provider' ? query(collection(db, 'job_posts'), where('status', '==', 'open'), where('category', 'in', providerSkills.length > 0 ? providerSkills : ['__placeholder__'])) : null;
+  const providerJobsQuery = useMemoFirebase(() => currentUser?.role === 'provider' ? query(collection(db, 'job_posts'), where('status', '==', 'open'), where('category', 'in', providerSkills.length > 0 ? providerSkills : ['__placeholder__'])) : null, [currentUser, providerSkills]);
   const { data: providerJobs } = useCollection<Job>(providerJobsQuery);
   
-  const allJobsQuery = query(collection(db, 'job_posts'), where('status', '==', 'open'));
+  const allJobsQuery = useMemoFirebase(() => query(collection(db, 'job_posts'), where('status', '==', 'open')), []);
   const { data: allJobs } = useCollection<Job>(allJobsQuery);
 
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
@@ -459,5 +458,7 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
 
     
