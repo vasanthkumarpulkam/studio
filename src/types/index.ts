@@ -8,6 +8,8 @@ export type User = {
   hasPaymentMethod: boolean;
   phone?: string;
   bio?: string;
+  status: 'active' | 'suspended';
+  joinedOn: string; // ISO date string
 };
 
 export type Provider = User & {
