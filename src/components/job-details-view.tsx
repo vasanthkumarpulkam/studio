@@ -40,6 +40,8 @@ import {
   LogIn,
   Hourglass,
   ThumbsUp,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -70,7 +72,7 @@ interface JobDetailsViewProps {
 
 export default function JobDetailsView({ job, bids, currentUser, jobPoster, acceptedProvider, acceptedBid, chatMessages }: JobDetailsViewProps) {
   const { t, isTranslationReady, language } = useTranslation();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const isOwner = currentUser ? job.postedBy === currentUser.id : false;
   const currentUserIsProvider = currentUser?.role === 'provider';
   
@@ -98,6 +100,18 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
       working: <Hammer className="h-4 w-4 text-yellow-600"/>,
       completed: <Check className="h-4 w-4 text-green-600"/>,
   }
+
+  const handleNextImage = () => {
+    if (selectedImageIndex !== null && selectedImageIndex < job.images.length - 1) {
+      setSelectedImageIndex(selectedImageIndex + 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (selectedImageIndex !== null && selectedImageIndex > 0) {
+      setSelectedImageIndex(selectedImageIndex - 1);
+    }
+  };
 
   const PaymentAlert = () => (
      <Alert variant="destructive" className="mb-6">
@@ -172,7 +186,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   <Dialog>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {job.images.map((img, index) => (
-                        <DialogTrigger asChild key={index} onClick={() => setSelectedImage(img)}>
+                        <DialogTrigger asChild key={index} onClick={() => setSelectedImageIndex(index)}>
                           <div className="cursor-pointer overflow-hidden rounded-lg">
                             <Image
                               src={img}
@@ -186,16 +200,40 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                         </DialogTrigger>
                       ))}
                     </div>
-                    <DialogContent className="max-w-3xl p-2">
-                       <DialogTitle className="sr-only">Job Image Preview</DialogTitle>
-                      {selectedImage && (
-                        <Image
-                          src={selectedImage}
-                          alt="Job image preview"
-                          width={1200}
-                          height={800}
-                          className="rounded-md object-contain max-h-[80vh]"
-                        />
+                     <DialogContent className="max-w-4xl p-0">
+                      <DialogTitle className="sr-only">{t('job_details_image_preview_title')}</DialogTitle>
+                      {selectedImageIndex !== null && (
+                        <div className="relative">
+                           <Image
+                            src={job.images[selectedImageIndex]}
+                            alt={`Job image ${selectedImageIndex + 1}`}
+                            width={1200}
+                            height={800}
+                            className="rounded-md object-contain max-h-[80vh]"
+                          />
+                          {job.images.length > 1 && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-black/30 text-white hover:bg-black/50 hover:text-white"
+                                onClick={handlePrevImage}
+                                disabled={selectedImageIndex === 0}
+                              >
+                                <ChevronLeft className="h-6 w-6" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-black/30 text-white hover:bg-black/50 hover:text-white"
+                                onClick={handleNextImage}
+                                disabled={selectedImageIndex === job.images.length - 1}
+                              >
+                                <ChevronRight className="h-6 w-6" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       )}
                     </DialogContent>
                   </Dialog>
@@ -447,3 +485,5 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
+
+    
