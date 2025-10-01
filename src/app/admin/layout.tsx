@@ -1,9 +1,12 @@
 
+'use client';
+
 import { Sidebar, SidebarProvider, SidebarItem, SidebarSection } from '@/components/admin-sidebar';
 import { Home, Users, Settings } from 'lucide-react';
 import { Header } from '@/components/header';
 import { getCurrentUser } from '@/lib/data';
 import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function AdminLayout({
     children,
@@ -13,10 +16,15 @@ export default function AdminLayout({
 
     const user = getCurrentUser();
 
+    useEffect(() => {
+        if (!user || user.role !== 'admin') {
+            redirect('/login');
+        }
+    }, [user]);
+
     if (!user || user.role !== 'admin') {
-        // In a real app, you'd want more robust role checking, maybe with custom claims.
-        // For this mock, we redirect if not the admin user.
-        redirect('/login');
+        // Render a loading state or null while redirecting
+        return null;
     }
 
     return (

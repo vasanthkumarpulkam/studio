@@ -26,7 +26,11 @@ export default function LoginPage() {
 
   const handleLogin = (userId: string) => {
     login(userId);
-    router.replace(redirectUrl || '/dashboard');
+    if (userId === 'admin-user') {
+      router.replace('/admin');
+    } else {
+      router.replace(redirectUrl || '/dashboard');
+    }
   };
   
   if (!isTranslationReady) {
