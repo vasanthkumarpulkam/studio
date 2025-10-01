@@ -1,0 +1,11 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "source": "app"
+  },
+  "frameworksBackend": {
+    "region": "us-central1"
+  }
+}
