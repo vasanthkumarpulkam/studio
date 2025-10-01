@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -41,8 +40,7 @@ import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
-import MapView from '@/components/map-view';
-import AutocompleteInput from '@/components/autocomplete-input';
+import { Input } from '@/components/ui/input';
 
 
 export default function DashboardPage() {
@@ -174,18 +172,22 @@ export default function DashboardPage() {
                       </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <AutocompleteInput
+                          <Input
+                            type="search"
                             placeholder={t('dashboard_filters_search_placeholder')}
+                            className="w-full rounded-lg bg-background pl-10"
                             value={searchTerm}
-                            onValueChange={setSearchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                           />
                       </div>
                       <div className="relative flex-1 w-full">
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <AutocompleteInput
+                          <Input
+                            type="search"
                             placeholder={t('dashboard_filters_location_placeholder')}
+                            className="w-full rounded-lg bg-background pl-10"
                             value={location}
-                            onValueChange={setLocation}
+                            onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
                        <div className="space-y-2">
@@ -294,20 +296,22 @@ export default function DashboardPage() {
                     </div>
                     <div className="relative flex-1 w-full">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <AutocompleteInput
+                        <Input
+                          type="search"
                           placeholder={t('dashboard_filters_search_placeholder')}
+                          className="w-full rounded-lg bg-background pl-10"
                           value={searchTerm}
-                          onValueChange={setSearchTerm}
-                          className="pl-10"
+                          onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                       <div className="relative flex-1 w-full">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <AutocompleteInput
+                        <Input
+                            type="search"
                             placeholder={t('dashboard_filters_location_placeholder')}
+                            className="w-full rounded-lg bg-background pl-10"
                             value={location}
-                            onValueChange={setLocation}
-                            className="pl-10"
+                            onChange={(e) => setLocation(e.target.value)}
                         />
                     </div>
                       <div className="space-y-2">
@@ -356,55 +360,44 @@ export default function DashboardPage() {
           </Card>
         </aside>
           <main className="flex flex-col">
-            <Tabs defaultValue="list-view" className="flex flex-col flex-grow">
-              <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h1 className="text-3xl font-bold font-headline">{t('dashboard_provider_title')}</h1>
-                    <p className="text-muted-foreground">
-                      {t('dashboard_provider_subtitle')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Select onValueChange={setSortBy} defaultValue={sortBy}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
-                        <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
-                        <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
-                        <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <TabsList>
-                        <TabsTrigger value="list-view"><LayoutList className="mr-2" />List View</TabsTrigger>
-                        <TabsTrigger value="map-view"><Map className="mr-2" />Map View</TabsTrigger>
-                    </TabsList>
-                  </div>
-              </div>
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h1 className="text-3xl font-bold font-headline">{t('dashboard_provider_title')}</h1>
+                  <p className="text-muted-foreground">
+                    {t('dashboard_provider_subtitle')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
+                      <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
+                      <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
+                      <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+            </div>
 
-              <TabsContent value="list-view" className="flex-grow">
-                {filteredJobs.length > 0 ? (
-                  <div className="space-y-6">
-                    {filteredJobs.map((job) => (
-                      <JobCard key={job.id} job={job} role="provider" />
-                    ))}
-                  </div>
-                ) : (
-                  <Card>
-                    <CardContent className="py-12 text-center">
-                      <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
-                      <p className="text-muted-foreground mt-2">
-                        {t('dashboard_no_jobs_subtitle')}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </TabsContent>
-              <TabsContent value="map-view" className="flex-grow rounded-lg overflow-hidden">
-                  <MapView jobs={filteredJobs} location={location} radius={radius[0]} />
-              </TabsContent>
-            </Tabs>
+            {filteredJobs.length > 0 ? (
+              <div className="space-y-6">
+                {filteredJobs.map((job) => (
+                  <JobCard key={job.id} job={job} role="provider" />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
+                  <p className="text-muted-foreground mt-2">
+                    {t('dashboard_no_jobs_subtitle')}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </main>
       </div>
     );
