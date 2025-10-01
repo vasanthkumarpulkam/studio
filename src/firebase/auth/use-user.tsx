@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../config';
 import type { User, Provider } from '@/types';
 
@@ -19,8 +19,24 @@ export function useUser() {
     setIsLoading(loadingAuth || loadingProfile);
 
     if (!loadingAuth && !loadingProfile) {
-      if (user && profile) {
-        setAppUser({ ...profile, uid: user.uid } as User | Provider);
+      if (user) {
+        if (profile) {
+          setAppUser({ ...profile, uid: user.uid } as User | Provider);
+        } else {
+          // First login: create minimal profile with default role
+          const minimalProfile: Omit<User, 'id'> = {
+            uid: user.uid,
+            name: user.displayName || user.email || 'User',
+            email: user.email || '',
+            role: 'customer',
+            status: 'active',
+            joinedOn: new Date().toISOString(),
+          };
+          setDoc(doc(db, 'users', user.uid), minimalProfile).catch(() => {
+            // non-blocking; a global error listener will surface permission issues
+          });
+          setAppUser({ ...minimalProfile, id: user.uid } as User);
+        }
       } else {
         setAppUser(null);
       }

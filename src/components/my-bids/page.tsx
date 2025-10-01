@@ -18,34 +18,56 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getBidsForJob, getJob } from '@/lib/data';
+import { collectionGroup, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { db } from '@/firebase/config';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { bids as allBids } from '@/lib/data';
-import { useEffect, useState } from 'react';
-import type { User, Provider } from '@/types';
+import { useEffect, useMemo, useState } from 'react';
+import type { User, Provider, Job, Bid } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
+import { useUser } from '@/firebase';
 
 export default function MyBidsPage() {
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+  const { user: currentUser, isUserLoading } = useUser();
   const { t, isTranslationReady, language } = useTranslation();
 
+  const [bids, setBids] = useState<Bid[]>([]);
+  const [jobsById, setJobsById] = useState<Record<string, Job>>({});
+
   useEffect(() => {
-    // Mock current user: pick the first provider from dataset
-    const provider = { id: 'user-2', role: 'provider' } as unknown as User | Provider;
-    setCurrentUser(provider);
-  }, []);
+    async function loadBidsAndJobs() {
+      if (!currentUser || currentUser.role !== 'provider') return;
+      const bidsQ = query(collectionGroup(db, 'bids'), where('providerId', '==', currentUser.id));
+      const bidsSnap = await getDocs(bidsQ);
+      const fetchedBids: Bid[] = bidsSnap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<Bid, 'id'>) }));
+      setBids(fetchedBids);
+      const uniqueJobIds = Array.from(new Set(fetchedBids.map(b => b.jobId)));
+      const jobEntries = await Promise.all(uniqueJobIds.map(async (jobId) => {
+        const jobSnap = await getDoc(doc(db, 'job_posts', jobId));
+        if (jobSnap.exists()) {
+          return [jobId, { id: jobSnap.id, ...(jobSnap.data() as Omit<Job, 'id'>) } as Job] as const;
+        }
+        return null;
+      }));
+      const jobsMap: Record<string, Job> = {};
+      for (const entry of jobEntries) {
+        if (entry) jobsMap[entry[0]] = entry[1];
+      }
+      setJobsById(jobsMap);
+    }
+    loadBidsAndJobs();
+  }, [currentUser]);
   
-  if (!currentUser || !isTranslationReady) {
+  if (isUserLoading || !isTranslationReady || !currentUser) {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
-  const providerBids = allBids.filter(bid => bid.providerId === currentUser.id);
+  const providerBids = useMemo(() => bids.filter(bid => bid.providerId === currentUser.id), [bids, currentUser.id]);
 
   const getStatusForBid = (jobId: string, bidId: string) => {
-    const job = getJob(jobId);
+    const job = jobsById[jobId];
     if (!job) return <Badge variant="destructive">Error</Badge>;
 
     if (job.status === 'completed' || job.status === 'in-progress' || job.status === 'working' || job.status === 'pending-confirmation') {
@@ -86,7 +108,7 @@ export default function MyBidsPage() {
               </TableHeader>
               <TableBody>
                 {providerBids.map((bid) => {
-                  const job = getJob(bid.jobId);
+                  const job = jobsById[bid.jobId];
                   if (!job) return null;
 
                   return (

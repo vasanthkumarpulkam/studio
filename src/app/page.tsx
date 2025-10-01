@@ -28,10 +28,11 @@ export default function Home() {
   const postJobHref = currentUser ? '/dashboard/jobs/new' : '/login';
   const findWorkHref = '/dashboard';
 
-  const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
-  const feature1 = PlaceHolderImages.find(p => p.id === 'feature-1');
-  const feature2 = PlaceHolderImages.find(p => p.id === 'feature-2');
-  const feature3 = PlaceHolderImages.find(p => p.id === 'feature-3');
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+  const heroImage = demoMode ? PlaceHolderImages.find(p => p.id === 'hero-image') : undefined;
+  const feature1 = demoMode ? PlaceHolderImages.find(p => p.id === 'feature-1') : undefined;
+  const feature2 = demoMode ? PlaceHolderImages.find(p => p.id === 'feature-2') : undefined;
+  const feature3 = demoMode ? PlaceHolderImages.find(p => p.id === 'feature-3') : undefined;
 
   if (!isTranslationReady) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;

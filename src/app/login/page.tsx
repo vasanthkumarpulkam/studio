@@ -37,6 +37,9 @@ function LoginContent() {
   useEffect(() => {
     if (!isUserLoading && user) {
         const userRole = user.role ?? 'customer';
+        if (!user.role) {
+          console.warn('User role missing on profile; defaulting to customer');
+        }
         if (userRole === 'admin') {
             router.replace('/admin');
         } else {

@@ -12,7 +12,7 @@ import { db } from '@/firebase/config';
 import { Loader2 } from 'lucide-react';
 
 
-export default function JobDetailsPage({ params }: { params: { id: string } }) {
+export default function JobDetailsPage({ params }: any) {
   const { id } = params;
   const { user: currentUser, isUserLoading } = useUser();
 
