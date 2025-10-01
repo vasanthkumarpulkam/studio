@@ -16,11 +16,13 @@ import { login } from '@/lib/data';
 import { User, Briefcase } from 'lucide-react';
 import { useEffect } from 'react';
 import LanguageSwitcher from '@/components/language-switcher';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
+  const { t } = useTranslation();
 
   const handleLogin = (userId: string) => {
     login(userId);
@@ -28,6 +30,15 @@ export default function LoginPage() {
     // This feels more natural for a login flow.
     router.replace(redirectUrl || '/dashboard');
   };
+  
+  if (!t) {
+    return (
+       <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
+        <div>Loading...</div>
+      </div>
+    )
+  }
+
 
   return (
     <div className="w-full h-screen flex items-center justify-center p-4 bg-background">
@@ -39,26 +50,26 @@ export default function LoginPage() {
           <div className="mb-4 flex justify-center">
             <Logo href="/" />
           </div>
-          <CardTitle className="text-2xl font-headline">Test Login</CardTitle>
+          <CardTitle className="text-2xl font-headline">{t('login_title')}</CardTitle>
           <CardDescription>
-            Select a user role to log in for testing.
+            {t('login_subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
             <div className="grid gap-4">
               <Button type="button" className="w-full" onClick={() => handleLogin('user-1')}>
                 <User className="mr-2 h-4 w-4"/>
-                Login as Customer
+                {t('login_as_customer')}
               </Button>
               <Button type="button" variant="secondary" className="w-full" onClick={() => handleLogin('user-2')}>
                 <Briefcase className="mr-2 h-4 w-4"/>
-                Login as Provider
+                {t('login_as_provider')}
               </Button>
             </div>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
+            {t('login_no_account')}{' '}
             <Link href="/signup" className="underline">
-              Sign up
+              {t('login_signup_link')}
             </Link>
           </div>
         </CardContent>
