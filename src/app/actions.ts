@@ -4,8 +4,9 @@ import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
 import type { SuggestInitialBidOutput } from '@/ai/flows/suggest-initial-bid';
 import { moderateChatFlow } from '@/ai/flows/moderate-chat';
 import { jobs, bids as allBids, notifications as allNotifications, chats } from '@/lib/data';
-import type { Bid, ChatMessage } from '@/types';
+import type { Bid, ChatMessage, Job } from '@/types';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<SuggestInitialBidOutput> {
   // In a real app, you'd fetch this data from your database
@@ -54,7 +55,7 @@ export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
     console.log('New notification created for user:', job.postedBy);
     
     revalidatePath(`/dashboard/jobs/${job.id}`);
-    // Potentially revalidate a path for notifications if we have a dedicated page
+    revalidatePath('/dashboard');
 }
 
 
@@ -67,6 +68,7 @@ export async function acceptBid(jobId: string, bidId: string) {
         console.log(`Bid ${bidId} accepted for job ${jobId}. Job status updated to in-progress.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
+        revalidatePath('/dashboard');
     } else {
         console.error('Job not found or not available for bidding.');
         throw new Error('Job not found or not available for bidding.');
@@ -80,6 +82,7 @@ export async function startWork(jobId: string) {
         console.log(`Work started for job ${jobId}.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
+        revalidatePath('/dashboard');
     } else {
         console.error('Job not found or not in the correct state to start work.');
         throw new Error('Could not start work on this job.');
@@ -94,6 +97,7 @@ export async function markJobAsCompleted(jobId: string) {
         console.log(`Job ${jobId} marked as completed.`);
         revalidatePath(`/dashboard/jobs/${jobId}`);
         revalidatePath('/dashboard/my-bids');
+        revalidatePath('/dashboard');
     } else {
         console.error('Job not found or not in progress.');
         throw new Error('Job not found or not in progress.');
@@ -137,4 +141,30 @@ export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>
     // In a real app with websockets, you'd revalidate/push to clients here
     revalidatePath(`/dashboard/jobs/${message.jobId}`);
     return newMessage;
+}
+
+export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images'> & { images: File[] }, postedById: string) {
+  // In a real app, you would handle file uploads to a storage service like S3 or GCS
+  // For this mock, we'll just use placeholder URLs
+  const imageUrls = jobData.images.map((_, index) => `/placeholder-job-image-${index}.jpg`);
+
+  const newJob: Job = {
+    ...jobData,
+    id: `job-${Date.now()}`,
+    postedBy: postedById,
+    postedOn: new Date().toISOString(),
+    status: 'open',
+    images: imageUrls,
+  };
+
+  jobs.unshift(newJob); // Add to the beginning of the list
+
+  console.log('New job posted:', newJob);
+  
+  // Revalidate paths to show the new job everywhere
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/jobs/new');
+  revalidatePath(`/dashboard/jobs/${newJob.id}`);
+  
+  redirect(`/dashboard/jobs/${newJob.id}`);
 }

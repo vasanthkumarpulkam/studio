@@ -32,9 +32,11 @@ import { jobCategories, getCurrentUser } from '@/lib/data';
 import { Camera, FilePlus2, AlertTriangle, CreditCard, Banknote, X, Image as ImageIcon } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import Image from 'next/image';
+import { postJob } from '@/app/actions';
+import { Loader2 } from 'lucide-react';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -56,6 +58,7 @@ export default function NewJobPage() {
   const router = useRouter();
   const currentUser = getCurrentUser();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!currentUser) {
@@ -110,6 +113,14 @@ export default function NewJobPage() {
   };
 
   function onSubmit(values: JobFormValues) {
+    if (!currentUser) {
+        toast({
+            variant: 'destructive',
+            title: 'Not Logged In',
+            description: 'You must be logged in to post a job.',
+        });
+        return;
+    }
     if (!hasPaymentMethod) {
       toast({
         variant: 'destructive',
@@ -118,13 +129,24 @@ export default function NewJobPage() {
       });
       return;
     }
-    console.log(values);
-    toast({
-      title: 'Job Posted Successfully!',
-      description: `Your job "${values.title}" is now live.`,
+    
+    startTransition(async () => {
+        try {
+            await postJob(values, currentUser.id);
+            toast({
+                title: 'Job Posted Successfully!',
+                description: `Your job "${values.title}" is now live.`,
+            });
+            form.reset();
+            setImagePreviews([]);
+        } catch (error) {
+             toast({
+                variant: 'destructive',
+                title: 'Error Posting Job',
+                description: 'There was an issue posting your job. Please try again.',
+            });
+        }
     });
-    form.reset();
-    setImagePreviews([]);
   }
 
   if (!currentUser) {
@@ -170,7 +192,7 @@ export default function NewJobPage() {
             )}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <fieldset disabled={!hasPaymentMethod} className="space-y-6">
+                <fieldset disabled={!hasPaymentMethod || isPending} className="space-y-6">
                   <FormField
                     control={form.control}
                     name="title"
@@ -346,9 +368,18 @@ export default function NewJobPage() {
                   />
                 </fieldset>
 
-                <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod}>
-                    <FilePlus2 className="mr-2 h-4 w-4" />
-                    Post Job
+                <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isPending}>
+                    {isPending ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Posting...
+                        </>
+                    ) : (
+                        <>
+                            <FilePlus2 className="mr-2 h-4 w-4" />
+                            Post Job
+                        </>
+                    )}
                 </Button>
               </form>
             </Form>
