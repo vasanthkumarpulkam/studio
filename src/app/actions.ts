@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, getDoc, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage }from '@/firebase/config';
 import type { Bid, ChatMessage, Job, User, Provider } from '@/types';
@@ -21,7 +21,7 @@ export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
     
     await addDoc(collection(jobRef, 'bids'), newBid);
 
-    const jobDoc = (await db.collection('job_posts').doc(bidData.jobId).get()).data() as Job;
+    const jobDoc = (await getDoc(doc(db, 'job_posts', bidData.jobId))).data() as Job;
 
     // Create a notification for the job poster
     await addDoc(collection(db, 'notifications'), {
@@ -45,8 +45,8 @@ export async function acceptBid(jobId: string, bidId: string) {
     const jobRef = doc(db, 'job_posts', jobId);
     const bidRef = doc(jobRef, 'bids', bidId);
 
-    const jobDoc = (await jobRef.get()).data() as Job;
-    const bidDoc = (await bidRef.get()).data() as Bid;
+    const jobDoc = (await getDoc(jobRef)).data() as Job;
+    const bidDoc = (await getDoc(bidRef)).data() as Bid;
 
     if (jobDoc && jobDoc.status === 'open' && bidDoc) {
         await updateDoc(jobRef, {
@@ -75,7 +75,7 @@ export async function acceptBid(jobId: string, bidId: string) {
 
 export async function confirmJob(jobId: string) {
     const jobRef = doc(db, 'job_posts', jobId);
-    const jobDoc = (await jobRef.get()).data() as Job;
+    const jobDoc = (await getDoc(jobRef)).data() as Job;
 
      if (jobDoc && jobDoc.status === 'pending-confirmation') {
         await updateDoc(jobRef, {
@@ -104,7 +104,7 @@ export async function confirmJob(jobId: string) {
 
 export async function startWork(jobId: string) {
     const jobRef = doc(db, 'job_posts', jobId);
-    const jobDoc = (await jobRef.get()).data() as Job;
+    const jobDoc = (await getDoc(jobRef)).data() as Job;
     if (jobDoc && jobDoc.status === 'in-progress') {
         await updateDoc(jobRef, { status: 'working' });
         revalidatePath(`/dashboard/jobs/${jobId}`);
@@ -118,7 +118,7 @@ export async function startWork(jobId: string) {
 
 export async function markJobAsCompleted(jobId: string) {
     const jobRef = doc(db, 'job_posts', jobId);
-    const jobDoc = (await jobRef.get()).data() as Job;
+    const jobDoc = (await getDoc(jobRef)).data() as Job;
     if (jobDoc && (jobDoc.status === 'in-progress' || jobDoc.status === 'working')) {
         await updateDoc(jobRef, { status: 'completed' });
 
@@ -137,14 +137,18 @@ export async function markNotificationAsRead(notificationId: string) {
 }
 
 export async function markAllNotificationsAsRead(userId: string) {
-    const notificationsQuery = collection(db, 'notifications').where('userId', '==', userId).where('isRead', '==', false);
-    const snapshot = await notificationsQuery.get();
-    const batch = db.batch();
-    snapshot.docs.forEach(doc => {
-        batch.update(doc.ref, { isRead: true });
+    const notificationsQuery = query(
+      collection(db, 'notifications'),
+      where('userId', '==', userId),
+      where('isRead', '==', false)
+    );
+    const snapshot = await getDocs(notificationsQuery);
+    const batch = writeBatch(db);
+    snapshot.docs.forEach((docSnap) => {
+        batch.update(docSnap.ref, { isRead: true });
     });
     await batch.commit();
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboard'); 
 }
 
 export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>): Promise<ChatMessage> {
@@ -166,7 +170,7 @@ async function uploadImage(file: File): Promise<string> {
     return await getDownloadURL(storageRef);
 }
 
-export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images'> & { images: File[] }, postedById: string) {
+export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images' | 'postedBy'> & { images: File[] }, postedById: string) {
   const imageUrls = await Promise.all((jobData.images || []).map(file => uploadImage(file)));
 
   const newJob: Omit<Job, 'id'> = {

@@ -81,7 +81,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
   if (currentUserIsProvider && currentUser) {
     const providerProfile = getProvider(currentUser.id);
     const hasAlreadyBid = bids.some(bid => bid.providerId === currentUser.id);
-    canProviderBid = (providerProfile?.skills.includes(job.category) ?? false) && !hasAlreadyBid;
+    canProviderBid = (providerProfile?.skills?.includes(job.category) ?? false) && !hasAlreadyBid;
   }
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
@@ -308,7 +308,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                 <LeaveReviewForm 
                   jobId={job.id} 
                   revieweeId={isOwner ? acceptedProvider!.id : job.postedBy}
-                  reviewerRole={currentUser.role}
+                  reviewerRole={isOwner ? 'customer' : 'provider'}
                 />
               </CardContent>
             </Card>
@@ -343,7 +343,6 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                           {t('job_details_message_button', { role: isOwner ? t('job_details_provider') : t('job_details_customer') })}
                       </Button>
                     }
-                    messages={chatMessages}
                     jobTitle={job.title}
                     recipient={isOwner ? acceptedProvider : jobPoster}
                     currentUser={currentUser}
@@ -376,7 +375,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                         {statusIcons[job.status]}
                         <AlertTitle className="text-yellow-800">{t('job_details_working_alert_title')}</AlertTitle>
                         <AlertDescription className="text-yellow-700">
-                          {job.isCashOnly ? t('job_details_working_alert_desc_cash') : t('job_details_working_alert_desc_escrow', { amount: acceptedBid?.amount.toFixed(2) })}
+                      {job.isCashOnly ? t('job_details_working_alert_desc_cash') : t('job_details_working_alert_desc_escrow', { amount: acceptedBid ? acceptedBid.amount.toFixed(2) : '0.00' })}
                         </AlertDescription>
                     </Alert>
                   )}

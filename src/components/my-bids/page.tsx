@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getCurrentUser, getBidsForJob, getJob } from '@/lib/data';
+import { getBidsForJob, getJob } from '@/lib/data';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -33,7 +33,9 @@ export default function MyBidsPage() {
   const { t, isTranslationReady, language } = useTranslation();
 
   useEffect(() => {
-    setCurrentUser(getCurrentUser());
+    // Mock current user: pick the first provider from dataset
+    const provider = { id: 'user-2', role: 'provider' } as unknown as User | Provider;
+    setCurrentUser(provider);
   }, []);
   
   if (!currentUser || !isTranslationReady) {

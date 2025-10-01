@@ -13,7 +13,7 @@ import {
 import Logo from '@/components/logo';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { User, Briefcase, Shield, Loader2 } from 'lucide-react';
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState, useTransition, Suspense } from 'react';
 import LanguageSwitcher from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
 import { useAuth, useUser } from '@/firebase';
@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
@@ -158,5 +158,13 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="w-full h-screen flex items-center justify-center p-4 bg-background"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

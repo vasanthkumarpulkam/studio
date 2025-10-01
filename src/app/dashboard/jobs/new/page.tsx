@@ -100,7 +100,7 @@ export default function NewJobPage() {
       return true;
     });
 
-    const updatedImages = [...currentImages, ...newImages];
+    const updatedImages = [...currentImages, ...newImages] as File[];
     form.setValue('images', updatedImages);
     
     const newPreviews = updatedImages.map(file => URL.createObjectURL(file));
@@ -108,7 +108,7 @@ export default function NewJobPage() {
   };
 
   const removeImage = (index: number) => {
-    const updatedImages = (form.getValues('images') || []).filter((_, i) => i !== index);
+    const updatedImages = (form.getValues('images') || []).filter((_, i) => i !== index) as File[];
     form.setValue('images', updatedImages);
 
     const newPreviews = updatedImages.map(file => URL.createObjectURL(file));
@@ -135,7 +135,7 @@ export default function NewJobPage() {
     
     startTransition(async () => {
         try {
-            await postJob(values, currentUser.id);
+            await postJob({ ...values, images: (values.images as unknown as File[]) ?? [] }, currentUser.id);
             toast({
                 title: 'Job Posted Successfully!',
                 description: `Your job "${values.title}" is now live.`,

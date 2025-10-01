@@ -30,7 +30,7 @@ type ChatModalProps = {
   triggerButton: React.ReactNode;
   jobTitle: string;
   recipient: User | Provider;
-  currentUser: User & Provider;
+  currentUser: User | Provider;
   jobId: string;
   providerId: string;
 };

@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { notFound } from 'next/navigation';
 import { getProvider } from '@/lib/data';
 import JobDetailsView from '@/components/job-details-view';
@@ -27,7 +27,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   
   const acceptedBid = useMemo(() => {
     if (!job || !bids) return null;
-    return job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
+    return job.acceptedBid ? (bids.find(b => b.id === job.acceptedBid) ?? null) : null;
   }, [job, bids]);
 
   const acceptedProviderRef = useMemoFirebase(() => {
@@ -63,7 +63,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
       job={job}
       bids={bids || []}
       currentUser={currentUser}
-      jobPoster={jobPoster}
+      jobPoster={jobPoster ?? undefined}
       acceptedProvider={acceptedProvider}
       acceptedBid={acceptedBid}
       chatMessages={chatMessages || []}

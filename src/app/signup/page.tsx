@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import LanguageSwitcher from '@/components/language-switcher';
@@ -24,7 +24,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
 import { createUserProfile } from '@/services/user-service';
 
-export default function SignupPage() {
+function SignupContent() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -182,5 +182,13 @@ export default function SignupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="w-full h-screen flex items-center justify-center p-4 bg-background"><div>Loading...</div></div>}>
+      <SignupContent />
+    </Suspense>
   );
 }

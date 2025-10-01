@@ -42,9 +42,9 @@ export function UserNav({ user: authUser }: { user: User }) {
     }
   };
 
-  const displayName = user?.name || authUser.displayName || 'User';
+  const displayName = user?.name || authUser.name || 'User';
   const displayEmail = user?.email || authUser.email;
-  const displayAvatar = user?.avatarUrl || authUser.photoURL || '';
+  const displayAvatar = user?.avatarUrl || authUser.avatarUrl || '';
 
   return (
     <DropdownMenu>

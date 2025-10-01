@@ -288,7 +288,7 @@ export default function AdminUsersPage() {
                     <DropdownMenuContent>
                          <DropdownMenuLabel>Filter by Role</DropdownMenuLabel>
                          <DropdownMenuCheckboxItem
-                            checked={table.getColumn('role')?.getFilterValue()?.includes('customer')}
+                            checked={(((table.getColumn('role')?.getFilterValue() as string[] | undefined) ?? []).includes('customer'))}
                             onCheckedChange={(checked) => {
                                 let current = (table.getColumn('role')?.getFilterValue() as string[] || []);
                                 if(checked) current.push('customer');
@@ -297,7 +297,7 @@ export default function AdminUsersPage() {
                             }}
                          >Customer</DropdownMenuCheckboxItem>
                           <DropdownMenuCheckboxItem
-                             checked={table.getColumn('role')?.getFilterValue()?.includes('provider')}
+                             checked={(((table.getColumn('role')?.getFilterValue() as string[] | undefined) ?? []).includes('provider'))}
                              onCheckedChange={(checked) => {
                                 let current = (table.getColumn('role')?.getFilterValue() as string[] || []);
                                 if(checked) current.push('provider');
@@ -306,7 +306,7 @@ export default function AdminUsersPage() {
                             }}
                           >Provider</DropdownMenuCheckboxItem>
                           <DropdownMenuCheckboxItem
-                            checked={table.getColumn('role')?.getFilterValue()?.includes('admin')}
+                            checked={(((table.getColumn('role')?.getFilterValue() as string[] | undefined) ?? []).includes('admin'))}
                             onCheckedChange={(checked) => {
                                 let current = (table.getColumn('role')?.getFilterValue() as string[] || []);
                                 if(checked) current.push('admin');
@@ -317,7 +317,7 @@ export default function AdminUsersPage() {
                         <DropdownMenuSeparator/>
                          <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                          <DropdownMenuCheckboxItem
-                            checked={table.getColumn('status')?.getFilterValue()?.includes('active')}
+                            checked={(((table.getColumn('status')?.getFilterValue() as string[] | undefined) ?? []).includes('active'))}
                             onCheckedChange={(checked) => {
                                 let current = (table.getColumn('status')?.getFilterValue() as string[] || []);
                                 if(checked) current.push('active');
@@ -326,7 +326,7 @@ export default function AdminUsersPage() {
                             }}
                          >Active</DropdownMenuCheckboxItem>
                          <DropdownMenuCheckboxItem
-                            checked={table.getColumn('status')?.getFilterValue()?.includes('suspended')}
+                            checked={(((table.getColumn('status')?.getFilterValue() as string[] | undefined) ?? []).includes('suspended'))}
                             onCheckedChange={(checked) => {
                                 let current = (table.getColumn('status')?.getFilterValue() as string[] || []);
                                 if(checked) current.push('suspended');
