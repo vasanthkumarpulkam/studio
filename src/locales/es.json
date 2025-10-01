@@ -23,6 +23,7 @@
   "login_subtitle": "Seleccione un rol de usuario para iniciar sesión para la prueba.",
   "login_as_customer": "Iniciar Sesión como Cliente",
   "login_as_provider": "Iniciar Sesión como Proveedor",
+  "login_as_admin": "Iniciar Sesión como Administrador",
   "login_no_account": "¿No tiene una cuenta?",
   "login_signup_link": "Registrarse",
   "login_button": "Iniciar Sesión",
@@ -355,5 +356,3 @@
   "profile_edit_error_title": "Error al Actualizar",
   "profile_edit_error_desc": "No se pudieron guardar sus cambios. Por favor, inténtelo de nuevo."
 }
-
-    

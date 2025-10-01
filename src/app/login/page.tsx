@@ -69,7 +69,7 @@ export default function LoginPage() {
               </Button>
                <Button type="button" variant="destructive" className="w-full" onClick={() => handleLogin('admin-user', 'admin')}>
                 <Shield className="mr-2 h-4 w-4"/>
-                Login as Admin
+                {t('login_as_admin')}
               </Button>
             </div>
           <div className="mt-4 text-center text-sm">

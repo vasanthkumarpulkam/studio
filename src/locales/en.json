@@ -23,6 +23,7 @@
   "login_subtitle": "Select a user role to log in for testing.",
   "login_as_customer": "Login as Customer",
   "login_as_provider": "Login as Provider",
+  "login_as_admin": "Login as Admin",
   "login_no_account": "Don't have an account?",
   "login_signup_link": "Sign up",
   "login_button": "Login",
@@ -355,5 +356,3 @@
   "profile_edit_error_title": "Update Failed",
   "profile_edit_error_desc": "Could not save your changes. Please try again."
 }
-
-    
