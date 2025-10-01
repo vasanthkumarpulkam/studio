@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useRef, useEffect } from 'react';
@@ -17,6 +18,7 @@ export default function AutocompleteInput({ onValueChange, value, className, ...
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
     libraries: ['places'],
+    preventGoogleFontsLoading: true,
   });
 
   useEffect(() => {
@@ -34,6 +36,19 @@ export default function AutocompleteInput({ onValueChange, value, className, ...
       });
     }
   }, [isLoaded, onValueChange]);
+
+  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+    return (
+      <Input
+        value={value}
+        onChange={(e) => onValueChange(e.target.value)}
+        className={cn("w-full rounded-lg bg-background", className)}
+        disabled
+        placeholder="Add Maps API Key to enable"
+        {...props}
+      />
+    )
+  }
 
   return (
     <Input

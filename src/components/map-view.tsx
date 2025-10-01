@@ -10,7 +10,7 @@ import {
 } from '@react-google-maps/api';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import type { Job } from '@/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -30,6 +30,19 @@ const defaultCenter = {
   lat: 39.8283,
   lng: -98.5795,
 };
+
+const MissingApiKeyError = () => (
+  <div className="flex h-full items-center justify-center bg-destructive/10 text-destructive p-4 text-center">
+    <div className='flex flex-col items-center gap-4'>
+      <AlertTriangle className="h-8 w-8" />
+      <div>
+        <h3 className="font-bold">Google Maps API Key is Missing</h3>
+        <p className="text-sm">Please add your Google Maps API key to the `.env.local` file to enable map features.</p>
+        <code className="mt-2 block bg-destructive/20 p-2 rounded-md text-xs">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY_HERE</code>
+      </div>
+    </div>
+  </div>
+);
 
 // Mock function to geocode addresses
 // In a real app, you would use the Google Geocoding API
@@ -67,10 +80,13 @@ const getZoomLevel = (radius: number) => {
 };
 
 export default function MapView({ jobs, location, radius }: MapViewProps) {
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+    googleMapsApiKey: googleMapsApiKey || '',
     libraries: ['places', 'geocoding'],
+    preventGoogleFontsLoading: true,
   });
 
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -78,7 +94,6 @@ export default function MapView({ jobs, location, radius }: MapViewProps) {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [zoom, setZoom] = useState(4);
   const [jobLocations, setJobLocations] = useState<(Job & { position: { lat: number; lng: number } })[]>([]);
-
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -123,6 +138,10 @@ export default function MapView({ jobs, location, radius }: MapViewProps) {
     updateUserCenter();
   }, [location, jobLocations, isLoaded]);
 
+  if (!googleMapsApiKey) {
+    return <MissingApiKeyError />;
+  }
+  
   if (loadError) {
     return (
       <div className="flex h-full items-center justify-center bg-destructive/10 text-destructive">
