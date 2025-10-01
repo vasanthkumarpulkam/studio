@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -10,6 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -63,6 +69,7 @@ interface JobDetailsViewProps {
 
 export default function JobDetailsView({ job, bids, currentUser, jobPoster, acceptedProvider, acceptedBid, chatMessages }: JobDetailsViewProps) {
   const { t, isTranslationReady, language } = useTranslation();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const isOwner = currentUser ? job.postedBy === currentUser.id : false;
   const currentUserIsProvider = currentUser?.role === 'provider';
   
@@ -161,19 +168,35 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
               {job.images.length > 0 && (
                 <div className="mt-6">
                   <h3 className="font-semibold mb-2">{t('job_details_photos')}</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {job.images.map((img, index) => (
-                      <Image
-                        key={index}
-                        src={img}
-                        alt={`Job image ${index + 1}`}
-                        width={300}
-                        height={200}
-                        className="rounded-lg object-cover aspect-video"
-                        data-ai-hint="job photo"
-                      />
-                    ))}
-                  </div>
+                  <Dialog>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {job.images.map((img, index) => (
+                        <DialogTrigger asChild key={index} onClick={() => setSelectedImage(img)}>
+                          <div className="cursor-pointer overflow-hidden rounded-lg">
+                            <Image
+                              src={img}
+                              alt={`Job image ${index + 1}`}
+                              width={300}
+                              height={200}
+                              className="rounded-lg object-cover aspect-video hover:scale-105 transition-transform duration-300"
+                              data-ai-hint="job photo"
+                            />
+                          </div>
+                        </DialogTrigger>
+                      ))}
+                    </div>
+                    <DialogContent className="max-w-3xl p-2">
+                      {selectedImage && (
+                        <Image
+                          src={selectedImage}
+                          alt="Job image preview"
+                          width={1200}
+                          height={800}
+                          className="rounded-md object-contain max-h-[80vh]"
+                        />
+                      )}
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
             </CardContent>
