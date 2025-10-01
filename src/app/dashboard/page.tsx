@@ -286,132 +286,132 @@ export default function DashboardPage() {
   // Provider View
   if (isProvider) {
     return (
-      <Tabs defaultValue="list-view" className="h-full flex flex-col">
-        <div className="grid lg:grid-cols-[320px_1fr] gap-8">
-          <aside className="hidden lg:block">
-            <Card>
-              <CardContent className="p-4">
-                  <div className="flex flex-col gap-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>{t('dashboard_filters_title')} ({activeFilterCount})</h3>
-                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear_all')}</Button>
-                      </div>
+      <div className="grid lg:grid-cols-[320px_1fr] gap-8 h-full">
+        <aside className="hidden lg:block">
+          <Card>
+            <CardContent className="p-4">
+                <div className="flex flex-col gap-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>{t('dashboard_filters_title')} ({activeFilterCount})</h3>
+                      <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear_all')}</Button>
+                    </div>
+                    <div className="relative flex-1 w-full">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                        type="search"
+                        placeholder={t('dashboard_filters_search_placeholder')}
+                        className="w-full rounded-lg bg-background pl-10"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                       <div className="relative flex-1 w-full">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                          type="search"
-                          placeholder={t('dashboard_filters_search_placeholder')}
-                          className="w-full rounded-lg bg-background pl-10"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          />
-                      </div>
-                       <div className="relative flex-1 w-full">
-                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                          type="search"
-                          placeholder={t('dashboard_filters_location_placeholder')}
-                          className="w-full rounded-lg bg-background pl-10"
-                          value={location}
-                          onChange={(e) => setLocation(e.target.value)}
-                          />
-                      </div>
-                       <div className="space-y-2">
-                          <Label>{t('dashboard_filters_radius_label')}</Label>
-                          <Slider
-                              value={radius}
-                              onValueChange={setRadius}
-                              max={250}
-                              step={1}
-                          />
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                               <span>1 {t('dashboard_filters_radius_mile')}</span>
-                              <span>{radius[0]} {t('dashboard_filters_radius_miles')}</span>
-                              <span>250 {t('dashboard_filters_radius_miles')}</span>
-                          </div>
-                      </div>
-                      <Separator/>
-                      <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="w-full justify-between">
-                            <span>{t('dashboard_filters_category_label')} ({selectedCategories.length})</span>
-                            <ListFilter className="h-4 w-4" />
-                          </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[280px] max-h-80 overflow-y-auto">
-                          <DropdownMenuLabel>{t('dashboard_provider_filter_by_skills')}</DropdownMenuLabel>
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                        type="search"
+                        placeholder={t('dashboard_filters_location_placeholder')}
+                        className="w-full rounded-lg bg-background pl-10"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        />
+                    </div>
+                      <div className="space-y-2">
+                        <Label>{t('dashboard_filters_radius_label')}</Label>
+                        <Slider
+                            value={radius}
+                            onValueChange={setRadius}
+                            max={250}
+                            step={1}
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>1 {t('dashboard_filters_radius_mile')}</span>
+                            <span>{radius[0]} {t('dashboard_filters_radius_miles')}</span>
+                            <span>250 {t('dashboard_filters_radius_miles')}</span>
+                        </div>
+                    </div>
+                    <Separator/>
+                    <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          <span>{t('dashboard_filters_category_label')} ({selectedCategories.length})</span>
+                          <ListFilter className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[280px] max-h-80 overflow-y-auto">
+                        <DropdownMenuLabel>{t('dashboard_provider_filter_by_skills')}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                          <div className="flex justify-between px-2 py-1.5">
+                            <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleSelectAllCategories}>{t('dashboard_filters_select_all')}</Button>
+                            <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleClearCategories} disabled={selectedCategories.length === 0}>{t('dashboard_filters_clear')}</Button>
+                        </div>
                           <DropdownMenuSeparator />
-                           <div className="flex justify-between px-2 py-1.5">
-                              <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleSelectAllCategories}>{t('dashboard_filters_select_all')}</Button>
-                              <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleClearCategories} disabled={selectedCategories.length === 0}>{t('dashboard_filters_clear')}</Button>
-                          </div>
-                           <DropdownMenuSeparator />
-                          {categoriesForFilter.map(cat => (
-                              <DropdownMenuCheckboxItem 
-                                key={cat}
-                                checked={selectedCategories.includes(cat)}
-                                onCheckedChange={() => handleCategoryChange(cat)}
-                              >
-                                {t(`category_${cat.replace(/\s/g, '_').toLowerCase()}`)}
-                              </DropdownMenuCheckboxItem>
-                          ))}
-                      </DropdownMenuContent>
-                      </DropdownMenu>
-                  </div>
-              </CardContent>
-            </Card>
-          </aside>
-           <main className="flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h1 className="text-3xl font-bold font-headline">{t('dashboard_provider_title')}</h1>
-                  <p className="text-muted-foreground">
-                    {t('dashboard_provider_subtitle')}
-                  </p>
+                        {categoriesForFilter.map(cat => (
+                            <DropdownMenuCheckboxItem 
+                              key={cat}
+                              checked={selectedCategories.includes(cat)}
+                              onCheckedChange={() => handleCategoryChange(cat)}
+                            >
+                              {t(`category_${cat.replace(/\s/g, '_').toLowerCase()}`)}
+                            </DropdownMenuCheckboxItem>
+                        ))}
+                    </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Select onValueChange={setSortBy} defaultValue={sortBy}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
-                      <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
-                      <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
-                      <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <TabsList>
-                      <TabsTrigger value="list-view"><LayoutList className="mr-2" />List View</TabsTrigger>
-                      <TabsTrigger value="map-view"><Map className="mr-2" />Map View</TabsTrigger>
-                  </TabsList>
-                </div>
-            </div>
-
-            <TabsContent value="list-view" className="flex-grow">
-              {filteredJobs.length > 0 ? (
-                <div className="space-y-6">
-                  {filteredJobs.map((job) => (
-                    <JobCard key={job.id} job={job} role="provider" />
-                  ))}
-                </div>
-              ) : (
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
-                    <p className="text-muted-foreground mt-2">
-                      {t('dashboard_no_jobs_subtitle')}
+            </CardContent>
+          </Card>
+        </aside>
+          <main className="flex flex-col">
+            <Tabs defaultValue="list-view" className="flex flex-col flex-grow">
+              <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h1 className="text-3xl font-bold font-headline">{t('dashboard_provider_title')}</h1>
+                    <p className="text-muted-foreground">
+                      {t('dashboard_provider_subtitle')}
                     </p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-            <TabsContent value="map-view" className="flex-grow rounded-lg overflow-hidden">
-                <MapView jobs={filteredJobs} />
-            </TabsContent>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
+                        <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
+                        <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
+                        <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <TabsList>
+                        <TabsTrigger value="list-view"><LayoutList className="mr-2" />List View</TabsTrigger>
+                        <TabsTrigger value="map-view"><Map className="mr-2" />Map View</TabsTrigger>
+                    </TabsList>
+                  </div>
+              </div>
+
+              <TabsContent value="list-view" className="flex-grow">
+                {filteredJobs.length > 0 ? (
+                  <div className="space-y-6">
+                    {filteredJobs.map((job) => (
+                      <JobCard key={job.id} job={job} role="provider" />
+                    ))}
+                  </div>
+                ) : (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
+                      <p className="text-muted-foreground mt-2">
+                        {t('dashboard_no_jobs_subtitle')}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+              <TabsContent value="map-view" className="flex-grow rounded-lg overflow-hidden">
+                  <MapView jobs={filteredJobs} />
+              </TabsContent>
+            </Tabs>
           </main>
-        </div>
-      </Tabs>
+      </div>
     );
   }
 
