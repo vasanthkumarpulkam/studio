@@ -52,6 +52,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { updateUserRole, updateUserStatus } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Check, CircleUserRound, Shield, UserX, UserCheck } from 'lucide-react';
+import Link from 'next/link';
 
 const getInitials = (name: string) => {
   return name.split(' ').map((n) => n[0]).join('');
@@ -151,7 +152,7 @@ export default function AdminUsersPage() {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <Badge variant={row.original.status === 'active' ? 'outline' : 'destructive'} className="capitalize border-green-600 text-green-600">{row.original.status}</Badge>,
+      cell: ({ row }) => <Badge variant={row.original.status === 'active' ? 'outline' : 'destructive'} className={`capitalize ${row.original.status === 'active' ? 'border-green-600 text-green-600' : ''}`}>{row.original.status}</Badge>,
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
       },
@@ -187,7 +188,11 @@ export default function AdminUsersPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>View profile</DropdownMenuItem>
+              <Link href={`/dashboard/settings/profile`} passHref>
+                <DropdownMenuItem>
+                    View profile
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Change Role</DropdownMenuSubTrigger>
@@ -379,3 +384,5 @@ export default function AdminUsersPage() {
     </Card>
   );
 }
+
+    

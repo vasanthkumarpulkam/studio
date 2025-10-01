@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -254,7 +255,7 @@ const ChartTooltipContent = React.forwardRef<
     )
   }
 )
-ChartTooltipContent.displayName = "ChartTooltip"
+ChartTooltipContent.displayName = "ChartTooltipContent"
 
 const ChartLegend = RechartsPrimitive.Legend
 
@@ -306,7 +307,7 @@ const ChartLegendContent = React.forwardRef<
                   }}
                 />
               )}
-              {itemConfig?.label}
+              {itemConfig?.label || item.value}
             </div>
           )
         })}
@@ -363,3 +364,5 @@ export {
   ChartLegendContent,
   ChartStyle,
 }
+
+    
