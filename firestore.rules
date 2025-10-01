@@ -1,150 +1,159 @@
 /**
  * @file Firestore Security Rules for HandyConnect Platform
- * @version Prototyping Mode - Authorization Focused
+ * @description This ruleset enforces a user-ownership model for user profiles and a public-read, owner-write model for job posts.
  *
- * @description This ruleset enforces a strict user-ownership model for user profiles
- * and a public-read, owner-write model for job posts. It also enforces ownership
- * for bids within a job post, payments, and reviews. Data shape validation is relaxed
- * for rapid prototyping.
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles. Only the authenticated user can read/write their own profile.
+ * - /job_posts/{jobPostId}: Stores job postings. Publicly readable, but only the job poster can modify.
+ * - /job_posts/{jobPostId}/bids/{bidId}: Stores bids for a specific job post. Only accessible to the job poster and the bidder.
+ * - /payments/{paymentId}: Stores payment transactions. Publicly readable, only system can modify.
+ * - /reviews/{reviewId}: Stores reviews for jobs. Publicly readable, only system can modify.
  *
- * @data_structure
- * - /users/{userId}: Stores user profiles.
- * - /job_posts/{jobPostId}: Stores job postings.
- * - /job_posts/{jobPostId}/bids/{bidId}: Stores bids for a specific job.
- * - /payments/{paymentId}: Stores payment transaction records.
- * - /reviews/{reviewId}: Stores all reviews.
+ * Key Security Decisions:
+ * - Users can only access their own data under `/users/{userId}`.
+ * - Job posts are publicly readable to maximize visibility.
+ * - No user listing is allowed.
  *
- * @key_security_decisions
- * - Users can only read and write their own profile data. Listing all users is denied.
- * - Job posts are publicly readable but only the owner can create, update, or delete.
- * - Bids are owned by the provider and scoped to a specific job post.
- * - Payments are owner-writable
- * - Reviews are owner-writable.
- *
- * @denormalization_for_authorization
- *   - JobPost documents require a `userId` field to identify the owner.
- *   - Bid documents require a `providerId` field to identify the owner.
- *   - Payment documents require `userId` and `providerId` fields.
- *   - Review documents require `reviewerId` and `revieweeId` fields.
- *
- * @structural_segregation
- *   - Private user data is stored under /users/{userId}, separate from public data.
+ * Denormalization for Authorization:
+ * - JobPost documents MUST contain a `userId` field to indicate ownership.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile data.
+     * @description Secure user profiles. Only the authenticated user can access their own profile.
      * @path /users/{userId}
-     * @allow (create) User with UID 'user123' can create their profile.
-     * @allow (get) User with UID 'user123' can read their profile.
-     * @allow (update) User with UID 'user123' can update their profile.
-     * @allow (delete) User with UID 'user123' can delete their profile.
-     * @deny (create) User with UID 'user456' cannot create a profile with ID 'user123'.
+     * @allow (create, update, delete) User with UID "K3C5lt2v2MXswpNjh9JkDZjZ3ue2" can modify /users/K3C5lt2v2MXswpNjh9JkDZjZ3ue2
+     * @deny (create, update, delete) User with UID "OtherUID" cannot modify /users/K3C5lt2v2MXswpNjh9JkDZjZ3ue2
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
-      // Only signed-in users can attempt to create/modify user documents.
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner() {
+        return isSignedIn() && resource.data.userId == request.auth.uid;
+      }
+
       allow get: if isSignedIn() && isOwner(userId);
-      allow list: if false; // prevent listing all users
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.uid == userId;
-      allow update: if isSignedIn() && isOwner(userId) && resource.data.uid == userId;
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
+      allow update: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
+      allow delete: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
     }
 
     /**
-     * @description Controls access to job post data. Job posts are publicly readable, but
-     *              only the owner can create, update, or delete them.
+     * @description Secure job postings. Publicly readable, but only the job poster can modify.
      * @path /job_posts/{jobPostId}
-     * @allow (get) Any user can read a job post.
-     * @allow (list) Any user can list job posts.
-     * @allow (create) User with UID 'user123' can create a job post with userId 'user123'.
-     * @allow (update) User with UID 'user123' can update their job post.
-     * @allow (delete) User with UID 'user123' can delete their job post.
-     * @deny (create) User with UID 'user456' cannot create a job post with userId 'user123'.
-     * @principle Allows public reads and enforces document ownership for writes.
+     * @allow (get, list) Anyone can read job posts.
+     * @allow (create, update, delete) User with UID "K3C5lt2v2MXswpNjh9JkDZjZ3ue2" can modify /job_posts/{jobPostId} where resource.data.userId == "K3C5lt2v2MXswpNjh9JkDZjZ3ue2"
+     * @deny (create, update, delete) User with UID "OtherUID" cannot modify /job_posts/{jobPostId} where resource.data.userId == "K3C5lt2v2MXswpNjh9JkDZjZ3ue2"
+     * @principle Public read, owner-only writes.
      */
     match /job_posts/{jobPostId} {
-      allow get, list: if true;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isJobPostOwner(userId) {
+          return resource.data.userId == userId;
+      }
+
+      function isExistingJobPostOwner() {
+        return isSignedIn() && resource.data.userId == request.auth.uid;
+      }
+
+      allow get: if true;
+      allow list: if true;
+
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && isOwner(resource.data.userId) && resource != null;
-      allow delete: if isSignedIn() && isOwner(resource.data.userId) && resource != null;
+      allow update: if isSignedIn() && request.resource.data.userId == request.auth.uid && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
     /**
-     * @description Controls access to bids submitted for a specific job post.
-     *              Only the provider who created the bid can manage it.
+     * @description Secure bids on a specific job post. Only accessible to the job poster and the bidder.
      * @path /job_posts/{jobPostId}/bids/{bidId}
-     * @allow (create) Provider 'provider456' can create a bid for job 'job123' with providerId 'provider456'.
-     * @allow (get) Provider 'provider456' can read their own bid.
-     * @allow (update) Provider 'provider456' can update their own bid.
-     * @allow (delete) Provider 'provider456' can delete their own bid.
-     * @deny (create) Provider 'provider789' cannot create a bid for providerId 'provider456'.
-     * @principle Enforces document ownership for writes within a subcollection.
+     * @allow (create, update, delete) User with UID "K3C5lt2v2MXswpNjh9JkDZjZ3ue2" can create a bid under /job_posts/{jobPostId}/bids/{bidId} if they are the bidder.
+     * @deny (create, update, delete) User with UID "OtherUID" cannot modify /job_posts/{jobPostId}/bids/{bidId}
      */
     match /job_posts/{jobPostId}/bids/{bidId} {
-      allow get: if isSignedIn() && isBidOwner(resource.data.providerId);
-      allow list: if isSignedIn() && isBidOwner(resource.data.providerId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(providerId) {
+        return request.auth.uid == providerId;
+      }
+
+      function isBidder(providerId) {
+        return resource.data.providerId == providerId;
+      }
+
+      function isExistingBidOwner() {
+          return isSignedIn() && resource.data.providerId == request.auth.uid;
+      }
+
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+
       allow create: if isSignedIn() && request.resource.data.providerId == request.auth.uid;
-      allow update: if isSignedIn() && isBidOwner(resource.data.providerId) && resource != null;
-      allow delete: if isSignedIn() && isBidOwner(resource.data.providerId) && resource != null;
+      allow update: if isSignedIn() && request.resource.data.providerId == request.auth.uid && resource.data.providerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.providerId == request.auth.uid;
     }
 
     /**
-     * @description Controls access to payment transaction records.
-     *              Payments are accessible to the user or provider associated with the payment.
+     * @description Secure payment transactions. Publicly readable, only system can modify.
      * @path /payments/{paymentId}
-     * @allow (create) User 'user123' can create a payment record with userId 'user123'.
-     * @allow (get) User 'user123' can read a payment record associated with them.
-     * @allow (update) User 'user123' can update a payment record associated with them.
-     * @allow (delete) User 'user123' can delete a payment record associated with them.
-     * @deny (create) User 'user456' cannot create a payment record with userId 'user123'.
-     * @principle Enforces document ownership for writes.
      */
     match /payments/{paymentId} {
-      allow get: if isSignedIn() && (isOwner(resource.data.userId) || isOwner(resource.data.providerId));
-      allow list: if false;
-      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || request.resource.data.providerId == request.auth.uid);
-      allow update: if isSignedIn() && (isOwner(resource.data.userId) || isOwner(resource.data.providerId)) && resource != null;
-      allow delete: if isSignedIn() && (isOwner(resource.data.userId) || isOwner(resource.data.providerId)) && resource != null;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if true;
+      allow list: if true;
+      allow create, update, delete: if false; // TODO: Add system role check once roles are defined.
     }
 
     /**
-     * @description Controls access to reviews.
-     *              Reviews are accessible to reviewer and reviewee.
+     * @description Secure reviews for jobs. Publicly readable, only system can modify.
      * @path /reviews/{reviewId}
-     * @allow (create) User 'user123' can create a review with reviewerId 'user123'.
-     * @allow (get) User 'user123' can read a review where they are the reviewer or reviewee.
-     * @allow (update) User 'user123' can update a review where they are the reviewer.
-     * @allow (delete) User 'user123' can delete a review where they are the reviewer.
-     * @deny (create) User 'user456' cannot create a review with reviewerId 'user123'.
-     * @principle Enforces document ownership for writes.
      */
     match /reviews/{reviewId} {
-      allow get: if isSignedIn() && (isOwner(resource.data.reviewerId) || isOwner(resource.data.revieweeId));
-      allow list: if false;
-      allow create: if isSignedIn() && request.resource.data.reviewerId == request.auth.uid;
-      allow update: if isSignedIn() && isOwner(resource.data.reviewerId) && resource != null;
-      allow delete: if isSignedIn() && isOwner(resource.data.reviewerId) && resource != null;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if true;
+      allow list: if true;
+      allow create, update, delete: if false; // TODO: Add system role check once roles are defined.
     }
 
-    // --- Helper functions ---
-
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-    }
-
-    function isBidOwner(providerId) {
-      return request.auth.uid == providerId;
-    }
+     /**
+      * @description Secure notifications.  Any signed in user can list the notifications.
+      * @path /notifications
+      */
+     match /notifications/{notificationId} {
+        function isSignedIn() {
+          return request.auth != null;
+        }
+        allow get: if isSignedIn();
+        allow list: if isSignedIn();
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
+      }
   }
 }

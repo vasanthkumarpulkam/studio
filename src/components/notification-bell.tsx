@@ -26,21 +26,25 @@ export default function NotificationBell({ userId }: { userId: string }) {
   const { t, isTranslationReady } = useTranslation();
 
   const notificationsQuery = useMemoFirebase(() => {
-    if (!user) return null;
+    if (!user) return null; // Do not run query if user is not loaded
+    
     // Admins can see all, users only see their own
     if (user.role === 'admin') {
-      return collection(db, 'notifications');
+      return query(collection(db, 'notifications'));
     }
-    return query(collection(db, 'notifications'), where('userId', '==', userId))
-  }, [userId, user]);
+    
+    // For regular users, always filter by their userId
+    return query(collection(db, 'notifications'), where('userId', '==', user.uid));
+  }, [user]);
 
   const { data: notifications } = useCollection<Notification>(notificationsQuery);
   
   const unreadCount = notifications?.filter((n) => !n.isRead).length ?? 0;
 
   const handleMarkAllRead = () => {
+    if (!user) return;
     startTransition(async () => {
-      await markAllNotificationsAsRead(userId);
+      await markAllNotificationsAsRead(user.uid);
     });
   };
 
@@ -83,7 +87,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
             <ScrollArea className="h-72">
               {notifications && notifications.length > 0 ? (
                 <div className="divide-y">
-                  {notifications.map((notification) => (
+                  {notifications.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((notification) => (
                     <NotificationCard
                       key={notification.id}
                       notification={notification}
@@ -108,5 +112,3 @@ export default function NotificationBell({ userId }: { userId: string }) {
     </Popover>
   );
 }
-
-    
