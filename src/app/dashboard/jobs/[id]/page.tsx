@@ -3,63 +3,72 @@
 
 import React, { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
-import {
-  getJob,
-  getBidsForJob,
-  getProvider,
-  getChatMessages,
-  getUser,
-  getMockUser,
-} from '@/lib/data';
+import { getProvider } from '@/lib/data';
 import JobDetailsView from '@/components/job-details-view';
 import type { User, Provider, Job, Bid, ChatMessage } from '@/types';
-import { useUser } from '@/firebase';
+import { useUser, useDoc, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, collection, query, where } from 'firebase/firestore';
+import { db } from '@/firebase/config';
+import { Loader2 } from 'lucide-react';
 
-export default function JobDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  // Correctly unwrap the promise for params using React.use()
-  const { id } = React.use(params);
-  const { user: firebaseUser, isUserLoading } = useUser();
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+
+export default function JobDetailsPage({ params }: { params: { id: string } }) {
+  const { id } = params;
+  const { user: currentUser, isUserLoading } = useUser();
+
+  const jobRef = useMemoFirebase(() => doc(db, 'job_posts', id), [id]);
+  const { data: job, isLoading: isJobLoading } = useDoc<Job>(jobRef);
+
+  const bidsRef = useMemoFirebase(() => job ? collection(jobRef, 'bids') : null, [job, jobRef]);
+  const { data: bids, isLoading: areBidsLoading } = useCollection<Bid>(bidsRef);
+
+  const jobPosterRef = useMemoFirebase(() => job ? doc(db, 'users', job.postedBy) : null, [job]);
+  const { data: jobPoster } = useDoc<User>(jobPosterRef);
   
-  useEffect(() => {
-    if (firebaseUser) {
-      setCurrentUser(getMockUser(firebaseUser.uid));
-    } else if (!isUserLoading) {
-      setCurrentUser(null);
+  const acceptedBid = useMemo(() => {
+    if (!job || !bids) return null;
+    return job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
+  }, [job, bids]);
+
+  const acceptedProviderRef = useMemoFirebase(() => {
+    if (!acceptedBid) return null;
+    return doc(db, 'users', acceptedBid.providerId);
+  }, [acceptedBid]);
+  const { data: acceptedProvider } = useDoc<Provider>(acceptedProviderRef);
+  
+  const isOwner = currentUser && job ? job.postedBy === currentUser.uid : false;
+
+  const chatMessagesQuery = useMemoFirebase(() => {
+    if (currentUser && job && (isOwner || (acceptedProvider && currentUser.uid === acceptedProvider.uid))) {
+      return query(
+        collection(db, 'chats'),
+        where('jobId', '==', job.id)
+      );
     }
-  }, [firebaseUser, isUserLoading]);
+    return null;
+  }, [currentUser, job, isOwner, acceptedProvider]);
+  
+  const { data: chatMessages } = useCollection<ChatMessage>(chatMessagesQuery);
+  
+  if (isUserLoading || isJobLoading || areBidsLoading) {
+    return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
 
-  // Fetch data directly since `id` is now available synchronously
-  const job = getJob(id);
-
-  // If the job doesn't exist after fetching, then show notFound
   if (!job) {
     notFound();
   }
 
-  const bids = getBidsForJob(job.id);
-  const jobPoster = getUser(job.postedBy);
-  const acceptedBid = job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
-  const acceptedProvider = acceptedBid ? getProvider(acceptedBid.providerId) : null;
-  
-  function isOwner(job: Job, user: User | Provider) {
-    return job.postedBy === user.id;
-  }
-
-  const chatMessages = (currentUser && (isOwner(job, currentUser) || (acceptedProvider && currentUser.id === acceptedProvider.id))) 
-    ? getChatMessages(job.id, acceptedProvider ? acceptedProvider.id : bids[0]?.providerId) 
-    : [];
-
-
   return (
     <JobDetailsView
       job={job}
-      bids={bids}
+      bids={bids || []}
       currentUser={currentUser}
       jobPoster={jobPoster}
       acceptedProvider={acceptedProvider}
       acceptedBid={acceptedBid}
-      chatMessages={chatMessages}
+      chatMessages={chatMessages || []}
     />
   );
 }
+
+    

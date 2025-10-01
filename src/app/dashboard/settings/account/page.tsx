@@ -4,29 +4,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { getCurrentUser, getProvider } from '@/lib/data';
+import { getProvider } from '@/lib/data';
 import { ShieldCheck, ShieldAlert, User, KeyRound, UserX, FileText, Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import type { User as UserType, Provider } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
+import { useUser } from '@/firebase';
 
 
 export default function AccountSettingsPage() {
-    const [user, setUser] = useState<UserType | Provider | null>(null);
-    const [provider, setProvider] = useState<Provider | null>(null);
+    const { user, isUserLoading } = useUser();
     const { t, isTranslationReady } = useTranslation();
 
-    useEffect(() => {
-        const currentUser = getCurrentUser();
-        setUser(currentUser);
-        if (currentUser && currentUser.role === 'provider') {
-            setProvider(getProvider(currentUser.id) || null);
-        }
-    }, []);
-
-    if (!user || !isTranslationReady) {
+    if (isUserLoading || !user || !isTranslationReady) {
         return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     }
+
+    const provider = user.role === 'provider' ? user as Provider : null;
 
     return (
         <div className="space-y-6">
@@ -114,3 +107,5 @@ export default function AccountSettingsPage() {
         </div>
     )
 }
+
+    

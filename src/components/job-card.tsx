@@ -96,7 +96,7 @@ export function JobCard({ job, isGrid = false }: JobCardProps) {
   return (
      <Card className="hover:shadow-lg transition-shadow duration-300 bg-card overflow-hidden">
         <div className="grid md:grid-cols-[200px_1fr]">
-            <div className="relative">
+            <div className="relative h-48 md:h-full">
                 {job.images[0] ? (
                     <Image 
                         src={job.images[0]}
@@ -160,3 +160,5 @@ export function JobCard({ job, isGrid = false }: JobCardProps) {
      </Card>
   );
 }
+
+    

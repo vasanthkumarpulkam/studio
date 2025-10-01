@@ -7,12 +7,8 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import {
-  getJobsForCustomer,
-  getOpenJobsForProvider,
   jobCategories,
-  getAllOpenJobs,
   getProvider,
-  getMockUser,
 } from '@/lib/data';
 import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
@@ -42,12 +38,13 @@ import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useCollection } from '@/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/firebase/config';
 
 
 export default function DashboardPage() {
-  const { user: firebaseUser, isUserLoading } = useUser();
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+  const { user: currentUser, isUserLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -56,37 +53,41 @@ export default function DashboardPage() {
   const { t, isTranslationReady } = useTranslation();
   const router = useRouter();
   
-  const allJobs = useMemo(() => getAllOpenJobs(), []);
-  const [providerJobs, setProviderJobs] = useState<Job[]>([]);
-  const [customerJobs, setCustomerJobs] = useState<Job[]>([]);
+  // Queries for jobs
+  const customerJobsQuery = currentUser ? query(collection(db, 'job_posts'), where('postedBy', '==', currentUser.uid)) : null;
+  const { data: customerJobs } = useCollection<Job>(customerJobsQuery);
+
+  const providerSkills = useMemo(() => (currentUser as Provider)?.skills || [], [currentUser]);
+  const providerJobsQuery = currentUser?.role === 'provider' ? query(collection(db, 'job_posts'), where('status', '==', 'open'), where('category', 'in', providerSkills.length > 0 ? providerSkills : ['__placeholder__'])) : null;
+  const { data: providerJobs } = useCollection<Job>(providerJobsQuery);
+  
+  const allJobsQuery = query(collection(db, 'job_posts'), where('status', '==', 'open'));
+  const { data: allJobs } = useCollection<Job>(allJobsQuery);
 
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
-  const providerProfile = useMemo(() => currentUser?.role === 'provider' ? getProvider(currentUser.id) : null, [currentUser]);
-  const providerSkills = useMemo(() => providerProfile?.skills || [], [providerProfile]);
 
   useEffect(() => {
-    if (!isUserLoading) {
-      const user = firebaseUser ? getMockUser(firebaseUser.uid) : null;
-      setCurrentUser(user as User | Provider | null);
-
-      if (user) {
-          if (user.role === 'provider') {
-              const provider = getProvider(user.id);
-              if (provider) {
-                  setProviderJobs(getOpenJobsForProvider(provider.id));
-                  setSelectedCategories(provider.skills); // Pre-select provider's skills
-              }
-          }
-          setCustomerJobs(getJobsForCustomer(user.id));
+    // Pre-select provider's skills on initial load
+    if (currentUser?.role === 'provider') {
+      const provider = currentUser as Provider;
+      if (provider.skills) {
+        setSelectedCategories(provider.skills);
       }
     }
-  }, [firebaseUser, isUserLoading]);
+  }, [currentUser])
 
   useEffect(() => {
     // Only run filter if not loading
     if (isUserLoading) return;
 
-    const jobsToFilter = !currentUser || currentUser?.role === 'customer' ? allJobs : providerJobs;
+    let jobsToFilter: Job[] = [];
+    if (!currentUser) { // public view
+      jobsToFilter = allJobs || [];
+    } else if (currentUser.role === 'provider') {
+      jobsToFilter = providerJobs || [];
+    } else { // customer view
+      jobsToFilter = customerJobs || [];
+    }
     
     let results = jobsToFilter.filter(job => {
       const searchTermMatch = searchTerm.toLowerCase() 
@@ -123,7 +124,7 @@ export default function DashboardPage() {
 
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius, currentUser, isUserLoading]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, customerJobs, sortBy, radius, currentUser, isUserLoading]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
@@ -262,7 +263,7 @@ export default function DashboardPage() {
                   {filteredJobs.length > 0 ? (
                       <div className="space-y-6">
                       {filteredJobs.map((job) => (
-                          <JobCard key={job.id} job={job} role="customer" />
+                          <JobCard key={job.id} job={job} />
                       ))}
                       </div>
                   ) : (
@@ -389,7 +390,7 @@ export default function DashboardPage() {
             {filteredJobs.length > 0 ? (
               <div className="space-y-6">
                 {filteredJobs.map((job) => (
-                  <JobCard key={job.id} job={job} role="provider" />
+                  <JobCard key={job.id} job={job} />
                 ))}
               </div>
             ) : (
@@ -408,7 +409,7 @@ export default function DashboardPage() {
   }
 
   // Customer View
-  const myJobs = customerJobs;
+  const myJobs = customerJobs || [];
   
   return (
     <>
@@ -435,7 +436,7 @@ export default function DashboardPage() {
                  {myJobs.length > 0 ? (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {myJobs.map((job) => (
-                        <JobCard key={job.id} job={job} role="customer" isGrid />
+                        <JobCard key={job.id} job={job} isGrid />
                     ))}
                     </div>
                 ) : (
@@ -458,3 +459,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    

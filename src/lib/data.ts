@@ -23,17 +23,17 @@ const jobImageIkea2 = PlaceHolderImages.find(p => p.id === 'job-ikea-2')?.imageU
 
 export const users: User[] = [
   { id: 'user-1', uid: 'user-1', name: 'Vasanth Kumar', email: 'vasanth.kumar@example.com', avatarUrl: avatar1, role: 'customer', hasPaymentMethod: true, phone: '555-123-4567', bio: 'I value clear communication and timely service.', status: 'active', joinedOn: '2024-05-01T10:00:00.000Z' },
-  { id: 'user-2', uid: 'user-2', name: 'Mike Johnson', email: 'provider@servicehub.com', avatarUrl: avatar2, role: 'provider', hasPaymentMethod: true, phone: '555-987-6543', bio: 'Certified plumber with over 10 years of experience in residential and commercial plumbing. I take pride in quality workmanship and fast, friendly service.', status: 'active', joinedOn: '2024-04-15T11:00:00.000Z' },
+  { id: 'user-2', uid: 'provider@servicehub.com', name: 'Mike Johnson', email: 'provider@servicehub.com', avatarUrl: avatar2, role: 'provider', hasPaymentMethod: true, phone: '555-987-6543', bio: 'Certified plumber with over 10 years of experience in residential and commercial plumbing. I take pride in quality workmanship and fast, friendly service.', status: 'active', joinedOn: '2024-04-15T11:00:00.000Z' },
   { id: 'user-3', uid: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', hasPaymentMethod: true, phone: '555-321-7654', bio: 'Skilled flooring and tiling expert. I work with hardwood, laminate, vinyl, and ceramic to bring your vision to life. My focus is on precision and durability.', status: 'active', joinedOn: '2024-03-20T14:30:00.000Z' },
   { id: 'user-4', uid: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', hasPaymentMethod: false, phone: '555-456-1239', bio: 'Passionate about creating beautiful outdoor spaces. I offer lawn care, gardening, and landscaping services.', status: 'suspended', joinedOn: '2024-05-10T09:00:00.000Z' },
   { id: 'user-5', uid: 'user-5', name: 'James Brown', email: 'james.brown@example.com', avatarUrl: avatar5, role: 'provider', hasPaymentMethod: true, phone: '555-654-9870', bio: 'Reliable and efficient mover with a strong team. We handle your belongings with care as if they were our own. No job is too big or too small.', status: 'active', joinedOn: '2023-12-05T18:00:00.000Z' },
   { id: 'user-6', uid: 'user-6', name: 'Jessica Williams', email: 'jessica.w@example.com', avatarUrl: avatar6, role: 'provider', hasPaymentMethod: true, phone: '555-789-4561', bio: 'Professional cleaning services for homes and offices. I am thorough, trustworthy, and use eco-friendly products whenever possible.', status: 'active', joinedOn: '2024-01-22T16:45:00.000Z' },
-  { id: 'admin-user', uid: 'admin-user', name: 'Admin User', email: 'admin@servicehub.com', role: 'admin', hasPaymentMethod: true, status: 'active', joinedOn: '2023-01-01T00:00:00.000Z' },
-  { id: 'customer-user', uid: 'customer-user', name: 'Customer User', email: 'customer@servicehub.com', role: 'customer', hasPaymentMethod: true, status: 'active', joinedOn: '2023-01-01T00:00:00.000Z' },
+  { id: 'admin-user', uid: 'admin@servicehub.com', name: 'Admin User', email: 'admin@servicehub.com', role: 'admin', hasPaymentMethod: true, status: 'active', joinedOn: '2023-01-01T00:00:00.000Z' },
+  { id: 'customer-user', uid: 'customer@servicehub.com', name: 'Customer User', email: 'customer@servicehub.com', role: 'customer', hasPaymentMethod: true, status: 'active', joinedOn: '2023-01-01T00:00:00.000Z' },
 ];
 
 export const providers: Provider[] = [
-  { id: 'user-2', uid: 'user-2', name: 'Mike Johnson', email: 'provider@servicehub.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs', 'Electrical'], location: 'San Francisco, CA', hasPaymentMethod: true, phone: '555-987-6543', bio: 'Certified plumber with over 10 years of experience in residential and commercial plumbing. I take pride in quality workmanship and fast, friendly service.', website: 'https://mikeplumbs.com', status: 'active', joinedOn: '2024-04-15T11:00:00.000Z' },
+  { id: 'user-2', uid: 'provider@servicehub.com', name: 'Mike Johnson', email: 'provider@servicehub.com', avatarUrl: avatar2, role: 'provider', rating: 4.8, reviews: 25, isVerified: true, skills: ['Plumbing', 'General Repair', 'Handyman Work', 'Appliance Repairs', 'Electrical'], location: 'San Francisco, CA', hasPaymentMethod: true, phone: '555-987-6543', bio: 'Certified plumber with over 10 years of experience in residential and commercial plumbing. I take pride in quality workmanship and fast, friendly service.', website: 'https://mikeplumbs.com', status: 'active', joinedOn: '2024-04-15T11:00:00.000Z' },
   { id: 'user-3', uid: 'user-3', name: 'David Chen', email: 'david.chen@example.com', avatarUrl: avatar3, role: 'provider', rating: 4.9, reviews: 42, isVerified: true, skills: ['Flooring', 'Painting', 'Tiling', 'Electrical', 'Furniture Assembly'], location: 'San Francisco, CA', hasPaymentMethod: true, phone: '555-321-7654', bio: 'Skilled flooring and tiling expert. I work with hardwood, laminate, vinyl, and ceramic to bring your vision to life. My focus is on precision and durability.', website: 'https://chenflooring.com', status: 'active', joinedOn: '2024-03-20T14:30:00.000Z' },
   { id: 'user-4', uid: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', rating: 4.7, reviews: 18, isVerified: false, skills: ['Grass Cutting', 'Gardening', 'Landscaping'], location: 'Oakland, CA', hasPaymentMethod: false, phone: '555-456-1239', bio: 'Passionate about creating beautiful outdoor spaces. I offer lawn care, gardening, and landscaping services.', status: 'suspended', joinedOn: '2024-05-10T09:00:00.000Z' },
   { id: 'user-5', uid: 'user-5', name: 'James Brown', email: 'james.brown@example.com', avatarUrl: avatar5, role: 'provider', rating: 4.9, reviews: 55, isVerified: true, skills: ['Movers', 'Packing', 'Storage Help', 'General Labor'], location: 'New York, NY', hasPaymentMethod: true, phone: '555-654-9870', bio: 'Reliable and efficient mover with a strong team. We handle your belongings with care as if they were our own. No job is too big or too small.', status: 'active', joinedOn: '2023-12-05T18:00:00.000Z' },
@@ -141,7 +141,7 @@ export { initialNotifications };
 // NOTE: The functions below are for the mock data and will be replaced by Firebase interactions.
 
 export function getMockUser(uid: string): User | Provider | undefined {
-  const user = users.find(u => u.email?.startsWith(uid.split('@')[0]));
+  const user = users.find(u => u.uid === uid);
   if (!user) return undefined;
   
   if (user.role === 'provider') {
@@ -170,31 +170,12 @@ export function getProvider(id: string): Provider | undefined {
   return providers.find(p => p.id === id);
 }
 
-export function getJobsForCustomer(userId: string): Job[] {
-  return jobs.filter(j => j.postedBy === userId);
-}
-
-export function getOpenJobsForProvider(providerId: string): Job[] {
-    const provider = getProvider(providerId);
-    if (!provider) return [];
-    
-    return jobs.filter(job => job.status === 'open' && provider.skills.includes(job.category));
-}
-
-export function getAllOpenJobs(): Job[] {
-  return jobs.filter(j => j.status === 'open');
-}
-
 export function getJob(id: string): Job | undefined {
   return jobs.find(j => j.id === id);
 }
 
 export function getBidsForJob(jobId: string): Bid[] {
   return bids.filter(b => b.jobId === jobId);
-}
-
-export function getNotificationsForUser(userId:string): Notification[] {
-    return notifications.filter(n => n.userId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
 export function getChatMessages(jobId: string, providerId: string): ChatMessage[] {
@@ -248,26 +229,4 @@ export let jobCategories = [
     'Other'
 ];
 
-export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
-    const job = jobs.find(j => j.id === bidData.jobId);
-    if (!job) {
-        throw new Error('Job not found.');
-    }
-
-    const newBid: Bid = {
-        ...bidData,
-        id: `bid-${Date.now()}`,
-        submittedOn: new Date().toISOString(),
-    };
-    bids.push(newBid);
-
-    // Create a notification for the job poster
-    notifications.unshift({
-        id: `notif-${Date.now()}`,
-        userId: job.postedBy,
-        message: `You received a new bid of $${newBid.amount.toFixed(2)} for your job "${job.title}".`,
-        link: `/dashboard/jobs/${job.id}`,
-        isRead: false,
-        createdAt: new Date().toISOString(),
-    });
-}
+    

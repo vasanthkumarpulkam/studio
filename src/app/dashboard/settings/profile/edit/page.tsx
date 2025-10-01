@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { jobCategories, getCurrentUser } from '@/lib/data';
+import { jobCategories } from '@/lib/data';
 import { ArrowLeft, Save, Trash2, PlusCircle, Loader2, User, Briefcase, Globe, Camera, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
@@ -30,6 +30,7 @@ import type { User as UserType, Provider } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useUser } from '@/firebase';
 
 
 const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
@@ -53,34 +54,23 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function EditProfilePage() {
   const { toast } = useToast();
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<UserType | Provider | null>(null);
+  const { user: currentUser, isUserLoading } = useUser();
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
 
-  useEffect(() => {
-    const user = getCurrentUser();
-    if (!user) {
-      router.push('/login');
-    }
-    setCurrentUser(user);
-    if(user?.avatarUrl) {
-      setAvatarPreview(user.avatarUrl);
-    }
-  }, [router]);
-
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      phone: currentUser?.phone || '',
-      bio: currentUser?.bio || '',
+      name: '',
+      email: '',
+      phone: '',
+      bio: '',
       avatar: undefined,
-      skills: (currentUser as Provider)?.skills || [],
-      location: (currentUser as Provider)?.location || '',
-      website: (currentUser as Provider)?.website || '',
+      skills: [],
+      location: '',
+      website: '',
     },
   });
 
@@ -104,8 +94,10 @@ export default function EditProfilePage() {
       if(currentUser.avatarUrl) {
         setAvatarPreview(currentUser.avatarUrl);
       }
+    } else if (!isUserLoading) {
+      router.push('/login');
     }
-  }, [currentUser, form]);
+  }, [currentUser, isUserLoading, form, router]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,7 +127,7 @@ export default function EditProfilePage() {
     
     startTransition(async () => {
         try {
-            await updateUserProfile(currentUser.id, values);
+            await updateUserProfile(currentUser.uid, values);
             toast({
                 title: t('profile_edit_success_title'),
                 description: t('profile_edit_success_desc'),
@@ -150,7 +142,7 @@ export default function EditProfilePage() {
     });
   }
 
-  if (!currentUser || !isTranslationReady) {
+  if (isUserLoading || !currentUser || !isTranslationReady) {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
   
@@ -252,8 +244,9 @@ export default function EditProfilePage() {
                         <FormItem>
                             <FormLabel>{t('profile_edit_email_label')}</FormLabel>
                             <FormControl>
-                            <Input type="email" placeholder={t('profile_edit_email_placeholder')} {...field} />
+                            <Input type="email" placeholder={t('profile_edit_email_placeholder')} {...field} readOnly disabled />
                             </FormControl>
+                            <FormDescription>Your email address cannot be changed.</FormDescription>
                             <FormMessage />
                         </FormItem>
                         )}

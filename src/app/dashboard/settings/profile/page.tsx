@@ -1,38 +1,31 @@
 
 'use client';
 
-import { getCurrentUser, getProvider } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, ShieldAlert, Star, Loader2, Mail, Phone, Globe, Edit } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import type { User, Provider } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { useUser } from '@/firebase';
 
 export default function ProfileSettingsPage() {
-  const [user, setUser] = useState<User | Provider | null>(null);
-  const [provider, setProvider] = useState<Provider | null>(null);
+  const { user, isUserLoading } = useUser();
   const { t, isTranslationReady } = useTranslation();
 
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-    if (currentUser?.role === 'provider') {
-        setProvider(getProvider(currentUser.id) || null);
-    }
-  }, []);
-
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | undefined) => {
+    if (!name) return '';
     return name.split(' ').map((n) => n[0]).join('');
   };
 
-  if (!user || !isTranslationReady) {
+  if (isUserLoading || !isTranslationReady || !user) {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
+  
+  const provider = user.role === 'provider' ? user as Provider : null;
 
   return (
     <Card>
@@ -102,9 +95,9 @@ export default function ProfileSettingsPage() {
                   <p className="text-sm text-muted-foreground">{t('settings_profile_rating')}</p>
                   <div className="flex items-center gap-1 text-2xl font-bold">
                       <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
-                      {provider.rating}
+                      {provider.rating || 'N/A'}
                   </div>
-                  <p className="text-xs text-muted-foreground">({provider.reviews} {t('settings_profile_reviews')})</p>
+                  <p className="text-xs text-muted-foreground">({provider.reviews || 0} {t('settings_profile_reviews')})</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 p-4 border rounded-lg bg-muted/30">
                       <p className="text-sm text-muted-foreground">{t('settings_profile_verification')}</p>
@@ -128,9 +121,9 @@ export default function ProfileSettingsPage() {
               <div>
                   <h3 className="text-lg font-semibold mb-2">{t('settings_profile_skills')}</h3>
                   <div className="flex flex-wrap gap-2">
-                  {provider.skills.map((skill) => (
+                  {(provider.skills && provider.skills.length > 0) ? provider.skills.map((skill) => (
                       <Badge key={skill} variant="outline">{t(`category_${skill.replace(/\s/g, '_').toLowerCase()}`)}</Badge>
-                  ))}
+                  )) : <p className="text-sm text-muted-foreground">No skills listed.</p>}
                   </div>
               </div>
             </div>
@@ -140,3 +133,5 @@ export default function ProfileSettingsPage() {
     </Card>
   );
 }
+
+    
