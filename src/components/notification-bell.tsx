@@ -14,17 +14,26 @@ import NotificationCard from './notification-card';
 import { markAllNotificationsAsRead } from '@/app/actions';
 import { ScrollArea } from './ui/scroll-area';
 import { useTranslation } from '@/hooks/use-translation';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import type { Notification } from '@/types';
 
 export default function NotificationBell({ userId }: { userId: string }) {
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
 
-  const notificationsQuery = useMemoFirebase(() => query(collection(db, 'notifications'), where('userId', '==', userId)), [userId]);
+  const notificationsQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    // Admins can see all, users only see their own
+    if (user.role === 'admin') {
+      return collection(db, 'notifications');
+    }
+    return query(collection(db, 'notifications'), where('userId', '==', userId))
+  }, [userId, user]);
+
   const { data: notifications } = useCollection<Notification>(notificationsQuery);
   
   const unreadCount = notifications?.filter((n) => !n.isRead).length ?? 0;
