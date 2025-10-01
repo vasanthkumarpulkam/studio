@@ -14,6 +14,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -186,6 +187,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                       ))}
                     </div>
                     <DialogContent className="max-w-3xl p-2">
+                       <DialogTitle className="sr-only">Job Image Preview</DialogTitle>
                       {selectedImage && (
                         <Image
                           src={selectedImage}
@@ -445,5 +447,3 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
-
-    
