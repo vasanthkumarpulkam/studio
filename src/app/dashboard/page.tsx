@@ -201,7 +201,7 @@ export default function DashboardPage() {
                                 checked={selectedCategories.includes(cat)}
                                 onCheckedChange={() => handleCategoryChange(cat)}
                               >
-                                {cat}
+                                {t(`category_${cat.replace(/\s/g, '_').toLowerCase()}`)}
                               </DropdownMenuCheckboxItem>
                           ))}
                       </DropdownMenuContent>
@@ -323,7 +323,7 @@ export default function DashboardPage() {
                                 checked={selectedCategories.includes(cat)}
                                 onCheckedChange={() => handleCategoryChange(cat)}
                               >
-                                {cat}
+                                {t(`category_${cat.replace(/\s/g, '_').toLowerCase()}`)}
                               </DropdownMenuCheckboxItem>
                           ))}
                       </DropdownMenuContent>
@@ -426,6 +426,8 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
 
     
 
