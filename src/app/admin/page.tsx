@@ -4,8 +4,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { getAllUsers, providers, jobs, bids as allBids } from '@/lib/data';
-import { BarChart, Users, Briefcase, FileText, LineChart, PieChart } from 'lucide-react';
-import { Line, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend, Cell, Bar } from 'recharts';
+import { BarChart as BarChartIcon, Users, Briefcase, FileText } from 'lucide-react';
+import { LineChart, PieChart, Line, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend, Cell, Bar, BarChart } from 'recharts';
 import { subMonths, format } from 'date-fns';
 import { useState, useEffect } from 'react';
 
