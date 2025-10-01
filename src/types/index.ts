@@ -3,8 +3,8 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  avatarUrl: string;
-  role: 'customer' | 'provider';
+  avatarUrl?: string;
+  role: 'customer' | 'provider' | 'admin';
   hasPaymentMethod: boolean;
   phone?: string;
   bio?: string;
@@ -76,5 +76,3 @@ export type ChatMessage = {
   text: string;
   timestamp: string; // ISO date string
 };
-
-    

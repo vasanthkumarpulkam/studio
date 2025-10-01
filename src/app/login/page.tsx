@@ -13,7 +13,7 @@ import {
 import Logo from '@/components/logo';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { login } from '@/lib/data';
-import { User, Briefcase } from 'lucide-react';
+import { User, Briefcase, Shield } from 'lucide-react';
 import { useEffect } from 'react';
 import LanguageSwitcher from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
@@ -24,11 +24,13 @@ export default function LoginPage() {
   const redirectUrl = searchParams.get('redirect');
   const { t, isTranslationReady } = useTranslation();
 
-  const handleLogin = (userId: string) => {
+  const handleLogin = (userId: string, role: 'customer' | 'provider' | 'admin') => {
     login(userId);
-    // Use replace to avoid adding a new entry to the history stack
-    // This feels more natural for a login flow.
-    router.replace(redirectUrl || '/dashboard');
+    if (role === 'admin') {
+      router.replace('/admin');
+    } else {
+      router.replace(redirectUrl || '/dashboard');
+    }
   };
   
   if (!isTranslationReady) {
@@ -57,13 +59,17 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
             <div className="grid gap-4">
-              <Button type="button" className="w-full" onClick={() => handleLogin('user-1')}>
+              <Button type="button" className="w-full" onClick={() => handleLogin('user-1', 'customer')}>
                 <User className="mr-2 h-4 w-4"/>
                 {t('login_as_customer')}
               </Button>
-              <Button type="button" variant="secondary" className="w-full" onClick={() => handleLogin('user-2')}>
+              <Button type="button" variant="secondary" className="w-full" onClick={() => handleLogin('user-2', 'provider')}>
                 <Briefcase className="mr-2 h-4 w-4"/>
                 {t('login_as_provider')}
+              </Button>
+               <Button type="button" variant="destructive" className="w-full" onClick={() => handleLogin('admin-user', 'admin')}>
+                <Shield className="mr-2 h-4 w-4"/>
+                Login as Admin
               </Button>
             </div>
           <div className="mt-4 text-center text-sm">

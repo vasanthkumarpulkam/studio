@@ -28,6 +28,7 @@ export const users: User[] = [
   { id: 'user-4', name: 'Emily Rodriguez', email: 'emily.r@example.com', avatarUrl: avatar4, role: 'provider', hasPaymentMethod: false, phone: '555-456-1239', bio: 'Passionate about creating beautiful outdoor spaces. I offer lawn care, gardening, and landscaping services.' },
   { id: 'user-5', name: 'James Brown', email: 'james.brown@example.com', avatarUrl: avatar5, role: 'provider', hasPaymentMethod: true, phone: '555-654-9870', bio: 'Reliable and efficient mover with a strong team. We handle your belongings with care as if they were our own. No job is too big or too small.' },
   { id: 'user-6', name: 'Jessica Williams', email: 'jessica.w@example.com', avatarUrl: avatar6, role: 'provider', hasPaymentMethod: true, phone: '555-789-4561', bio: 'Professional cleaning services for homes and offices. I am thorough, trustworthy, and use eco-friendly products whenever possible.' },
+  { id: 'admin-user', name: 'Admin User', email: 'admin@servicehub.com', role: 'admin', hasPaymentMethod: true },
 ];
 
 export const providers: Provider[] = [
