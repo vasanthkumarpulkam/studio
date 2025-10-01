@@ -8,6 +8,7 @@ import { BarChart as BarChartIcon, Users, Briefcase, FileText } from 'lucide-rea
 import { LineChart, PieChart, Line, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend, Cell, Bar, BarChart } from 'recharts';
 import { subMonths, format } from 'date-fns';
 import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
 type ChartData = {
   month: string;
@@ -20,6 +21,7 @@ type JobStatusData = {
 };
 
 export default function AdminDashboard() {
+  const [isLoading, setIsLoading] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalProviders, setTotalProviders] = useState(0);
   const [openJobs, setOpenJobs] = useState(0);
@@ -27,11 +29,10 @@ export default function AdminDashboard() {
   const [userSignupData, setUserSignupData] = useState<ChartData[]>([]);
   const [revenueData, setRevenueData] = useState<ChartData[]>([]);
   const [jobStatusData, setJobStatusData] = useState<JobStatusData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // All data fetching and processing is done on the client side
-    // to prevent hydration mismatches.
+    // after the initial render to prevent hydration mismatches.
     const allUsers = getAllUsers();
     setTotalUsers(allUsers.length);
     setTotalProviders(providers.length);
@@ -76,7 +77,7 @@ export default function AdminDashboard() {
     setJobStatusData(generatedJobStatusData);
     
     setIsLoading(false);
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on the client.
 
   const statusColors = {
     open: 'hsl(var(--chart-1))',
@@ -88,7 +89,11 @@ export default function AdminDashboard() {
   };
 
   if (isLoading) {
-      return <div>Loading dashboard...</div>
+    return (
+      <div className="flex h-[80vh] w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -205,3 +210,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+    
