@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight, Loader2 } from 'lucide-react';
 import type { Job, User, Provider } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { getCurrentUser } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
@@ -83,7 +84,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
               )}
               <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" /> 
-                  <span>{t('job_card_posted')} {format(new Date(job.postedOn), 'PP')}</span>
+                  <span>{t('job_card_posted')} {format(new Date(job.postedOn), 'PP', { locale: language === 'es' ? es : undefined })}</span>
               </div>
           </div>
         </CardContent>
@@ -150,7 +151,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                         )}
                          <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
                             <Calendar className="w-4 h-4" /> 
-                            <span>{formatDistanceToNow(new Date(job.postedOn), { addSuffix: true })}</span>
+                            <span>{formatDistanceToNow(new Date(job.postedOn), { addSuffix: true, locale: language === 'es' ? es : undefined })}</span>
                         </div>
                     </div>
                     <Button asChild size="sm" className="mt-2 md:mt-0">

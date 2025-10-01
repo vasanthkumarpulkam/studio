@@ -47,6 +47,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import BidForm from '@/components/bid-form';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AcceptBidButton from '@/components/accept-bid-button';
 import MarkCompletedButton from '@/components/mark-completed-button';
@@ -169,7 +170,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                   <MapPin className="w-4 h-4" /> {jobLocation}
                 </span>
                 <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Calendar className="w-4 h-4" /> {t('job_details_posted_on')} {format(new Date(job.postedOn), 'PPP')}
+                  <Calendar className="w-4 h-4" /> {t('job_details_posted_on')} {format(new Date(job.postedOn), 'PPP', { locale: language === 'es' ? es : undefined })}
                 </span>
                 {job.budget && (
                   <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -485,5 +486,3 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
-
-    

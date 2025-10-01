@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -15,10 +16,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, User, Provider } from '@/types';
 import { moderateChat, sendMessage } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/use-translation';
 
 type ChatModalProps = {
   triggerButton: React.ReactNode;
@@ -43,6 +46,7 @@ export default function ChatModal({
   const [newMessage, setNewMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const { language } = useTranslation();
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +123,7 @@ export default function ChatModal({
                         'text-xs mt-1',
                         isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'
                     )}>
-                        {format(new Date(message.timestamp), 'p')}
+                        {format(new Date(message.timestamp), 'p', { locale: language === 'es' ? es : undefined })}
                     </p>
                   </div>
                   {isCurrentUser && (

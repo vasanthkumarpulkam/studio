@@ -4,6 +4,7 @@
 import { useTransition } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { Notification } from '@/types';
 import { markNotificationAsRead } from '@/app/actions';
@@ -17,7 +18,7 @@ type NotificationCardProps = {
 
 export default function NotificationCard({ notification, onRead }: NotificationCardProps) {
   const [isPending, startTransition] = useTransition();
-  const { t, isTranslationReady } = useTranslation();
+  const { t, isTranslationReady, language } = useTranslation();
 
 
   const handleClick = () => {
@@ -49,6 +50,7 @@ export default function NotificationCard({ notification, onRead }: NotificationC
             <p className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(notification.createdAt), {
                 addSuffix: true,
+                locale: language === 'es' ? es : undefined,
               })}
             </p>
           </div>
