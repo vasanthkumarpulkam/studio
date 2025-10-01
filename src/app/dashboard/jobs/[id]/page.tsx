@@ -188,7 +188,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
               <CardHeader>
                 <CardTitle className="font-headline">Want to bid on this job?</CardTitle>
                 <CardDescription>
-                  Log in or create a provider account to submit your bid and chat with the poster.
+                  Log in or create a provider account to submit your bid.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex gap-4">
@@ -221,26 +221,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                 )}
                 {canProviderBid && !hasPaymentMethod && <PaymentAlert />}
                 {canProviderBid && hasPaymentMethod && currentUser && (
-                  <div className="space-y-6">
-                    <div className="flex justify-end">
-                     {currentUser && <ChatModal 
-                        triggerButton={
-                          <Button variant="outline">
-                              <MessageSquare className="mr-2 h-4 w-4"/>
-                              Message Poster
-                          </Button>
-                        }
-                        messages={getChatMessages(job.id, currentUser.id)}
-                        jobTitle={job.title}
-                        recipient={jobPoster}
-                        currentUser={currentUser}
-                        jobId={job.id}
-                        providerId={currentUser.id}
-                      />}
-                    </div>
-                    <Separator />
-                    <BidForm job={job} />
-                  </div>
+                  <BidForm job={job} />
                 )}
               </CardContent>
             </Card>
@@ -264,7 +245,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
         </div>
 
         <div className="space-y-6">
-          {(job.status !== 'open' && acceptedProvider) && (
+          {(job.status !== 'open' && acceptedProvider && currentUser) && (
             <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Provider Selected</CardTitle>
@@ -283,6 +264,21 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                       </div>
                     </div>
                   </div>
+
+                  <ChatModal 
+                    triggerButton={
+                      <Button variant="outline" className="w-full">
+                          <MessageSquare className="mr-2 h-4 w-4"/>
+                          Message {isOwner ? 'Provider' : 'Customer'}
+                      </Button>
+                    }
+                    messages={getChatMessages(job.id, acceptedProvider.id)}
+                    jobTitle={job.title}
+                    recipient={isOwner ? acceptedProvider : jobPoster}
+                    currentUser={currentUser}
+                    jobId={job.id}
+                    providerId={acceptedProvider.id}
+                  />
 
                   {job.status === 'pending-confirmation' && (
                      <Alert variant="default" className="bg-amber-50 border-amber-200">
@@ -367,8 +363,6 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     {bids.map((bid) => {
                       const provider = getProvider(bid.providerId);
                       if (!provider) return null;
-                      
-                      const chatHistory = getChatMessages(job.id, bid.providerId);
 
                       return (
                         <div key={bid.id} className="p-4 border rounded-lg">
@@ -399,20 +393,6 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                           </div>
                           {bid.message && <p className="text-sm text-muted-foreground mt-2 pl-11">{bid.message}</p>}
                           <div className="flex justify-end mt-3 gap-2">
-                             {currentUser && <ChatModal 
-                                triggerButton={
-                                  <Button variant="outline" size="sm">
-                                      <MessageSquare className="mr-2 h-4 w-4"/>
-                                      Message
-                                  </Button>
-                                }
-                                messages={chatHistory}
-                                jobTitle={job.title}
-                                recipient={provider}
-                                currentUser={currentUser}
-                                jobId={job.id}
-                                providerId={provider.id}
-                             />}
                              <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
                           </div>
                         </div>

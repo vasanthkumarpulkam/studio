@@ -22,6 +22,7 @@ import { getAiBidSuggestion, submitBid } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import type { Job } from '@/types';
 import { getCurrentUser } from '@/lib/data';
+import { Separator } from './ui/separator';
 
 const bidSchema = z.object({
   amount: z.coerce.number().positive('Must be a positive number.'),
@@ -109,28 +110,13 @@ export default function BidForm({ job }: { job: Job }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h3 className="text-xl font-bold font-headline">Submit Your Bid</h3>
-        <Button variant="outline" onClick={handleSuggestion} disabled={loadingSuggestion || !hasPaymentMethod || isSubmitting}>
-          {loadingSuggestion ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Sparkles className="mr-2 h-4 w-4" />
-          )}
-          Get AI Suggestion
-        </Button>
-      </div>
-
-      {suggestion && (
-        <Alert>
-          <Sparkles className="h-4 w-4" />
-          <AlertTitle className="font-headline">AI Bid Suggestion</AlertTitle>
-          <AlertDescription>
-            <p className="font-bold text-lg">${suggestion.suggestedBid.toFixed(2)}</p>
-            <p className="text-sm text-muted-foreground">{suggestion.reasoning}</p>
-          </AlertDescription>
-        </Alert>
-      )}
+       <div className="space-y-2">
+         <h3 className="text-xl font-bold font-headline">Submit Your Bid</h3>
+         <p className="text-sm text-muted-foreground">
+            Once your bid is accepted, you will be able to chat with the job poster to finalize details.
+         </p>
+       </div>
+      <Separator />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -177,16 +163,37 @@ export default function BidForm({ job }: { job: Job }) {
               )}
             />
           </fieldset>
-          <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isSubmitting}>
-            {isSubmitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <HandCoins className="mr-2 h-4 w-4" />
-            )}
-            {isSubmitting ? 'Submitting...' : 'Submit Bid'}
-          </Button>
+            
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isSubmitting}>
+                {isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                <HandCoins className="mr-2 h-4 w-4" />
+                )}
+                {isSubmitting ? 'Submitting...' : 'Submit Bid'}
+            </Button>
+            <Button variant="outline" type="button" className="w-full sm:w-auto" onClick={handleSuggestion} disabled={loadingSuggestion || !hasPaymentMethod || isSubmitting}>
+                {loadingSuggestion ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                )}
+                Get AI Suggestion
+            </Button>
+          </div>
         </form>
       </Form>
+        {suggestion && (
+            <Alert className="mt-6">
+            <Sparkles className="h-4 w-4" />
+            <AlertTitle className="font-headline">AI Bid Suggestion</AlertTitle>
+            <AlertDescription>
+                <p className="font-bold text-lg">${suggestion.suggestedBid.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">{suggestion.reasoning}</p>
+            </AlertDescription>
+            </Alert>
+        )}
     </div>
   );
 }
