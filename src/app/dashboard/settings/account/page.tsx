@@ -5,14 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCurrentUser, getProvider } from '@/lib/data';
-import { ShieldCheck, ShieldAlert, User, KeyRound, UserX, FileText } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, User, KeyRound, UserX, FileText, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { User as UserType, Provider } from '@/types';
+import { useTranslation } from '@/hooks/use-translation';
 
 
 export default function AccountSettingsPage() {
     const [user, setUser] = useState<UserType | Provider | null>(null);
     const [provider, setProvider] = useState<Provider | null>(null);
+    const { t, isTranslationReady } = useTranslation();
 
     useEffect(() => {
         const currentUser = getCurrentUser();
@@ -22,22 +24,22 @@ export default function AccountSettingsPage() {
         }
     }, []);
 
-    if (!user) {
-        return <div>Loading...</div>;
+    if (!user || !isTranslationReady) {
+        return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     }
 
     return (
         <div className="space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center gap-2"><User className="w-6 h-6"/> Account Type</CardTitle>
-                    <CardDescription>Manage your account type and verification status.</CardDescription>
+                    <CardTitle className="font-headline text-2xl flex items-center gap-2"><User className="w-6 h-6"/> {t('settings_account_title')}</CardTitle>
+                    <CardDescription>{t('settings_account_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
                         <div>
-                            <p className="font-semibold">Current Role</p>
-                            <p className="text-muted-foreground text-sm">You are currently a {user.role}.</p>
+                            <p className="font-semibold">{t('settings_account_current_role_label')}</p>
+                            <p className="text-muted-foreground text-sm">{t('settings_account_current_role_desc', { role: user.role })}</p>
                         </div>
                         <Badge variant={user.role === 'customer' ? 'secondary' : 'default'} className="capitalize">
                             {user.role}
@@ -45,68 +47,68 @@ export default function AccountSettingsPage() {
                     </div>
                      <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
                         <div>
-                            <p className="font-semibold">Verification Status</p>
-                             <p className="text-muted-foreground text-sm">Your identity verification status.</p>
+                            <p className="font-semibold">{t('settings_account_verification_status_label')}</p>
+                             <p className="text-muted-foreground text-sm">{t('settings_account_verification_status_desc')}</p>
                         </div>
                         {provider?.isVerified ? (
                             <div className="flex items-center gap-2 text-green-600">
                                 <ShieldCheck className="w-5 h-5"/>
-                                <span className="font-semibold">Verified</span>
+                                <span className="font-semibold">{t('settings_account_verified_status')}</span>
                             </div>
                         ) : (
                              <div className="flex items-center gap-2 text-amber-600">
                                 <ShieldAlert className="w-5 h-5"/>
-                                <span className="font-semibold">{provider ? 'Not Verified' : 'N/A'}</span>
+                                <span className="font-semibold">{provider ? t('settings_account_not_verified_status') : t('settings_account_not_applicable')}</span>
                             </div>
                         )}
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button variant="outline" disabled>{user.role === 'customer' ? 'Switch to Provider' : 'Switch to Customer'}</Button>
+                    <Button variant="outline" disabled>{user.role === 'customer' ? t('settings_account_switch_to_provider') : t('settings_account_switch_to_customer')}</Button>
                 </CardFooter>
             </Card>
 
              <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center gap-2"><KeyRound className="w-6 h-6"/> Login &amp; Security</CardTitle>
-                    <CardDescription>Manage your password, two-factor authentication, and view your login history.</CardDescription>
+                    <CardTitle className="font-headline text-2xl flex items-center gap-2"><KeyRound className="w-6 h-6"/> {t('settings_security_title')}</CardTitle>
+                    <CardDescription>{t('settings_security_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
-                        <p>Password</p>
-                        <Button variant="outline" size="sm">Reset Password</Button>
+                        <p>{t('settings_security_password_label')}</p>
+                        <Button variant="outline" size="sm">{t('settings_security_password_button')}</Button>
                     </div>
                      <div className="flex justify-between items-center">
-                        <p>Two-Factor Authentication</p>
-                        <Button variant="outline" size="sm" disabled>Enable 2FA</Button>
+                        <p>{t('settings_security_2fa_label')}</p>
+                        <Button variant="outline" size="sm" disabled>{t('settings_security_2fa_button')}</Button>
                     </div>
                      <div className="flex justify-between items-center">
-                        <p>Login History</p>
-                        <Button variant="outline" size="sm" disabled>View History</Button>
+                        <p>{t('settings_security_history_label')}</p>
+                        <Button variant="outline" size="sm" disabled>{t('settings_security_history_button')}</Button>
                     </div>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center gap-2"><FileText className="w-6 h-6"/> Data &amp; Privacy</CardTitle>
-                    <CardDescription>Export your account data.</CardDescription>
+                    <CardTitle className="font-headline text-2xl flex items-center gap-2"><FileText className="w-6 h-6"/> {t('settings_data_title')}</CardTitle>
+                    <CardDescription>{t('settings_data_subtitle')}</CardDescription>
                 </CardHeader>
                  <CardContent>
                     <div className="flex justify-between items-center">
-                        <p>Export Account Data</p>
-                        <Button variant="outline" size="sm" disabled>Request Data</Button>
+                        <p>{t('settings_data_export_label')}</p>
+                        <Button variant="outline" size="sm" disabled>{t('settings_data_export_button')}</Button>
                     </div>
                 </CardContent>
             </Card>
 
              <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center gap-2 text-destructive"><UserX className="w-6 h-6"/> Account Deletion</CardTitle>
-                    <CardDescription>Permanently delete your account and all associated data. This action cannot be undone.</CardDescription>
+                    <CardTitle className="font-headline text-2xl flex items-center gap-2 text-destructive"><UserX className="w-6 h-6"/> {t('settings_delete_title')}</CardTitle>
+                    <CardDescription>{t('settings_delete_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                     <Button variant="destructive" disabled>Delete Account</Button>
+                     <Button variant="destructive" disabled>{t('settings_delete_button')}</Button>
                 </CardContent>
             </Card>
         </div>

@@ -5,32 +5,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Bell, Mail, Smartphone } from 'lucide-react';
+import { Bell, Mail, Smartphone, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function NotificationsSettingsPage() {
+    const { t, isTranslationReady } = useTranslation();
+
     const notificationSettings = [
-        { id: 'newBids', label: 'New Bids on My Jobs', email: true, push: true },
-        { id: 'bidAccepted', label: 'My Bid is Accepted', email: true, push: true },
-        { id: 'jobStatus', label: 'Job Status Updates', email: true, push: false },
-        { id: 'newMessage', label: 'New Messages', email: false, push: true },
-        { id: 'paymentRelease', label: 'Payment Released', email: true, push: true },
-        { id: 'platformAnnouncements', label: 'Platform Announcements', email: true, push: false },
+        { id: 'newBids', label: t('settings_notifications_new_bids_label'), email: true, push: true },
+        { id: 'bidAccepted', label: t('settings_notifications_bid_accepted_label'), email: true, push: true },
+        { id: 'jobStatus', label: t('settings_notifications_job_status_label'), email: true, push: false },
+        { id: 'newMessage', label: t('settings_notifications_new_message_label'), email: false, push: true },
+        { id: 'paymentRelease', label: t('settings_notifications_payment_release_label'), email: true, push: true },
+        { id: 'platformAnnouncements', label: t('settings_notifications_platform_announcements_label'), email: true, push: false },
     ];
+
+    if (!isTranslationReady) {
+        return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    }
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                    <Bell className="w-6 h-6"/> Notifications
+                    <Bell className="w-6 h-6"/> {t('settings_notifications_title')}
                 </CardTitle>
-                <CardDescription>Manage how you receive notifications from ServiceHub.</CardDescription>
+                <CardDescription>{t('settings_notifications_subtitle')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-4 rounded-lg border p-4">
                     <div className="grid grid-cols-3 gap-4 font-semibold">
-                        <div className="col-span-1">Notification Type</div>
-                        <div className="col-span-1 flex items-center justify-center gap-2"><Mail className="w-4 h-4"/> Email</div>
-                        <div className="col-span-1 flex items-center justify-center gap-2"><Smartphone className="w-4 h-4"/> Push</div>
+                        <div className="col-span-1">{t('settings_notifications_type_header')}</div>
+                        <div className="col-span-1 flex items-center justify-center gap-2"><Mail className="w-4 h-4"/> {t('settings_notifications_email_header')}</div>
+                        <div className="col-span-1 flex items-center justify-center gap-2"><Smartphone className="w-4 h-4"/> {t('settings_notifications_push_header')}</div>
                     </div>
                      {notificationSettings.map(setting => (
                         <div key={setting.id} className="grid grid-cols-3 gap-4 items-center">
@@ -46,7 +53,7 @@ export default function NotificationsSettingsPage() {
                 </div>
             </CardContent>
             <CardFooter>
-                <Button>Save Preferences</Button>
+                <Button>{t('settings_notifications_save_button')}</Button>
             </CardFooter>
         </Card>
     )

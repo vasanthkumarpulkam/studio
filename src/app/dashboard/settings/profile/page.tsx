@@ -6,13 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, ShieldAlert, Star } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, Star, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { User, Provider } from '@/types';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function ProfileSettingsPage() {
   const [user, setUser] = useState<User | Provider | null>(null);
   const [provider, setProvider] = useState<Provider | null>(null);
+  const { t, isTranslationReady } = useTranslation();
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -26,15 +28,15 @@ export default function ProfileSettingsPage() {
     return name.split(' ').map((n) => n[0]).join('');
   };
 
-  if (!user) {
-    return <div>Loading...</div>
+  if (!user || !isTranslationReady) {
+    return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Profile</CardTitle>
-        <CardDescription>This is how others will see you on the site.</CardDescription>
+        <CardTitle className="font-headline text-2xl">{t('settings_profile_title')}</CardTitle>
+        <CardDescription>{t('settings_profile_subtitle')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="flex items-center gap-4">
@@ -57,34 +59,34 @@ export default function ProfileSettingsPage() {
             <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border rounded-lg bg-muted/30">
                 <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-muted-foreground">Rating</p>
+                <p className="text-sm text-muted-foreground">{t('settings_profile_rating')}</p>
                 <div className="flex items-center gap-1 text-2xl font-bold">
                     <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
                     {provider.rating}
                 </div>
-                <p className="text-xs text-muted-foreground">({provider.reviews} reviews)</p>
+                <p className="text-xs text-muted-foreground">({provider.reviews} {t('settings_profile_reviews')})</p>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                    <p className="text-sm text-muted-foreground">Verification</p>
+                    <p className="text-sm text-muted-foreground">{t('settings_profile_verification')}</p>
                 {provider.isVerified ? (
                     <div className="flex items-center gap-2 text-green-600">
                         <ShieldCheck />
-                        <span className="font-semibold">Verified</span>
+                        <span className="font-semibold">{t('settings_profile_verified')}</span>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2">
                             <div className="flex items-center gap-2 text-amber-600">
                             <ShieldAlert />
-                            <span className="font-semibold">Not Verified</span>
+                            <span className="font-semibold">{t('settings_profile_not_verified')}</span>
                         </div>
-                        <Button size="sm" variant="outline" className="mt-1">Start Verification</Button>
+                        <Button size="sm" variant="outline" className="mt-1">{t('settings_profile_start_verification')}</Button>
                     </div>
                 )}
                 </div>
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold mb-2">Skills</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('settings_profile_skills')}</h3>
                 <div className="flex flex-wrap gap-2">
                 {provider.skills.map((skill) => (
                     <Badge key={skill} variant="outline">{skill}</Badge>
@@ -94,7 +96,7 @@ export default function ProfileSettingsPage() {
             </div>
         )}
         <div className="text-left">
-            <Button>Edit Profile</Button>
+            <Button>{t('settings_profile_edit_button')}</Button>
         </div>
       </CardContent>
     </Card>

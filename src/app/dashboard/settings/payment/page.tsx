@@ -16,7 +16,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard, Banknote, VenetianSofa } from 'lucide-react';
+import { CreditCard, Banknote, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
+import { useEffect } from 'react';
 
 const paymentSchema = z.object({
   cardName: z.string().min(2, 'Name on card is required.'),
@@ -29,6 +31,8 @@ type PaymentFormValues = z.infer<typeof paymentSchema>;
 
 export default function PaymentSettingsPage() {
   const { toast } = useToast();
+  const { t, isTranslationReady } = useTranslation();
+  
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
   });
@@ -43,13 +47,16 @@ export default function PaymentSettingsPage() {
     form.reset();
   }
 
+  if (!isTranslationReady) {
+    return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-      <div className="max-w-3xl mx-auto w-full">
+      <div className="max-w-3xl w-full">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Payment Methods</CardTitle>
-            <CardDescription>Add and manage your payment methods for seamless transactions.</CardDescription>
+            <CardTitle className="font-headline text-2xl">{t('settings_payment_title')}</CardTitle>
+            <CardDescription>{t('settings_payment_subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -59,9 +66,9 @@ export default function PaymentSettingsPage() {
                   name="cardName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name on Card</FormLabel>
+                      <FormLabel>{t('settings_payment_form_name_label')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Sarah Lee" {...field} />
+                        <Input placeholder={t('settings_payment_form_name_placeholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -73,9 +80,9 @@ export default function PaymentSettingsPage() {
                   name="cardNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Card Number</FormLabel>
+                      <FormLabel>{t('settings_payment_form_card_number_label')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="•••• •••• •••• ••••" {...field} />
+                        <Input placeholder={t('settings_payment_form_card_number_placeholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -88,9 +95,9 @@ export default function PaymentSettingsPage() {
                     name="expiryDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Expiry Date</FormLabel>
+                        <FormLabel>{t('settings_payment_form_expiry_label')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="MM/YY" {...field} />
+                          <Input placeholder={t('settings_payment_form_expiry_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -101,9 +108,9 @@ export default function PaymentSettingsPage() {
                     name="cvc"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CVC / CVV</FormLabel>
+                        <FormLabel>{t('settings_payment_form_cvc_label')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="•••" {...field} />
+                          <Input placeholder={t('settings_payment_form_cvc_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -113,21 +120,20 @@ export default function PaymentSettingsPage() {
 
                 <Button type="submit" className="w-full sm:w-auto">
                   <CreditCard className="mr-2 h-4 w-4" />
-                  Save Payment Method
+                  {t('settings_payment_form_save_button')}
                 </Button>
               </form>
             </Form>
             
             <div className="mt-8 text-center text-muted-foreground">
-                <p className="text-sm">We also support bank transfers.</p>
+                <p className="text-sm">{t('settings_payment_bank_info')}</p>
                 <Button variant="link" className="text-primary">
                     <Banknote className="mr-2 h-4 w-4" />
-                    Connect Bank Account
+                    {t('settings_payment_bank_button')}
                 </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-    </main>
   );
 }

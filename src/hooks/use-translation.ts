@@ -16,12 +16,19 @@ export function useTranslation() {
     setIsClient(true);
   }, []);
 
-  const t = (key: string): string => {
-    // On the server or before the client has mounted, return the key to avoid mismatches
-    if (!isClient) return key;
-    return translations[language]?.[key] || key;
+  const t = (key: string, options?: { [key: string]: string | number }): string => {
+    if (!isClient) return key; // Return key on server or before mount
+    
+    let translation = translations[language]?.[key] || key;
+
+    if (options) {
+      Object.keys(options).forEach(optionKey => {
+        translation = translation.replace(`{${optionKey}}`, String(options[optionKey]));
+      });
+    }
+
+    return translation;
   };
   
-  // isTranslationReady is true only on the client
-  return { t, isTranslationReady: isClient };
+  return { t, isTranslationReady: isClient, language };
 }

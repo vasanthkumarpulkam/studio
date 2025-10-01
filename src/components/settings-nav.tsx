@@ -8,11 +8,13 @@ import { cn } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import type { User as UserType, Provider } from '@/types';
+import { useTranslation } from '@/hooks/use-translation';
 
 
 export function SettingsNav() {
   const pathname = usePathname();
   const [user, setUser] = useState<UserType | Provider | null>(null);
+  const { t } = useTranslation();
   
   useEffect(() => {
     setUser(getCurrentUser());
@@ -20,10 +22,10 @@ export function SettingsNav() {
 
 
   const navItems = [
-    { href: '/dashboard/settings/profile', label: 'Profile', icon: User },
-    { href: '/dashboard/settings/account', label: 'Account', icon: Shield },
-    { href: '/dashboard/settings/payment', label: 'Payment', icon: CreditCard },
-    { href: '/dashboard/settings/notifications', label: 'Notifications', icon: Bell },
+    { href: '/dashboard/settings/profile', label: t('settings_nav_profile'), icon: User },
+    { href: '/dashboard/settings/account', label: t('settings_nav_account'), icon: Shield },
+    { href: '/dashboard/settings/payment', label: t('settings_nav_payment'), icon: CreditCard },
+    { href: '/dashboard/settings/notifications', label: t('settings_nav_notifications'), icon: Bell },
   ];
 
   if (!user) {
