@@ -19,7 +19,7 @@ export default function AdminContentPage() {
         <CardContent>
           <ul className="list-disc pl-5 text-muted-foreground space-y-3">
             <li>
-              <strong>View & Manage Listings:</strong> A central place to see all service posts, jobs, or other listings.
+              <strong>View & Manage Listings:</strong> A center place to see all service posts, jobs, or other listings on the site.
             </li>
             <li>
               <strong>Approval Workflow:</strong> Approve or reject pending posts before they go live on the platform.
