@@ -10,20 +10,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/data';
+import { User, Briefcase } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real app, you would handle authentication here.
-    // For this mock, we'll log in as 'user-1' and then redirect.
-    login('user-1');
+  const handleLogin = (userId: string) => {
+    login(userId);
     router.push('/dashboard');
   };
 
@@ -34,43 +30,22 @@ export default function LoginPage() {
           <div className="mb-4 flex justify-center">
             <Logo href="/" />
           </div>
-          <CardTitle className="text-2xl font-headline">Welcome Back!</CardTitle>
+          <CardTitle className="text-2xl font-headline">Test Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Select a user role to log in for testing.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
             <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="#"
-                    className="ml-auto inline-block text-sm underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input id="password" type="password" required />
-              </div>
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="button" className="w-full" onClick={() => handleLogin('user-1')}>
+                <User className="mr-2 h-4 w-4"/>
+                Login as Customer
               </Button>
-              <Button variant="link" type="button" onClick={() => router.back()}>
-                Back
+              <Button type="button" variant="secondary" className="w-full" onClick={() => handleLogin('user-2')}>
+                <Briefcase className="mr-2 h-4 w-4"/>
+                Login as Provider
               </Button>
             </div>
-          </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="underline">
