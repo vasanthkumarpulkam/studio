@@ -259,7 +259,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
         </div>
 
         <div className="space-y-6">
-          {(job.status !== 'open' && acceptedProvider && currentUser) && (
+          {(job.status !== 'open' && acceptedProvider && currentUser && jobPoster) && (
             <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Provider Selected</CardTitle>
