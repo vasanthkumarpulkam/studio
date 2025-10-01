@@ -33,16 +33,27 @@ const defaultCenter = {
 
 // Mock function to geocode addresses
 // In a real app, you would use the Google Geocoding API
-const geocodeMock = (location: string): { lat: number; lng: number } | null => {
-  const loc = location.toLowerCase();
-  if (loc.includes('san francisco')) return { lat: 37.7749, lng: -122.4194 };
-  if (loc.includes('oakland')) return { lat: 37.8044, lng: -122.2712 };
-  if (loc.includes('new york')) return { lat: 40.7128, lng: -74.006 };
-  if (loc.includes('chicago')) return { lat: 41.8781, lng: -87.6298 };
-  if (loc.includes('los angeles')) return { lat: 34.0522, lng: -118.2437 };
-  if (loc.includes('houston')) return { lat: 29.7604, lng: -95.3698 };
-  if (loc.includes('phoenix')) return { lat: 33.4484, lng: -112.0740 };
-  return null;
+const geocodeMock = (location: string): Promise<{ lat: number; lng: number } | null> => {
+  return new Promise((resolve) => {
+    // Simulate network delay
+    setTimeout(() => {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: location }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const { lat, lng } = results[0].geometry.location;
+          resolve({ lat: lat(), lng: lng() });
+        } else {
+          // Fallback for mock locations if Geocoding fails (e.g. API key issue)
+          const loc = location.toLowerCase();
+          if (loc.includes('san francisco')) return resolve({ lat: 37.7749, lng: -122.4194 });
+          if (loc.includes('oakland')) return resolve({ lat: 37.8044, lng: -122.2712 });
+          if (loc.includes('new york')) return resolve({ lat: 40.7128, lng: -74.006 });
+          if (loc.includes('chicago')) return resolve({ lat: 41.8781, lng: -87.6298 });
+          resolve(null);
+        }
+      });
+    }, 200);
+  });
 };
 
 // Calculate zoom level based on radius in miles
@@ -59,42 +70,58 @@ export default function MapView({ jobs, location, radius }: MapViewProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
+    libraries: ['places', 'geocoding'],
   });
 
   const mapRef = useRef<google.maps.Map | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [zoom, setZoom] = useState(4);
+  const [jobLocations, setJobLocations] = useState<(Job & { position: { lat: number; lng: number } })[]>([]);
 
-  const jobLocations = useMemo(() => {
-    return jobs
-      .map((job) => {
-        const coords = geocodeMock(job.location);
-        if (coords) {
-          return { ...job, position: coords };
-        }
-        return null;
-      })
-      .filter((job) => job !== null) as (Job & { position: { lat: number; lng: number } })[];
-  }, [jobs]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    
+    const geocodeJobs = async () => {
+        const promises = jobs.map(async (job) => {
+            const coords = await geocodeMock(job.location);
+            if (coords) {
+                return { ...job, position: coords };
+            }
+            return null;
+        });
+
+        const results = await Promise.all(promises);
+        setJobLocations(results.filter(job => job !== null) as (Job & { position: { lat: number; lng: number } })[]);
+    };
+
+    geocodeJobs();
+  }, [jobs, isLoaded]);
+
 
   useEffect(() => {
     setZoom(getZoomLevel(radius));
   }, [radius]);
 
   useEffect(() => {
-    if (location) {
-      const userCoords = geocodeMock(location);
-      if (userCoords) {
-        setMapCenter(userCoords);
-      }
-    } else if (jobLocations.length > 0) {
-      setMapCenter(jobLocations[0].position);
-    } else {
-        setMapCenter(defaultCenter);
-    }
-  }, [location, jobLocations]);
+    if (!isLoaded) return;
+
+    const updateUserCenter = async () => {
+        if (location) {
+            const userCoords = await geocodeMock(location);
+            if (userCoords) {
+                setMapCenter(userCoords);
+            }
+        } else if (jobLocations.length > 0) {
+            setMapCenter(jobLocations[0].position);
+        } else {
+            setMapCenter(defaultCenter);
+        }
+    };
+
+    updateUserCenter();
+  }, [location, jobLocations, isLoaded]);
 
   if (loadError) {
     return (

@@ -18,7 +18,6 @@ import {
 import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +42,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
 import MapView from '@/components/map-view';
+import AutocompleteInput from '@/components/autocomplete-input';
 
 
 export default function DashboardPage() {
@@ -174,22 +174,18 @@ export default function DashboardPage() {
                       </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                          type="search"
-                          placeholder={t('dashboard_filters_search_placeholder')}
-                          className="w-full rounded-lg bg-background pl-10"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
+                          <AutocompleteInput
+                            placeholder={t('dashboard_filters_search_placeholder')}
+                            value={searchTerm}
+                            onValueChange={setSearchTerm}
                           />
                       </div>
                       <div className="relative flex-1 w-full">
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                          type="search"
-                          placeholder={t('dashboard_filters_location_placeholder')}
-                          className="w-full rounded-lg bg-background pl-10"
-                          value={location}
-                          onChange={(e) => setLocation(e.target.value)}
+                          <AutocompleteInput
+                            placeholder={t('dashboard_filters_location_placeholder')}
+                            value={location}
+                            onValueChange={setLocation}
                           />
                       </div>
                        <div className="space-y-2">
@@ -298,22 +294,20 @@ export default function DashboardPage() {
                     </div>
                     <div className="relative flex-1 w-full">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                        type="search"
-                        placeholder={t('dashboard_filters_search_placeholder')}
-                        className="w-full rounded-lg bg-background pl-10"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        <AutocompleteInput
+                          placeholder={t('dashboard_filters_search_placeholder')}
+                          value={searchTerm}
+                          onValueChange={setSearchTerm}
+                          className="pl-10"
                         />
                     </div>
                       <div className="relative flex-1 w-full">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                        type="search"
-                        placeholder={t('dashboard_filters_location_placeholder')}
-                        className="w-full rounded-lg bg-background pl-10"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
+                        <AutocompleteInput
+                            placeholder={t('dashboard_filters_location_placeholder')}
+                            value={location}
+                            onValueChange={setLocation}
+                            className="pl-10"
                         />
                     </div>
                       <div className="space-y-2">
@@ -467,5 +461,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
