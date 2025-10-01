@@ -43,7 +43,7 @@ export default function AdminLayout({
                     <Sidebar>
                         <SidebarSection>
                             <SidebarItem icon={<Home />} label="Dashboard" href="/admin" />
-                            <SidebarItem icon={<Users />} label="Users" href="/admin/users" />
+                            <SidebarItem icon={<Users />} label="User Management" href="/admin/users" />
                             <SidebarItem icon={<Settings />} label="Settings" href="/admin/settings" />
                         </SidebarSection>
                     </Sidebar>

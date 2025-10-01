@@ -51,7 +51,7 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { updateUserRole, updateUserStatus } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Check, CircleUserRound, Shield, UserX, UserCheck } from 'lucide-react';
+import { Check, CircleUserRound, Shield, UserX, UserCheck, Filter } from 'lucide-react';
 import Link from 'next/link';
 
 const getInitials = (name: string) => {
@@ -188,7 +188,7 @@ export default function AdminUsersPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <Link href={`/dashboard/settings/profile`} passHref>
+              <Link href={`/dashboard`} passHref>
                 <DropdownMenuItem>
                     View profile
                 </DropdownMenuItem>
@@ -264,12 +264,12 @@ export default function AdminUsersPage() {
   return (
     <Card>
         <CardHeader>
-            <CardTitle>User Management</CardTitle>
+            <CardTitle>User & Provider Management</CardTitle>
             <CardDescription>View, manage, and moderate all users on the platform.</CardDescription>
         </CardHeader>
         <CardContent>
             <div className="w-full">
-            <div className="flex items-center py-4">
+            <div className="flex items-center py-4 gap-2">
                 <Input
                 placeholder="Filter by name or email..."
                 value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -278,6 +278,66 @@ export default function AdminUsersPage() {
                 }
                 className="max-w-sm"
                 />
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                            <Filter className="mr-2 h-4 w-4" />
+                            Filter
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                         <DropdownMenuLabel>Filter by Role</DropdownMenuLabel>
+                         <DropdownMenuCheckboxItem
+                            checked={table.getColumn('role')?.getFilterValue()?.includes('customer')}
+                            onCheckedChange={(checked) => {
+                                let current = (table.getColumn('role')?.getFilterValue() as string[] || []);
+                                if(checked) current.push('customer');
+                                else current = current.filter(c => c !== 'customer');
+                                table.getColumn('role')?.setFilterValue(current.length ? current : undefined);
+                            }}
+                         >Customer</DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem
+                             checked={table.getColumn('role')?.getFilterValue()?.includes('provider')}
+                             onCheckedChange={(checked) => {
+                                let current = (table.getColumn('role')?.getFilterValue() as string[] || []);
+                                if(checked) current.push('provider');
+                                else current = current.filter(c => c !== 'provider');
+                                table.getColumn('role')?.setFilterValue(current.length ? current : undefined);
+                            }}
+                          >Provider</DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem
+                            checked={table.getColumn('role')?.getFilterValue()?.includes('admin')}
+                            onCheckedChange={(checked) => {
+                                let current = (table.getColumn('role')?.getFilterValue() as string[] || []);
+                                if(checked) current.push('admin');
+                                else current = current.filter(c => c !== 'admin');
+                                table.getColumn('role')?.setFilterValue(current.length ? current : undefined);
+                            }}
+                           >Admin</DropdownMenuCheckboxItem>
+                        <DropdownMenuSeparator/>
+                         <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                         <DropdownMenuCheckboxItem
+                            checked={table.getColumn('status')?.getFilterValue()?.includes('active')}
+                            onCheckedChange={(checked) => {
+                                let current = (table.getColumn('status')?.getFilterValue() as string[] || []);
+                                if(checked) current.push('active');
+                                else current = current.filter(c => c !== 'active');
+                                table.getColumn('status')?.setFilterValue(current.length ? current : undefined);
+                            }}
+                         >Active</DropdownMenuCheckboxItem>
+                         <DropdownMenuCheckboxItem
+                            checked={table.getColumn('status')?.getFilterValue()?.includes('suspended')}
+                            onCheckedChange={(checked) => {
+                                let current = (table.getColumn('status')?.getFilterValue() as string[] || []);
+                                if(checked) current.push('suspended');
+                                else current = current.filter(c => c !== 'suspended');
+                                table.getColumn('status')?.setFilterValue(current.length ? current : undefined);
+                            }}
+                         >Suspended</DropdownMenuCheckboxItem>
+
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">
