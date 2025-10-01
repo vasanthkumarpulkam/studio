@@ -31,9 +31,13 @@ export default function JobDetailsPage({ params }: { params: Promise<{ id: strin
   const acceptedBid = job.acceptedBid ? bids.find(b => b.id === job.acceptedBid) : null;
   const acceptedProvider = acceptedBid ? getProvider(acceptedBid.providerId) : null;
 
-  const chatMessages = (currentUser && acceptedProvider) 
-    ? getChatMessages(job.id, acceptedProvider.id) 
+  const chatMessages = (currentUser && (isOwner(job, currentUser) || (acceptedProvider && currentUser.id === acceptedProvider.id))) 
+    ? getChatMessages(job.id, acceptedProvider ? acceptedProvider.id : bids[0]?.providerId) 
     : [];
+
+  function isOwner(job: any, user: any) {
+    return job.postedBy === user.id;
+  }
 
   return (
     <JobDetailsView

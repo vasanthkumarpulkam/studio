@@ -14,6 +14,7 @@ import Logo from '@/components/logo';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { login } from '@/lib/data';
 import { User, Briefcase } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,7 +23,9 @@ export default function LoginPage() {
 
   const handleLogin = (userId: string) => {
     login(userId);
-    router.push(redirectUrl || '/dashboard');
+    // Use replace to avoid adding a new entry to the history stack
+    // This feels more natural for a login flow.
+    router.replace(redirectUrl || '/dashboard');
   };
 
   return (

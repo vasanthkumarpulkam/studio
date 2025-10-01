@@ -68,7 +68,8 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
   let canProviderBid = false;
   if (currentUserIsProvider && currentUser) {
     const providerProfile = getProvider(currentUser.id);
-    canProviderBid = providerProfile?.skills.includes(job.category) ?? false;
+    const hasAlreadyBid = bids.some(bid => bid.providerId === currentUser.id);
+    canProviderBid = (providerProfile?.skills.includes(job.category) ?? false) && !hasAlreadyBid;
   }
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
@@ -195,7 +196,18 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                 <CardTitle className="font-headline">Interested in this job?</CardTitle>
               </CardHeader>
               <CardContent>
-                {!canProviderBid && (
+                {!canProviderBid && bids.some(b => b.providerId === currentUser.id) ? (
+                  <Alert>
+                    <Check className="h-4 w-4" />
+                    <AlertTitle>You've already placed a bid!</AlertTitle>
+                    <AlertDescription>
+                     Your bid is being reviewed by the customer. You can track its status on your "My Bids" page.
+                     <Button asChild variant="link" className="p-0 h-auto mt-2">
+                       <Link href="/dashboard/my-bids">Go to My Bids</Link>
+                     </Button>
+                    </AlertDescription>
+                  </Alert>
+                ) : !canProviderBid ? (
                    <Alert>
                     <Briefcase className="h-4 w-4" />
                     <AlertTitle>Outside Your Skillset</AlertTitle>
@@ -203,9 +215,9 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                      This job is in the '{job.category}' category, which is not one of your registered skills. You can only bid on jobs that match your profile.
                     </AlertDescription>
                   </Alert>
-                )}
-                {canProviderBid && !hasPaymentMethod && <PaymentAlert />}
-                {canProviderBid && hasPaymentMethod && currentUser && (
+                ) : !hasPaymentMethod ? (
+                  <PaymentAlert />
+                ) : (
                   <BidForm job={job} />
                 )}
               </CardContent>

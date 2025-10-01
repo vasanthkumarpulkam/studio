@@ -16,6 +16,8 @@ const jobImagePlumbing3 = PlaceHolderImages.find(p => p.id === 'job-plumbing-3')
 const jobImageLawn = PlaceHolderImages.find(p => p.id === 'job-lawn')?.imageUrl || '';
 const jobImageFloor1 = PlaceHolderImages.find(p => p.id === 'job-floor-1')?.imageUrl || '';
 const jobImageFloor2 = PlaceHolderImages.find(p => p.id === 'job-floor-2')?.imageUrl || '';
+const jobImageIkea1 = PlaceHolderImages.find(p => p.id === 'job-ikea-1')?.imageUrl || '';
+const jobImageIkea2 = PlaceHolderImages.find(p => p.id === 'job-ikea-2')?.imageUrl || '';
 
 
 export const users: User[] = [
@@ -35,13 +37,26 @@ export const providers: Provider[] = [
   { id: 'user-6', name: 'Jessica Williams', email: 'jessica.w@example.com', avatarUrl: avatar6, role: 'provider', rating: 4.8, reviews: 33, isVerified: true, skills: ['Cleaning', 'Cooking', 'Babysitting', 'Laundry'], location: 'Chicago, IL', hasPaymentMethod: true },
 ];
 
-export let jobs: Job[] = [];
+export let jobs: Job[] = [
+  { id: 'job-1', title: 'Fix leaky kitchen sink', description: 'The pipe under my kitchen sink is dripping. It seems to be coming from one of the joints. I have a bucket under it now, but I need a permanent fix. I have attached photos of the setup.', category: 'Plumbing', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'open', images: [jobImagePlumbing1, jobImagePlumbing2, jobImagePlumbing3], budget: 150 },
+  { id: 'job-2', title: 'Mow my lawn and trim edges', description: 'My front and back lawns are overgrown. I need someone to mow them, trim the edges along the driveway and sidewalk, and bag the clippings.', category: 'Grass Cutting', location: 'Oakland, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', images: [jobImageLawn], budget: 50, acceptedBid: 'bid-3' },
+  { id: 'job-3', title: 'Repair scratched hardwood floor', description: 'My movers scratched a section of the hardwood floor in my living room. It\'s about a 2-foot long scratch, moderately deep. Need it repaired and refinished to match the rest of the floor.', category: 'Flooring', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), status: 'open', images: [jobImageFloor1, jobImageFloor2] },
+  { id: 'job-4', title: 'Assemble IKEA bookshelf', description: 'I have a new IKEA BILLY bookshelf in the box that needs to be assembled. All parts and instructions are included. The job should be quick for someone who knows what they\'re doing.', category: 'Furniture Assembly', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'in-progress', images: [jobImageIkea1, jobImageIkea2], budget: 80, acceptedBid: 'bid-4' },
+];
 
-export let bids: Bid[] = [];
+export let bids: Bid[] = [
+    { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 140, submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), completionTime: '2-3 hours', message: 'I can take care of that for you this afternoon. I have all the necessary tools and parts.' },
+    { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 155, submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(), completionTime: 'Tomorrow morning', message: 'Hi, I\'m an experienced plumber and can fix your leaky sink quickly. My bid includes all materials.' },
+    { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 45, submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'bid-4', jobId: 'job-4', providerId: 'user-3', amount: 75, submittedOn: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(), message: 'I build IKEA furniture all the time. I can get this done for you in about an hour.' },
+];
 
-export let chats: ChatMessage[] = [];
+export let chats: ChatMessage[] = [
+    { id: 'chat-1', jobId: 'job-4', providerId: 'user-3', senderId: 'user-1', text: 'Hi David, thanks for your bid. When would you be available to assemble the bookshelf?', timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-2', jobId: 'job-4', providerId: 'user-3', senderId: 'user-3', text: 'Hello! I can come by tomorrow around 2 PM if that works for you.', timestamp: new Date(Date.now() - 17 * 60 * 60 * 1000).toISOString() },
+];
 
-export let notifications: Notification[] = [];
+export let notifications: Notification[] = initialNotifications.slice();
 
 
 export { initialNotifications };
