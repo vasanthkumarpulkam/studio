@@ -29,7 +29,7 @@ export default function Home() {
   }, []);
 
   const postJobHref = currentUser ? '/dashboard/jobs/new' : '/login';
-  const findWorkHref = currentUser ? '/dashboard' : '/login';
+  const findWorkHref = '/dashboard';
 
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
   const feature1 = PlaceHolderImages.find(p => p.id === 'feature-1');
