@@ -58,14 +58,13 @@ import ConfirmJobButton from '@/components/confirm-job-button';
 import { useEffect, useState } from 'react';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
-  const { id } = params;
   const [currentUser, setCurrentUser] = useState<UserType | Provider | null>(null);
   
   useEffect(() => {
     setCurrentUser(getCurrentUser());
   }, []);
 
-  const job = getJob(id);
+  const job = getJob(params.id);
   const jobPoster = getUser(job?.postedBy || '');
 
 
