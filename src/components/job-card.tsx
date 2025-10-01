@@ -39,6 +39,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
   const jobTitle = isTranslationReady && language === 'es' && job.i18n?.es?.title ? job.i18n.es.title : job.title;
   const jobDescription = isTranslationReady && language === 'es' && job.i18n?.es?.description ? job.i18n.es.description : job.description;
   const jobLocation = isTranslationReady && language === 'es' && job.i18n?.es?.location ? job.i18n.es.location : job.location;
+  const jobCategoryKey = `category_${job.category.replace(/\s/g, '_').toLowerCase()}`;
 
 
   if (!isTranslationReady) {
@@ -64,7 +65,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
           </div>
           <CardDescription className="flex items-center gap-2 pt-1">
               <Tag className="w-3.5 h-3.5" /> 
-              <span className="text-sm">{job.category}</span>
+              <span className="text-sm">{t(jobCategoryKey)}</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-grow space-y-3">
@@ -128,7 +129,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                     <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1">
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Tag className="w-3.5 h-3.5" /> 
-                            {job.category}
+                            {t(jobCategoryKey)}
                         </span>
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <MapPin className="w-3.5 h-3.5" /> 

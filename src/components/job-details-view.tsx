@@ -110,6 +110,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
   const jobTitle = isTranslationReady && language === 'es' && job.i18n?.es?.title ? job.i18n.es.title : job.title;
   const jobDescription = isTranslationReady && language === 'es' && job.i18n?.es?.description ? job.i18n.es.description : job.description;
   const jobLocation = isTranslationReady && language === 'es' && job.i18n?.es?.location ? job.i18n.es.location : job.location;
+  const jobCategoryKey = `category_${job.category.replace(/\s/g, '_').toLowerCase()}`;
 
   if (!isTranslationReady) {
       return <div>{t('loading')}</div>
@@ -131,7 +132,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{job.category}</Badge>
+                  <Badge variant="outline">{t(jobCategoryKey)}</Badge>
                    {job.isCashOnly && (
                     <Badge variant="secondary" className="flex items-center gap-1.5">
                       <Banknote className="w-4 h-4"/> {t('job_details_cash_payment')}
@@ -419,7 +420,3 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
-
-    
-
-    
