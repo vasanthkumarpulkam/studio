@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useTransition } from 'react';
@@ -7,6 +8,7 @@ import { cn } from '@/lib/utils';
 import type { Notification } from '@/types';
 import { markNotificationAsRead } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
 
 type NotificationCardProps = {
   notification: Notification;
@@ -15,6 +17,8 @@ type NotificationCardProps = {
 
 export default function NotificationCard({ notification, onRead }: NotificationCardProps) {
   const [isPending, startTransition] = useTransition();
+  const { t, isTranslationReady } = useTranslation();
+
 
   const handleClick = () => {
     if (!notification.isRead) {
@@ -27,6 +31,10 @@ export default function NotificationCard({ notification, onRead }: NotificationC
     }
   };
 
+  const translatedMessage = isTranslationReady
+    ? t(notification.messageKey, notification.messageParams)
+    : notification.message;
+
   return (
     <Link href={notification.link} onClick={handleClick} className="block">
       <div
@@ -37,7 +45,7 @@ export default function NotificationCard({ notification, onRead }: NotificationC
       >
         <div className="flex items-start gap-3">
           <div className="flex-1 space-y-1">
-            <p className="text-sm">{notification.message}</p>
+            <p className="text-sm">{translatedMessage}</p>
             <p className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(notification.createdAt), {
                 addSuffix: true,

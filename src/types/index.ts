@@ -57,7 +57,9 @@ export type Bid = {
 export type Notification = {
     id: string;
     userId: string;
-    message: string;
+    message: string; // Fallback for old notifications
+    messageKey: string;
+    messageParams?: { [key: string]: string | number };
     link: string;
     isRead: boolean;
     createdAt: string; // ISO date string

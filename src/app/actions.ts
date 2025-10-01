@@ -24,6 +24,11 @@ export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
         id: `notif-${Date.now()}`,
         userId: job.postedBy,
         message: `You received a new bid of $${newBid.amount.toFixed(2)} for your job "${job.title}".`,
+        messageKey: 'notification_new_bid',
+        messageParams: {
+          amount: newBid.amount.toFixed(2),
+          jobTitle: job.title,
+        },
         link: `/dashboard/jobs/${job.id}`,
         isRead: false,
         createdAt: new Date().toISOString(),
@@ -55,6 +60,10 @@ export async function acceptBid(jobId: string, bidId: string) {
             id: `notif-${Date.now()}`,
             userId: bid.providerId,
             message: `Your bid for "${job.title}" was accepted! Please confirm to start the job.`,
+            messageKey: 'notification_bid_accepted',
+            messageParams: {
+              jobTitle: job.title,
+            },
             link: `/dashboard/jobs/${job.id}`,
             isRead: false,
             createdAt: new Date().toISOString(),
@@ -79,6 +88,10 @@ export async function confirmJob(jobId: string) {
             id: `notif-${Date.now()}`,
             userId: job.postedBy,
             message: `Provider has confirmed and is ready to start work on "${job.title}".`,
+            messageKey: 'notification_job_confirmed',
+            messageParams: {
+              jobTitle: job.title,
+            },
             link: `/dashboard/jobs/${job.id}`,
             isRead: false,
             createdAt: new Date().toISOString(),
