@@ -46,9 +46,12 @@ function PaymentFormInner() {
     (async () => {
       if (!stripe || !elements || !user) return;
       try {
+        const token = await (await import('firebase/auth')).getIdToken((await import('firebase/auth')).getAuth().currentUser!, true).catch(() => '');
         const res = await fetch('/api/payments/create-setup-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          // Pass ID token for server verification
+          ...(token ? { headers: { 'Content-Type': 'application/json', authorization: `Bearer ${token}` } } : {} as any),
           body: JSON.stringify({ customerId: user.id }),
         });
         const data = await res.json();

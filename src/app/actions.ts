@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { addDoc, collection, doc, updateDoc, getDoc, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage }from '@/firebase/config';
+import { getDoc as getDocLite, doc as docLite } from 'firebase/firestore';
 import type { Bid, ChatMessage, Job, User, Provider } from '@/types';
 import { moderateChatFlow } from '@/ai/flows/moderate-chat';
 import { suggestInitialBid } from '@/ai/flows/suggest-initial-bid';
@@ -171,6 +172,12 @@ async function uploadImage(file: File): Promise<string> {
 }
 
 export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images' | 'postedBy'> & { images: File[] }, postedById: string) {
+  // Server-side enforcement: ensure user has a payment method
+  const userSnap = await getDocLite(docLite(db, 'users', postedById));
+  const userData = userSnap.data() as User | undefined;
+  if (!userData || !userData.hasPaymentMethod) {
+    throw new Error('Payment method required to post a job.');
+  }
   const imageUrls = await Promise.all((jobData.images || []).map(file => uploadImage(file)));
 
   const newJob: Omit<Job, 'id'> = {

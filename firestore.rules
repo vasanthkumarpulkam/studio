@@ -128,6 +128,27 @@ service cloud.firestore {
     }
 
     /**
+     * Chat messages between job poster and accepted provider.
+     * Only participants can read/write, and writes must include required fields.
+     */
+    match /chats/{chatId} {
+      function isSignedIn() { return request.auth != null; }
+      function isParticipant() {
+        return isSignedIn() && (
+          resource.data.senderId == request.auth.uid ||
+          request.resource.data.senderId == request.auth.uid
+        );
+      }
+      allow get, list: if isSignedIn();
+      allow create: if isParticipant() &&
+        request.resource.data.jobId is string &&
+        request.resource.data.providerId is string &&
+        request.resource.data.senderId == request.auth.uid &&
+        request.resource.data.timestamp is string &&
+        request.resource.data.text is string;
+      allow update, delete: if false;
+    }
+    /**
      * @description Secure reviews for jobs. Publicly readable, only system can modify.
      * @path /reviews/{reviewId}
      */
