@@ -1,13 +1,16 @@
 
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight } from 'lucide-react';
-import type { Job } from '@/types';
+import type { Job, User, Provider } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { getCurrentUser } from '@/lib/data';
+import { useEffect, useState } from 'react';
 
 type JobCardProps = {
   job: Job;
@@ -16,7 +19,11 @@ type JobCardProps = {
 };
 
 export function JobCard({ job, role, isGrid = false }: JobCardProps) {
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+
+  useEffect(() => {
+    setCurrentUser(getCurrentUser());
+  }, []);
 
   const statusColors: { [key: string]: string } = {
     open: 'bg-green-100 text-green-800 border-green-200',

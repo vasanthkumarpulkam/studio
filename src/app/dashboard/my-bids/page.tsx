@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
   Card,
   CardContent,
@@ -21,16 +23,27 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { bids as allBids } from '@/lib/data';
+import { useEffect, useState } from 'react';
+import type { User, Provider } from '@/types';
 
 export default function MyBidsPage() {
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+
+  useEffect(() => {
+    setCurrentUser(getCurrentUser());
+  }, []);
+  
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
+
   const providerBids = allBids.filter(bid => bid.providerId === currentUser.id);
 
   const getStatusForBid = (jobId: string, bidId: string) => {
     const job = getJob(jobId);
     if (!job) return <Badge variant="destructive">Error</Badge>;
 
-    if (job.status === 'completed' || job.status === 'in-progress' || job.status === 'working') {
+    if (job.status === 'completed' || job.status === 'in-progress' || job.status === 'working' || job.status === 'pending-confirmation') {
       if (job.acceptedBid === bidId) {
         return <Badge className="bg-green-100 text-green-800 border-green-200">Won</Badge>;
       }

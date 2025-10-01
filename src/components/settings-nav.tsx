@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -5,10 +6,18 @@ import { usePathname } from 'next/navigation';
 import { User, CreditCard, Shield, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/data';
+import { useEffect, useState } from 'react';
+import type { User as UserType, Provider } from '@/types';
+
 
 export function SettingsNav() {
   const pathname = usePathname();
-  const user = getCurrentUser();
+  const [user, setUser] = useState<UserType | Provider | null>(null);
+  
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, [])
+
 
   const navItems = [
     { href: '/dashboard/settings/profile', label: 'Profile', icon: User },
@@ -16,6 +25,10 @@ export function SettingsNav() {
     { href: '/dashboard/settings/payment', label: 'Payment', icon: CreditCard },
     { href: '/dashboard/settings/notifications', label: 'Notifications', icon: Bell },
   ];
+
+  if (!user) {
+    return null;
+  }
 
   const linkClass = (href: string) =>
     cn(

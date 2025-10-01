@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,7 +21,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Sparkles, Loader2, HandCoins } from 'lucide-react';
 import { getAiBidSuggestion, submitBid } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import type { Job } from '@/types';
+import type { Job, Provider, User } from '@/types';
 import { getCurrentUser } from '@/lib/data';
 import { Separator } from './ui/separator';
 
@@ -37,7 +38,12 @@ export default function BidForm({ job }: { job: Job }) {
   const [isSubmitting, startSubmitting] = useTransition();
   const [suggestion, setSuggestion] = useState<{ suggestedBid: number; reasoning: string } | null>(null);
   const { toast } = useToast();
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+
+  useEffect(() => {
+    setCurrentUser(getCurrentUser());
+  }, []);
+
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
   const form = useForm<BidFormValues>({

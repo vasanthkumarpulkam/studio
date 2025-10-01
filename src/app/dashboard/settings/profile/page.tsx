@@ -1,17 +1,34 @@
+
+'use client';
+
 import { getCurrentUser, getProvider } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, ShieldAlert, Star } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import type { User, Provider } from '@/types';
 
 export default function ProfileSettingsPage() {
-  const user = getCurrentUser();
-  const provider = user.role === 'provider' ? getProvider(user.id) : null;
+  const [user, setUser] = useState<User | Provider | null>(null);
+  const [provider, setProvider] = useState<Provider | null>(null);
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    if (currentUser?.role === 'provider') {
+        setProvider(getProvider(currentUser.id) || null);
+    }
+  }, []);
 
   const getInitials = (name: string) => {
     return name.split(' ').map((n) => n[0]).join('');
   };
+
+  if (!user) {
+    return <div>Loading...</div>
+  }
 
   return (
     <Card>

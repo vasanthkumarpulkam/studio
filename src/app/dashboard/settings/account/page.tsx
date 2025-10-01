@@ -1,12 +1,30 @@
+
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCurrentUser, getProvider } from '@/lib/data';
 import { ShieldCheck, ShieldAlert, User, KeyRound, UserX, FileText } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import type { User as UserType, Provider } from '@/types';
+
 
 export default function AccountSettingsPage() {
-    const user = getCurrentUser();
-    const provider = user.role === 'provider' ? getProvider(user.id) : null;
+    const [user, setUser] = useState<UserType | Provider | null>(null);
+    const [provider, setProvider] = useState<Provider | null>(null);
+
+    useEffect(() => {
+        const currentUser = getCurrentUser();
+        setUser(currentUser);
+        if (currentUser && currentUser.role === 'provider') {
+            setProvider(getProvider(currentUser.id) || null);
+        }
+    }, []);
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="space-y-6">

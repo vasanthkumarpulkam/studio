@@ -37,6 +37,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import Image from 'next/image';
 import { postJob } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
+import type { User, Provider } from '@/types';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -56,15 +57,17 @@ type JobFormValues = z.infer<typeof jobSchema>;
 export default function NewJobPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (!currentUser) {
+    const user = getCurrentUser();
+    setCurrentUser(user);
+    if (!user) {
       router.push('/login');
     }
-  }, [currentUser, router]);
+  }, [router]);
 
   const hasPaymentMethod = currentUser?.hasPaymentMethod ?? false;
 
