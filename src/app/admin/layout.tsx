@@ -16,7 +16,7 @@ export default function AdminLayout({
     if (!user || user.role !== 'admin') {
         // In a real app, you'd want more robust role checking, maybe with custom claims.
         // For this mock, we redirect if not the admin user.
-        // redirect('/login');
+        redirect('/login');
     }
 
     return (
