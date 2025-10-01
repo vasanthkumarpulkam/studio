@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -38,6 +37,7 @@ import Image from 'next/image';
 import { postJob } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
 import type { User, Provider } from '@/types';
+import { useTranslation } from '@/hooks/use-translation';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -60,6 +60,7 @@ export default function NewJobPage() {
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
+  const { t, isTranslationReady } = useTranslation();
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -152,9 +153,9 @@ export default function NewJobPage() {
     });
   }
 
-  if (!currentUser) {
+  if (!currentUser || !isTranslationReady) {
     // Render a loading state or null while redirecting
-    return null;
+    return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
 
@@ -163,31 +164,31 @@ export default function NewJobPage() {
        <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">{t('breadcrumb_dashboard')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Post a New Job</BreadcrumbPage>
+              <BreadcrumbPage>{t('new_job_breadcrumb_post_job')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       <div className="max-w-3xl w-full">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Post a New Job</CardTitle>
-            <CardDescription>Fill out the details below to find the right provider for your job.</CardDescription>
+            <CardTitle className="font-headline text-2xl">{t('new_job_title')}</CardTitle>
+            <CardDescription>{t('new_job_description')}</CardDescription>
           </CardHeader>
           <CardContent>
             {!hasPaymentMethod && (
               <Alert variant="destructive" className="mb-6">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Payment Method Required</AlertTitle>
+                <AlertTitle>{t('payment_alert_title')}</AlertTitle>
                 <AlertDescription>
-                  You must add a payment method before you can post a job. This ensures that you can securely pay providers once a job is complete.
+                  {t('payment_alert_description_post')}
                   <Button asChild variant="secondary" size="sm" className="mt-2 ml-auto block">
                     <Link href="/dashboard/settings/payment">
                       <CreditCard className="mr-2 h-4 w-4"/>
-                      Add Payment Method
+                      {t('payment_alert_button')}
                     </Link>
                   </Button>
                 </AlertDescription>
@@ -201,12 +202,12 @@ export default function NewJobPage() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Job Title</FormLabel>
+                        <FormLabel>{t('new_job_form_job_title_label')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., Fix leaky kitchen sink" {...field} />
+                          <Input placeholder={t('new_job_form_job_title_placeholder')} {...field} />
                         </FormControl>
                         <FormDescription>
-                          Give your job a short, clear title.
+                          {t('new_job_form_job_title_desc')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -218,10 +219,10 @@ export default function NewJobPage() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Job Description</FormLabel>
+                        <FormLabel>{t('new_job_form_job_desc_label')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Describe the job in detail. What needs to be done? What's the current situation?"
+                            placeholder={t('new_job_form_job_desc_placeholder')}
                             className="min-h-[120px]"
                             {...field}
                           />
@@ -237,11 +238,11 @@ export default function NewJobPage() {
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Category</FormLabel>
+                          <FormLabel>{t('new_job_form_category_label')}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select a job category" />
+                                <SelectValue placeholder={t('new_job_form_category_placeholder')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -260,9 +261,9 @@ export default function NewJobPage() {
                       name="location"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Location</FormLabel>
+                          <FormLabel>{t('new_job_form_location_label')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., San Francisco, CA" {...field} />
+                            <Input placeholder={t('new_job_form_location_placeholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -275,12 +276,12 @@ export default function NewJobPage() {
                       name="budget"
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Budget (Optional)</FormLabel>
+                          <FormLabel>{t('new_job_form_budget_label')}</FormLabel>
                           <FormControl>
-                          <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} />
+                          <Input type="number" placeholder={t('new_job_form_budget_placeholder')} {...field} value={field.value ?? ''} />
                           </FormControl>
                           <FormDescription>
-                              Provide an estimated budget to guide providers.
+                              {t('new_job_form_budget_desc')}
                           </FormDescription>
                           <FormMessage />
                       </FormItem>
@@ -294,10 +295,10 @@ export default function NewJobPage() {
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
                           <FormLabel className="text-base flex items-center gap-2">
-                             <Banknote className="w-5 h-5"/> Pay with cash
+                             <Banknote className="w-5 h-5"/> {t('new_job_form_cash_label')}
                           </FormLabel>
                           <FormDescription>
-                            Select this if you plan to pay the provider in cash. The 10% platform fee will be charged to the provider's saved payment method.
+                            {t('new_job_form_cash_desc')}
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -315,7 +316,7 @@ export default function NewJobPage() {
                     name="images"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Photos (Optional)</FormLabel>
+                        <FormLabel>{t('new_job_form_photos_label')}</FormLabel>
                         {imagePreviews.length > 0 && (
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 mb-4">
                             {imagePreviews.map((src, index) => (
@@ -348,7 +349,7 @@ export default function NewJobPage() {
                                   htmlFor="file-upload"
                                   className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
                                   >
-                                  <span>Upload files</span>
+                                  <span>{t('new_job_form_photos_upload')}</span>
                                   <input 
                                     id="file-upload" 
                                     name="file-upload" 
@@ -359,9 +360,9 @@ export default function NewJobPage() {
                                     accept="image/png, image/jpeg, image/gif"
                                   />
                                   </label>
-                                  <p className="pl-1">or drag and drop</p>
+                                  <p className="pl-1">{t('new_job_form_photos_drag')}</p>
                               </div>
-                              <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                              <p className="text-xs leading-5 text-gray-600">{t('new_job_form_photos_types')}</p>
                               </div>
                           </div>
                         </FormControl>
@@ -375,12 +376,12 @@ export default function NewJobPage() {
                     {isPending ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Posting...
+                            {t('new_job_button_posting')}
                         </>
                     ) : (
                         <>
                             <FilePlus2 className="mr-2 h-4 w-4" />
-                            Post Job
+                            {t('new_job_button_post')}
                         </>
                     )}
                 </Button>
@@ -392,3 +393,5 @@ export default function NewJobPage() {
     </>
   );
 }
+
+    

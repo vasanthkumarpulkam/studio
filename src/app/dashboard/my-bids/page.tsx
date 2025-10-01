@@ -19,22 +19,24 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getCurrentUser, getBidsForJob, getJob } from '@/lib/data';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { bids as allBids } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import type { User, Provider } from '@/types';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function MyBidsPage() {
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+  const { t, isTranslationReady } = useTranslation();
 
   useEffect(() => {
     setCurrentUser(getCurrentUser());
   }, []);
   
-  if (!currentUser) {
-    return <div>Loading...</div>;
+  if (!currentUser || !isTranslationReady) {
+    return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   const providerBids = allBids.filter(bid => bid.providerId === currentUser.id);
@@ -45,13 +47,13 @@ export default function MyBidsPage() {
 
     if (job.status === 'completed' || job.status === 'in-progress' || job.status === 'working' || job.status === 'pending-confirmation') {
       if (job.acceptedBid === bidId) {
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Won</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200">{t('my_bids_status_won')}</Badge>;
       }
-      return <Badge variant="secondary">Not Selected</Badge>;
+      return <Badge variant="secondary">{t('my_bids_status_not_selected')}</Badge>;
     }
     
     if (job.status === 'open') {
-        return <Badge variant="outline">Pending</Badge>
+        return <Badge variant="outline">{t('my_bids_status_pending')}</Badge>
     }
 
     return <Badge variant="secondary">{job.status}</Badge>;
@@ -60,9 +62,9 @@ export default function MyBidsPage() {
   return (
     <div>
         <div className="mb-6">
-            <h1 className="text-3xl font-bold font-headline">My Bids</h1>
+            <h1 className="text-3xl font-bold font-headline">{t('my_bids_title')}</h1>
             <p className="text-muted-foreground">
-            Track the status of all your submitted bids.
+            {t('my_bids_subtitle')}
             </p>
         </div>
 
@@ -72,11 +74,11 @@ export default function MyBidsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Job Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Date Submitted</TableHead>
-                  <TableHead className="text-right">Your Bid</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t('my_bids_table_job_title')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('my_bids_table_date')}</TableHead>
+                  <TableHead className="text-right">{t('my_bids_table_your_bid')}</TableHead>
+                  <TableHead className="text-center">{t('my_bids_table_status')}</TableHead>
+                  <TableHead className="text-right">{t('my_bids_table_actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -97,7 +99,7 @@ export default function MyBidsPage() {
                       <TableCell className="text-right">
                         <Button asChild variant="outline" size="sm">
                           <Link href={`/dashboard/jobs/${job.id}`}>
-                            View Job <ArrowRight className="ml-2 h-4 w-4" />
+                            {t('my_bids_view_job_button')} <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>
                       </TableCell>
@@ -108,12 +110,12 @@ export default function MyBidsPage() {
             </Table>
           ) : (
             <div className="text-center py-12">
-              <h3 className="text-xl font-semibold">You haven't placed any bids yet.</h3>
+              <h3 className="text-xl font-semibold">{t('my_bids_no_bids_title')}</h3>
               <p className="text-muted-foreground mt-2">
-                Find jobs and start bidding to win projects.
+                {t('my_bids_no_bids_subtitle')}
               </p>
               <Button asChild className="mt-4">
-                <Link href="/dashboard">Find Jobs</Link>
+                <Link href="/dashboard">{t('my_bids_find_jobs_button')}</Link>
               </Button>
             </div>
           )}
@@ -122,3 +124,5 @@ export default function MyBidsPage() {
     </div>
   );
 }
+
+    

@@ -39,6 +39,7 @@ import type { Job, Provider, User } from '@/types';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { useTranslation } from '@/hooks/use-translation';
 
 
 export default function DashboardPage() {
@@ -49,6 +50,7 @@ export default function DashboardPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [radius, setRadius] = useState([50]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t, isTranslationReady } = useTranslation();
   
   const allJobs = useMemo(() => getAllOpenJobs(), []);
   const [providerJobs, setProviderJobs] = useState<Job[]>([]);
@@ -127,7 +129,7 @@ export default function DashboardPage() {
 
   const activeFilterCount = (searchTerm ? 1 : 0) + (location ? 1 : 0) + selectedCategories.length;
 
-  if (isLoading) {
+  if (isLoading || !isTranslationReady) {
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -145,14 +147,14 @@ export default function DashboardPage() {
               <CardContent className="p-4">
                   <div className="flex flex-col gap-4">
                       <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>Filters ({activeFilterCount})</h3>
-                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>Clear all</Button>
+                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>{t('dashboard_filters_title')} ({activeFilterCount})</h3>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear')}</Button>
                       </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                           type="search"
-                          placeholder="Search by keyword..."
+                          placeholder={t('dashboard_filters_search_placeholder')}
                           className="w-full rounded-lg bg-background pl-10"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -162,14 +164,14 @@ export default function DashboardPage() {
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                           type="search"
-                          placeholder="Location"
+                          placeholder={t('dashboard_filters_location_placeholder')}
                           className="w-full rounded-lg bg-background pl-10"
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
                        <div className="space-y-2">
-                          <Label>Search Radius</Label>
+                          <Label>{t('dashboard_filters_radius_label')}</Label>
                           <Slider
                               value={radius}
                               onValueChange={setRadius}
@@ -177,21 +179,21 @@ export default function DashboardPage() {
                               step={1}
                           />
                           <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>1 mile</span>
-                              <span>{radius[0]} miles</span>
-                              <span>250 miles</span>
+                              <span>1 {t('dashboard_filters_radius_mile')}</span>
+                              <span>{radius[0]} {t('dashboard_filters_radius_miles')}</span>
+                              <span>250 {t('dashboard_filters_radius_miles')}</span>
                           </div>
                       </div>
                       <Separator/>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
-                            <span>Category ({selectedCategories.length})</span>
+                            <span>{t('dashboard_filters_category_label')} ({selectedCategories.length})</span>
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
-                          <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('dashboard_filters_category_filter_label')}</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {jobCategories.map(cat => (
                               <DropdownMenuCheckboxItem 
@@ -212,18 +214,18 @@ export default function DashboardPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-primary">Find Your Next Job</h1>
-                  <p className="text-muted-foreground">Browse all available jobs on the platform. Sign up to start bidding!</p>
+                  <h1 className="text-3xl font-bold tracking-tight text-primary">{t('dashboard_public_title')}</h1>
+                  <p className="text-muted-foreground">{t('dashboard_public_subtitle')}</p>
                 </div>
                 <Select onValueChange={setSortBy} defaultValue={sortBy}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
+                    <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="newest">Newest Listings</SelectItem>
-                    <SelectItem value="oldest">Oldest Listings</SelectItem>
-                    <SelectItem value="budget-asc">Budget: Low to High</SelectItem>
-                    <SelectItem value="budget-desc">Budget: High to Low</SelectItem>
+                    <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
+                    <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
+                    <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
+                    <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -237,9 +239,9 @@ export default function DashboardPage() {
                   ) : (
                       <Card>
                       <CardContent className="py-12 text-center">
-                          <h3 className="text-xl font-semibold">No Jobs Available</h3>
+                          <h3 className="text-xl font-semibold">{t('dashboard_no_jobs_title')}</h3>
                           <p className="text-muted-foreground mt-2">
-                          There are no jobs matching your criteria. Try adjusting your filters.
+                          {t('dashboard_no_jobs_subtitle')}
                           </p>
                       </CardContent>
                       </Card>
@@ -267,14 +269,14 @@ export default function DashboardPage() {
               <CardContent className="p-4">
                   <div className="flex flex-col gap-4">
                       <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>Filters ({activeFilterCount})</h3>
-                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>Clear all</Button>
+                        <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>{t('dashboard_filters_title')} ({activeFilterCount})</h3>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear')}</Button>
                       </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                           type="search"
-                          placeholder="Search by keyword..."
+                          placeholder={t('dashboard_filters_search_placeholder')}
                           className="w-full rounded-lg bg-background pl-10"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -284,14 +286,14 @@ export default function DashboardPage() {
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                           type="search"
-                          placeholder="Location"
+                          placeholder={t('dashboard_filters_location_placeholder')}
                           className="w-full rounded-lg bg-background pl-10"
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
                           />
                       </div>
                        <div className="space-y-2">
-                          <Label>Search Radius</Label>
+                          <Label>{t('dashboard_filters_radius_label')}</Label>
                           <Slider
                               value={radius}
                               onValueChange={setRadius}
@@ -299,21 +301,21 @@ export default function DashboardPage() {
                               step={1}
                           />
                           <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>1 mile</span>
-                              <span>{radius[0]} miles</span>
-                              <span>250 miles</span>
+                               <span>1 {t('dashboard_filters_radius_mile')}</span>
+                              <span>{radius[0]} {t('dashboard_filters_radius_miles')}</span>
+                              <span>250 {t('dashboard_filters_radius_miles')}</span>
                           </div>
                       </div>
                       <Separator/>
                       <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
-                            <span>Category ({selectedCategories.length})</span>
+                            <span>{t('dashboard_filters_category_label')} ({selectedCategories.length})</span>
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
-                          <DropdownMenuLabel>Filter by your skills</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('dashboard_provider_filter_by_skills')}</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {providerSkills.map(cat => (
                               <DropdownMenuCheckboxItem 
@@ -333,20 +335,20 @@ export default function DashboardPage() {
            <main>
             <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold font-headline">Find Work</h1>
+                  <h1 className="text-3xl font-bold font-headline">{t('dashboard_provider_title')}</h1>
                   <p className="text-muted-foreground">
-                    Browse and bid on jobs available in your area and skillset.
+                    {t('dashboard_provider_subtitle')}
                   </p>
                 </div>
                 <Select onValueChange={setSortBy} defaultValue={sortBy}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
+                    <SelectValue placeholder={t('dashboard_sort_by_placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="newest">Newest Listings</SelectItem>
-                    <SelectItem value="oldest">Oldest Listings</SelectItem>
-                    <SelectItem value="budget-asc">Budget: Low to High</SelectItem>
-                    <SelectItem value="budget-desc">Budget: High to Low</SelectItem>
+                    <SelectItem value="newest">{t('dashboard_sort_newest')}</SelectItem>
+                    <SelectItem value="oldest">{t('dashboard_sort_oldest')}</SelectItem>
+                    <SelectItem value="budget-asc">{t('dashboard_sort_budget_asc')}</SelectItem>
+                    <SelectItem value="budget-desc">{t('dashboard_sort_budget_desc')}</SelectItem>
                   </SelectContent>
                 </Select>
             </div>
@@ -360,9 +362,9 @@ export default function DashboardPage() {
             ) : (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <h3 className="text-xl font-semibold">No Open Jobs</h3>
+                  <h3 className="text-xl font-semibold">{t('dashboard_provider_no_jobs_title')}</h3>
                   <p className="text-muted-foreground mt-2">
-                    There are no jobs matching your criteria. Try adjusting your filters.
+                    {t('dashboard_no_jobs_subtitle')}
                   </p>
                 </CardContent>
               </Card>
@@ -380,19 +382,19 @@ export default function DashboardPage() {
     <>
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome, {currentUser.name}!</h1>
-        <p className="text-muted-foreground">Manage your jobs or post a new one.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-primary">{t('dashboard_customer_welcome')}, {currentUser.name}!</h1>
+        <p className="text-muted-foreground">{t('dashboard_customer_subtitle')}</p>
       </div>
 
        <Tabs defaultValue="my-jobs" className="w-full">
         <div className='flex justify-between items-center flex-wrap gap-4'>
             <TabsList>
-                <TabsTrigger value="my-jobs"><Briefcase className='mr-2' />My Jobs ({myJobs.length})</TabsTrigger>
+                <TabsTrigger value="my-jobs"><Briefcase className='mr-2' />{t('dashboard_customer_my_jobs_tab')} ({myJobs.length})</TabsTrigger>
             </TabsList>
             <Button asChild>
                 <Link href="/dashboard/jobs/new">
                     <FilePlus2 className="mr-2 h-4 w-4" />
-                    Post a New Job
+                    {t('dashboard_customer_post_job_button')}
                 </Link>
             </Button>
         </div>
@@ -407,12 +409,12 @@ export default function DashboardPage() {
                 ) : (
                     <Card>
                     <CardContent className="py-12 text-center">
-                        <h3 className="text-xl font-semibold">You haven't posted any jobs yet.</h3>
+                        <h3 className="text-xl font-semibold">{t('dashboard_customer_no_jobs_title')}</h3>
                         <p className="text-muted-foreground mt-2">
-                        Get started by posting a job and find the right help.
+                        {t('dashboard_customer_no_jobs_subtitle')}
                         </p>
                         <Button asChild className="mt-4">
-                        <Link href="/dashboard/jobs/new">Post Your First Job</Link>
+                        <Link href="/dashboard/jobs/new">{t('dashboard_customer_post_first_job_button')}</Link>
                         </Button>
                     </CardContent>
                     </Card>
@@ -424,5 +426,7 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
 
     

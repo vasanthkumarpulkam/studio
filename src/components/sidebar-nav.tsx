@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -10,6 +11,7 @@ import {
   Gavel,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/use-translation';
 
 type SidebarNavProps = {
   userRole: 'customer' | 'provider';
@@ -18,20 +20,21 @@ type SidebarNavProps = {
 
 export function SidebarNav({ userRole, isMobile = false }: SidebarNavProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const baseNav = [
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+    { href: '/dashboard/settings', label: t('sidebar_settings'), icon: Settings },
   ];
 
   const customerNav = [
-    { href: '/dashboard', label: 'Dashboard', icon: Home },
-    { href: '/dashboard/jobs/new', label: 'Post a Job', icon: FilePlus2 },
+    { href: '/dashboard', label: t('sidebar_dashboard'), icon: Home },
+    { href: '/dashboard/jobs/new', label: t('sidebar_post_job'), icon: FilePlus2 },
     ...baseNav,
   ];
 
   const providerNav = [
-    { href: '/dashboard', label: 'Find Jobs', icon: Search },
-    { href: '/dashboard/my-bids', label: 'My Bids', icon: Gavel },
+    { href: '/dashboard', label: t('sidebar_find_jobs'), icon: Search },
+    { href: '/dashboard/my-bids', label: t('sidebar_my_bids'), icon: Gavel },
     ...baseNav,
   ];
 
@@ -77,3 +80,5 @@ export function SidebarNav({ userRole, isMobile = false }: SidebarNavProps) {
     </div>
   );
 }
+
+    
