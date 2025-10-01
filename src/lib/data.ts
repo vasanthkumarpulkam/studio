@@ -38,10 +38,79 @@ export const providers: Provider[] = [
 ];
 
 export let jobs: Job[] = [
-  { id: 'job-1', title: 'Fix leaky kitchen sink', description: 'The pipe under my kitchen sink is dripping. It seems to be coming from one of the joints. I have a bucket under it now, but I need a permanent fix. I have attached photos of the setup.', category: 'Plumbing', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: '2024-05-28T12:00:00.000Z', status: 'open', images: [jobImagePlumbing1, jobImagePlumbing2, jobImagePlumbing3], budget: 150 },
-  { id: 'job-2', title: 'Mow my lawn and trim edges', description: 'My front and back lawns are overgrown. I need someone to mow them, trim the edges along the driveway and sidewalk, and bag the clippings.', category: 'Grass Cutting', location: 'Oakland, CA', postedBy: 'user-1', postedOn: '2024-05-25T12:00:00.000Z', status: 'completed', images: [jobImageLawn], budget: 50, acceptedBid: 'bid-3' },
-  { id: 'job-3', title: 'Repair scratched hardwood floor', description: 'My movers scratched a section of the hardwood floor in my living room. It\'s about a 2-foot long scratch, moderately deep. Need it repaired and refinished to match the rest of the floor.', category: 'Flooring', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: '2024-05-20T12:00:00.000Z', status: 'open', images: [jobImageFloor1, jobImageFloor2] },
-  { id: 'job-4', title: 'Assemble IKEA bookshelf', description: 'I have a new IKEA BILLY bookshelf in the box that needs to be assembled. All parts and instructions are included. The job should be quick for someone who knows what they\'re doing.', category: 'Furniture Assembly', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: '2024-05-29T12:00:00.000Z', status: 'in-progress', images: [jobImageIkea1, jobImageIkea2], budget: 80, acceptedBid: 'bid-4' },
+  {
+    id: 'job-1',
+    title: 'Fix leaky kitchen sink',
+    description: 'The pipe under my kitchen sink is dripping. It seems to be coming from one of the joints. I have a bucket under it now, but I need a permanent fix. I have attached photos of the setup.',
+    i18n: {
+      es: {
+        title: 'Arreglar el fregadero de la cocina que gotea',
+        description: 'La tubería debajo del fregadero de mi cocina está goteando. Parece que viene de una de las juntas. Ahora tengo un balde debajo, but necesito una solución permanente. He adjuntado fotos de la configuración.',
+      },
+    },
+    category: 'Plumbing',
+    location: 'San Francisco, CA',
+    postedBy: 'user-1',
+    postedOn: '2024-05-28T12:00:00.000Z',
+    status: 'open',
+    images: [jobImagePlumbing1, jobImagePlumbing2, jobImagePlumbing3],
+    budget: 150,
+  },
+  {
+    id: 'job-2',
+    title: 'Mow my lawn and trim edges',
+    description: 'My front and back lawns are overgrown. I need someone to mow them, trim the edges along the driveway and sidewalk, and bag the clippings.',
+    i18n: {
+      es: {
+        title: 'Cortar el césped y recortar los bordes',
+        description: 'Mis céspedes delantero y trasero están cubiertos de maleza. Necesito que alguien los siegue, recorte los bordes a lo largo de la entrada y la acera, y embolse los recortes.',
+      },
+    },
+    category: 'Grass Cutting',
+    location: 'Oakland, CA',
+    postedBy: 'user-1',
+    postedOn: '2024-05-25T12:00:00.000Z',
+    status: 'completed',
+    images: [jobImageLawn],
+    budget: 50,
+    acceptedBid: 'bid-3',
+  },
+  {
+    id: 'job-3',
+    title: 'Repair scratched hardwood floor',
+    description: "My movers scratched a section of the hardwood floor in my living room. It's about a 2-foot long scratch, moderately deep. Need it repaired and refinished to match the rest of the floor.",
+    i18n: {
+      es: {
+        title: 'Reparar piso de madera rayado',
+        description: 'Mis transportistas rayaron una sección del piso de madera en mi sala de estar. Es un rasguño de aproximadamente 2 pies de largo, moderadamente profundo. Necesito que lo reparen y lo acaben para que coincida con el resto del piso.',
+      },
+    },
+    category: 'Flooring',
+    location: 'San Francisco, CA',
+    postedBy: 'user-1',
+    postedOn: '2024-05-20T12:00:00.000Z',
+    status: 'open',
+    images: [jobImageFloor1, jobImageFloor2],
+  },
+  {
+    id: 'job-4',
+    title: 'Assemble IKEA bookshelf',
+    description: "I have a new IKEA BILLY bookshelf in the box that needs to be assembled. All parts and instructions are included. The job should be quick for someone who knows what they're doing.",
+    i18n: {
+      es: {
+        title: 'Montar estantería de IKEA',
+        description: 'Tengo una nueva estantería IKEA BILLY en la caja que necesita ser ensamblada. Todas las piezas e instrucciones están incluidas. El trabajo debería ser rápido para alguien que sepa lo que está haciendo.',
+      },
+    },
+    category: 'Furniture Assembly',
+    location: 'San Francisco, CA',
+    postedBy: 'user-1',
+    postedOn: '2024-05-29T12:00:00.000Z',
+    status: 'in-progress',
+    images: [jobImageIkea1, jobImageIkea2],
+    budget: 80,
+    acceptedBid: 'bid-4',
+  },
 ];
 
 export let bids: Bid[] = [

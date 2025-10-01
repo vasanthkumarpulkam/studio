@@ -21,7 +21,7 @@ type JobCardProps = {
 
 export function JobCard({ job, role, isGrid = false }: JobCardProps) {
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
-  const { t, isTranslationReady } = useTranslation();
+  const { t, isTranslationReady, language } = useTranslation();
 
   useEffect(() => {
     setCurrentUser(getCurrentUser());
@@ -35,6 +35,9 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
     completed: 'bg-gray-100 text-gray-800 border-gray-200',
     disputed: 'bg-red-100 text-red-800 border-red-200',
   };
+
+  const jobTitle = isTranslationReady && language === 'es' && job.i18n?.es?.title ? job.i18n.es.title : job.title;
+  const jobDescription = isTranslationReady && language === 'es' && job.i18n?.es?.description ? job.i18n.es.description : job.description;
 
   if (!isTranslationReady) {
     return (
@@ -52,7 +55,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
           <div className="flex justify-between items-start">
               <CardTitle className="font-bold text-lg">
                   <Link href={`/dashboard/jobs/${job.id}`} className="hover:underline">
-                      {job.title}
+                      {jobTitle}
                   </Link>
               </CardTitle>
               <Badge className={statusColors[job.status]}>{t(`job_status_${job.status}`)}</Badge>
@@ -63,7 +66,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-grow space-y-3">
-          <p className="text-sm text-muted-foreground line-clamp-2">{job.description}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">{jobDescription}</p>
           <div className='space-y-2 text-sm'>
               <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4" /> 
@@ -115,7 +118,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                     <div className="flex justify-between items-start gap-2">
                         <CardTitle className="font-bold text-lg">
                             <Link href={`/dashboard/jobs/${job.id}`} className="hover:underline">
-                                {job.title}
+                                {jobTitle}
                             </Link>
                         </CardTitle>
                         <Badge className={statusColors[job.status]} variant="outline">{t(`job_status_${job.status}`)}</Badge>
@@ -132,7 +135,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                     <p className="text-sm text-muted-foreground line-clamp-2">{job.description}</p>
+                     <p className="text-sm text-muted-foreground line-clamp-2">{jobDescription}</p>
                 </CardContent>
                 <CardFooter className="flex-wrap justify-between items-center bg-muted/50 p-4">
                      <div className="flex items-center gap-4 text-sm">

@@ -29,6 +29,12 @@ export type Job = {
   images: string[];
   acceptedBid?: string; // bidId
   isCashOnly?: boolean;
+  i18n?: {
+    [language: string]: {
+      title: string;
+      description: string;
+    };
+  };
 };
 
 export type Bid = {
