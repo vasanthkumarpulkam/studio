@@ -6,11 +6,12 @@ import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight } from 'lucide-react';
+import { MapPin, Calendar, CircleDollarSign, Tag, ArrowRight, Loader2 } from 'lucide-react';
 import type { Job, User, Provider } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { getCurrentUser } from '@/lib/data';
 import { useEffect, useState } from 'react';
+import { useTranslation } from '@/hooks/use-translation';
 
 type JobCardProps = {
   job: Job;
@@ -20,6 +21,7 @@ type JobCardProps = {
 
 export function JobCard({ job, role, isGrid = false }: JobCardProps) {
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
+  const { t, isTranslationReady } = useTranslation();
 
   useEffect(() => {
     setCurrentUser(getCurrentUser());
@@ -34,6 +36,15 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
     disputed: 'bg-red-100 text-red-800 border-red-200',
   };
 
+  if (!isTranslationReady) {
+    return (
+        <Card className="flex flex-col">
+            <CardHeader><Loader2 className="h-8 w-8 animate-spin text-primary" /></CardHeader>
+            <CardContent><p>{t('loading')}</p></CardContent>
+        </Card>
+    );
+  }
+
   if (isGrid) {
     return (
       <Card className="hover:shadow-lg transition-shadow duration-300 bg-card flex flex-col">
@@ -44,7 +55,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                       {job.title}
                   </Link>
               </CardTitle>
-              <Badge className={statusColors[job.status]}>{job.status}</Badge>
+              <Badge className={statusColors[job.status]}>{t(`job_status_${job.status}`)}</Badge>
           </div>
           <CardDescription className="flex items-center gap-2 pt-1">
               <Tag className="w-3.5 h-3.5" /> 
@@ -61,19 +72,19 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
               {job.budget && (
                    <div className="flex items-center gap-2 text-muted-foreground">
                       <CircleDollarSign className="w-4 h-4" />
-                      <span>Budget: ${job.budget}</span>
+                      <span>{t('job_card_budget')}: ${job.budget}</span>
                   </div>
               )}
               <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" /> 
-                  <span>Posted {format(new Date(job.postedOn), 'PP')}</span>
+                  <span>{t('job_card_posted')} {format(new Date(job.postedOn), 'PP')}</span>
               </div>
           </div>
         </CardContent>
         <CardFooter>
           <Button asChild className="w-full">
             <Link href={`/dashboard/jobs/${job.id}`}>
-              View Details <ArrowRight className="ml-2 h-4 w-4" />
+              {t('job_card_view_details')} <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </CardFooter>
@@ -107,7 +118,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                                 {job.title}
                             </Link>
                         </CardTitle>
-                        <Badge className={statusColors[job.status]} variant="outline">{job.status}</Badge>
+                        <Badge className={statusColors[job.status]} variant="outline">{t(`job_status_${job.status}`)}</Badge>
                     </div>
                     <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1">
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -138,7 +149,7 @@ export function JobCard({ job, role, isGrid = false }: JobCardProps) {
                     </div>
                     <Button asChild size="sm" className="mt-2 md:mt-0">
                         <Link href={`/dashboard/jobs/${job.id}`}>
-                            {currentUser && role === 'provider' ? 'View & Bid' : 'View Details'}
+                            {currentUser && role === 'provider' ? t('job_card_view_bid') : t('job_card_view_details')}
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>

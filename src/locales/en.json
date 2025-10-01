@@ -1,5 +1,6 @@
 
 {
+  "loading": "Loading...",
   "landing_find_work_button": "Find Work",
   "landing_how_it_works_button": "How it Works",
   "landing_login_button": "Login",
@@ -119,7 +120,15 @@
   "new_job_form_photos_drag": "or drag and drop",
   "new_job_form_photos_types": "PNG, JPG, GIF up to 10MB",
   "new_job_button_posting": "Posting...",
-  "new_job_button_post": "Post Job"
+  "new_job_button_post": "Post Job",
+  "job_status_open": "Open",
+  "job_status_pending-confirmation": "Pending Confirmation",
+  "job_status_in-progress": "In Progress",
+  "job_status_working": "Working",
+  "job_status_completed": "Completed",
+  "job_status_disputed": "Disputed",
+  "job_card_budget": "Budget",
+  "job_card_posted": "Posted",
+  "job_card_view_details": "View Details",
+  "job_card_view_bid": "View & Bid"
 }
-
-    

@@ -10,14 +10,18 @@ const translations: Record<string, any> = { en, es };
 
 export function useTranslation() {
   const { language } = useLanguage();
-  const [t, setT] = useState<{ fn: (key: string) => string, ready: boolean }>({ fn: (key: string) => key, ready: false });
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const translate = (key: string): string => {
-      return translations[language]?.[key] || key;
-    };
-    setT({ fn: translate, ready: true });
-  }, [language]);
+    setIsClient(true);
+  }, []);
 
-  return { t: t.fn, isTranslationReady: t.ready };
+  const t = (key: string): string => {
+    // On the server or before the client has mounted, return the key to avoid mismatches
+    if (!isClient) return key;
+    return translations[language]?.[key] || key;
+  };
+  
+  // isTranslationReady is true only on the client
+  return { t, isTranslationReady: isClient };
 }

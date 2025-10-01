@@ -1,5 +1,6 @@
 
 {
+  "loading": "Cargando...",
   "landing_find_work_button": "Encontrar Trabajo",
   "landing_how_it_works_button": "Cómo Funciona",
   "landing_login_button": "Iniciar Sesión",
@@ -119,7 +120,15 @@
   "new_job_form_photos_drag": "o arrastrar y soltar",
   "new_job_form_photos_types": "PNG, JPG, GIF de hasta 10MB",
   "new_job_button_posting": "Publicando...",
-  "new_job_button_post": "Publicar Trabajo"
+  "new_job_button_post": "Publicar Trabajo",
+  "job_status_open": "Abierto",
+  "job_status_pending-confirmation": "Pendiente de Confirmación",
+  "job_status_in-progress": "En Progreso",
+  "job_status_working": "Trabajando",
+  "job_status_completed": "Completado",
+  "job_status_disputed": "Disputado",
+  "job_card_budget": "Presupuesto",
+  "job_card_posted": "Publicado",
+  "job_card_view_details": "Ver Detalles",
+  "job_card_view_bid": "Ver y Ofertar"
 }
-
-    
