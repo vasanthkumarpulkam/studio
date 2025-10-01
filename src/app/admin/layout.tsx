@@ -2,7 +2,7 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarItem, SidebarSection } from '@/components/admin-sidebar';
-import { Home, Users, Settings, History } from 'lucide-react';
+import { Home, Users, Settings, History, ClipboardList } from 'lucide-react';
 import { Header } from '@/components/header';
 import { getCurrentUser } from '@/lib/data';
 import { redirect } from 'next/navigation';
@@ -44,6 +44,7 @@ export default function AdminLayout({
                         <SidebarSection>
                             <SidebarItem icon={<Home />} label="Dashboard" href="/admin" />
                             <SidebarItem icon={<Users />} label="User Management" href="/admin/users" />
+                            <SidebarItem icon={<ClipboardList />} label="Content Oversight" href="/admin/content" />
                              <SidebarItem icon={<History />} label="Logs & Moderation" href="/admin/security" />
                             <SidebarItem icon={<Settings />} label="Settings" href="/admin/settings" />
                         </SidebarSection>
