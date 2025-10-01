@@ -17,9 +17,11 @@ import type { User } from '@/types';
 import { CreditCard, User as UserIcon, Settings, LogOut } from 'lucide-react';
 import { login } from '@/lib/data';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/hooks/use-translation';
 
 export function UserNav({ user }: { user: User }) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const getInitials = (name: string) => {
     return name
@@ -59,26 +61,26 @@ export function UserNav({ user }: { user: User }) {
           <Link href="/dashboard/settings/profile">
             <DropdownMenuItem>
               <UserIcon className="mr-2 h-4 w-4" />
-              Profile
+              {t('user_nav_profile')}
             </DropdownMenuItem>
           </Link>
           <Link href="/dashboard/settings">
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {t('user_nav_settings')}
             </DropdownMenuItem>
           </Link>
           <Link href="/dashboard/settings/payment">
             <DropdownMenuItem>
               <CreditCard className="mr-2 h-4 w-4" />
-              <span>Payment</span>
+              <span>{t('user_nav_payment')}</span>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          Log out
+          {t('user_nav_logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -313,5 +313,9 @@
   "category_freelance_computer_work": "Trabajo informático independiente",
   "category_other": "Otro",
   "role_customer": "Cliente",
-  "role_provider": "Proveedor"
+  "role_provider": "Proveedor",
+  "user_nav_profile": "Perfil",
+  "user_nav_settings": "Configuración",
+  "user_nav_payment": "Pago",
+  "user_nav_logout": "Cerrar sesión"
 }
