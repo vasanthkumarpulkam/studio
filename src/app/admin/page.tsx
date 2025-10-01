@@ -9,30 +9,49 @@ import { Line, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, L
 import { subMonths, format } from 'date-fns';
 import { useState, useEffect } from 'react';
 
+type ChartData = {
+  month: string;
+  [key: string]: any;
+};
+
+type JobStatusData = {
+  name: string;
+  value: number;
+};
+
 export default function AdminDashboard() {
-  const totalUsers = getAllUsers().length;
-  const totalProviders = providers.length;
-  const openJobs = jobs.filter(j => j.status === 'open').length;
-  const totalRevenue = jobs
-    .filter(job => job.status === 'completed' && job.acceptedBid)
-    .reduce((acc, job) => {
-        const bid = job.acceptedBid ? allBids.find(b => b.id === job.acceptedBid) : null;
-        if(bid) {
-            return acc + (bid.amount * 0.10); // 10% platform fee
-        }
-        return acc;
-    }, 0);
-
-
-  const [userSignupData, setUserSignupData] = useState<any[]>([]);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalProviders, setTotalProviders] = useState(0);
+  const [openJobs, setOpenJobs] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [userSignupData, setUserSignupData] = useState<ChartData[]>([]);
+  const [revenueData, setRevenueData] = useState<ChartData[]>([]);
+  const [jobStatusData, setJobStatusData] = useState<JobStatusData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Generate data on the client-side to avoid hydration errors
+    // All data fetching and processing is done on the client side
+    // to prevent hydration mismatches.
+    const allUsers = getAllUsers();
+    setTotalUsers(allUsers.length);
+    setTotalProviders(providers.length);
+    setOpenJobs(jobs.filter(j => j.status === 'open').length);
+
+    const calculatedRevenue = jobs
+      .filter(job => job.status === 'completed' && job.acceptedBid)
+      .reduce((acc, job) => {
+          const bid = job.acceptedBid ? allBids.find(b => b.id === job.acceptedBid) : null;
+          if(bid) {
+              return acc + (bid.amount * 0.10); // 10% platform fee
+          }
+          return acc;
+      }, 0);
+    setTotalRevenue(calculatedRevenue);
+
     const generatedUserSignupData = Array.from({ length: 6 }).map((_, i) => {
       const date = subMonths(new Date(), 5 - i);
       const month = format(date, 'MMM');
-      const signups = Math.floor(Math.random() * (i + 1) * 2);
+      const signups = Math.floor(Math.random() * (i + 1) * 5 + 10);
       return { month, signups };
     });
     setUserSignupData(generatedUserSignupData);
@@ -44,17 +63,20 @@ export default function AdminDashboard() {
       return { month, revenue };
     });
     setRevenueData(generatedRevenueData);
+    
+    const jobStatusCounts = jobs.reduce((acc, job) => {
+        acc[job.status] = (acc[job.status] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+    const generatedJobStatusData = Object.keys(jobStatusCounts).map(status => ({
+        name: status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' '),
+        value: jobStatusCounts[status],
+    }));
+    setJobStatusData(generatedJobStatusData);
+    
+    setIsLoading(false);
   }, []);
-
-  const jobStatusCounts = jobs.reduce((acc, job) => {
-    acc[job.status] = (acc[job.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const jobStatusData = Object.keys(jobStatusCounts).map(status => ({
-    name: status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' '),
-    value: jobStatusCounts[status],
-  }));
 
   const statusColors = {
     open: 'hsl(var(--chart-1))',
@@ -65,6 +87,9 @@ export default function AdminDashboard() {
     disputed: 'hsl(var(--destructive))',
   };
 
+  if (isLoading) {
+      return <div>Loading dashboard...</div>
+  }
 
   return (
     <div className="space-y-6">
@@ -145,7 +170,7 @@ export default function AdminDashboard() {
                 <PieChart>
                     <Pie data={jobStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
                        {jobStatusData.map((entry, index) => (
-                         <Cell key={`cell-${index}`} fill={statusColors[entry.name.toLowerCase().replace(' ', '-') as keyof typeof statusColors]} />
+                         <Cell key={`cell-${index}`} fill={statusColors[entry.name.toLowerCase().replace(' ', '-') as keyof typeof statusColors] || '#8884d8'} />
                        ))}
                     </Pie>
                     <Tooltip content={<ChartTooltipContent />} />
