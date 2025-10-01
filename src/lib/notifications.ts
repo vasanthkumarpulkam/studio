@@ -9,7 +9,7 @@ export let notifications: Notification[] = [
         message: 'Your job "Fix leaky kitchen sink" has received a new bid.',
         link: '/dashboard/jobs/job-1',
         isRead: false,
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: '2024-05-29T12:00:00.000Z',
     },
     {
         id: 'notif-2',
@@ -17,7 +17,7 @@ export let notifications: Notification[] = [
         message: 'Your job "Fix leaky kitchen sink" has received another bid.',
         link: '/dashboard/jobs/job-1',
         isRead: true,
-        createdAt: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(),
+        createdAt: '2024-05-29T14:00:00.000Z',
     },
     {
         id: 'notif-3',
@@ -25,6 +25,6 @@ export let notifications: Notification[] = [
         message: 'Welcome to ServiceHub! Start by finding jobs that match your skills.',
         link: '/dashboard',
         isRead: true,
-        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: '2024-05-25T12:00:00.000Z',
     }
 ];

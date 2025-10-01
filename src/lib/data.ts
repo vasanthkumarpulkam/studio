@@ -38,22 +38,22 @@ export const providers: Provider[] = [
 ];
 
 export let jobs: Job[] = [
-  { id: 'job-1', title: 'Fix leaky kitchen sink', description: 'The pipe under my kitchen sink is dripping. It seems to be coming from one of the joints. I have a bucket under it now, but I need a permanent fix. I have attached photos of the setup.', category: 'Plumbing', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'open', images: [jobImagePlumbing1, jobImagePlumbing2, jobImagePlumbing3], budget: 150 },
-  { id: 'job-2', title: 'Mow my lawn and trim edges', description: 'My front and back lawns are overgrown. I need someone to mow them, trim the edges along the driveway and sidewalk, and bag the clippings.', category: 'Grass Cutting', location: 'Oakland, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', images: [jobImageLawn], budget: 50, acceptedBid: 'bid-3' },
-  { id: 'job-3', title: 'Repair scratched hardwood floor', description: 'My movers scratched a section of the hardwood floor in my living room. It\'s about a 2-foot long scratch, moderately deep. Need it repaired and refinished to match the rest of the floor.', category: 'Flooring', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), status: 'open', images: [jobImageFloor1, jobImageFloor2] },
-  { id: 'job-4', title: 'Assemble IKEA bookshelf', description: 'I have a new IKEA BILLY bookshelf in the box that needs to be assembled. All parts and instructions are included. The job should be quick for someone who knows what they\'re doing.', category: 'Furniture Assembly', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'in-progress', images: [jobImageIkea1, jobImageIkea2], budget: 80, acceptedBid: 'bid-4' },
+  { id: 'job-1', title: 'Fix leaky kitchen sink', description: 'The pipe under my kitchen sink is dripping. It seems to be coming from one of the joints. I have a bucket under it now, but I need a permanent fix. I have attached photos of the setup.', category: 'Plumbing', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: '2024-05-28T12:00:00.000Z', status: 'open', images: [jobImagePlumbing1, jobImagePlumbing2, jobImagePlumbing3], budget: 150 },
+  { id: 'job-2', title: 'Mow my lawn and trim edges', description: 'My front and back lawns are overgrown. I need someone to mow them, trim the edges along the driveway and sidewalk, and bag the clippings.', category: 'Grass Cutting', location: 'Oakland, CA', postedBy: 'user-1', postedOn: '2024-05-25T12:00:00.000Z', status: 'completed', images: [jobImageLawn], budget: 50, acceptedBid: 'bid-3' },
+  { id: 'job-3', title: 'Repair scratched hardwood floor', description: 'My movers scratched a section of the hardwood floor in my living room. It\'s about a 2-foot long scratch, moderately deep. Need it repaired and refinished to match the rest of the floor.', category: 'Flooring', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: '2024-05-20T12:00:00.000Z', status: 'open', images: [jobImageFloor1, jobImageFloor2] },
+  { id: 'job-4', title: 'Assemble IKEA bookshelf', description: 'I have a new IKEA BILLY bookshelf in the box that needs to be assembled. All parts and instructions are included. The job should be quick for someone who knows what they\'re doing.', category: 'Furniture Assembly', location: 'San Francisco, CA', postedBy: 'user-1', postedOn: '2024-05-29T12:00:00.000Z', status: 'in-progress', images: [jobImageIkea1, jobImageIkea2], budget: 80, acceptedBid: 'bid-4' },
 ];
 
 export let bids: Bid[] = [
-    { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 140, submittedOn: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), completionTime: '2-3 hours', message: 'I can take care of that for you this afternoon. I have all the necessary tools and parts.' },
-    { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 155, submittedOn: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(), completionTime: 'Tomorrow morning', message: 'Hi, I\'m an experienced plumber and can fix your leaky sink quickly. My bid includes all materials.' },
-    { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 45, submittedOn: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
-    { id: 'bid-4', jobId: 'job-4', providerId: 'user-3', amount: 75, submittedOn: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(), message: 'I build IKEA furniture all the time. I can get this done for you in about an hour.' },
+    { id: 'bid-1', jobId: 'job-1', providerId: 'user-2', amount: 140, submittedOn: '2024-05-29T12:00:00.000Z', completionTime: '2-3 hours', message: 'I can take care of that for you this afternoon. I have all the necessary tools and parts.' },
+    { id: 'bid-2', jobId: 'job-1', providerId: 'user-3', amount: 155, submittedOn: '2024-05-29T14:00:00.000Z', completionTime: 'Tomorrow morning', message: 'Hi, I\'m an experienced plumber and can fix your leaky sink quickly. My bid includes all materials.' },
+    { id: 'bid-3', jobId: 'job-2', providerId: 'user-4', amount: 45, submittedOn: '2024-05-26T12:00:00.000Z' },
+    { id: 'bid-4', jobId: 'job-4', providerId: 'user-3', amount: 75, submittedOn: '2024-05-29T16:00:00.000Z', message: 'I build IKEA furniture all the time. I can get this done for you in about an hour.' },
 ];
 
 export let chats: ChatMessage[] = [
-    { id: 'chat-1', jobId: 'job-4', providerId: 'user-3', senderId: 'user-1', text: 'Hi David, thanks for your bid. When would you be available to assemble the bookshelf?', timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString() },
-    { id: 'chat-2', jobId: 'job-4', providerId: 'user-3', senderId: 'user-3', text: 'Hello! I can come by tomorrow around 2 PM if that works for you.', timestamp: new Date(Date.now() - 17 * 60 * 60 * 1000).toISOString() },
+    { id: 'chat-1', jobId: 'job-4', providerId: 'user-3', senderId: 'user-1', text: 'Hi David, thanks for your bid. When would you be available to assemble the bookshelf?', timestamp: '2024-05-29T18:00:00.000Z' },
+    { id: 'chat-2', jobId: 'job-4', providerId: 'user-3', senderId: 'user-3', text: 'Hello! I can come by tomorrow around 2 PM if that works for you.', timestamp: '2024-05-29T19:00:00.000Z' },
 ];
 
 export let notifications: Notification[] = initialNotifications.slice();
@@ -180,3 +180,27 @@ export const jobCategories = [
     'Freelance Computer Work',
     'Other'
 ];
+
+export async function submitBid(bidData: Omit<Bid, 'id' | 'submittedOn'>) {
+    const job = jobs.find(j => j.id === bidData.jobId);
+    if (!job) {
+        throw new Error('Job not found.');
+    }
+
+    const newBid: Bid = {
+        ...bidData,
+        id: `bid-${Date.now()}`,
+        submittedOn: new Date().toISOString(),
+    };
+    bids.push(newBid);
+
+    // Create a notification for the job poster
+    notifications.unshift({
+        id: `notif-${Date.now()}`,
+        userId: job.postedBy,
+        message: `You received a new bid of $${newBid.amount.toFixed(2)} for your job "${job.title}".`,
+        link: `/dashboard/jobs/${job.id}`,
+        isRead: false,
+        createdAt: new Date().toISOString(),
+    });
+}
