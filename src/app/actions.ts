@@ -229,15 +229,31 @@ export async function getAiBidSuggestion(jobDescription: string, jobCategory: st
 }
 
 
-export async function updateUserProfile(userId: string, data: Partial<User & Provider>) {
+export async function updateUserProfile(userId: string, data: Partial<User & Provider> & { avatar?: File }) {
   const userIndex = users.findIndex(u => u.id === userId);
+  if (userIndex === -1) {
+    throw new Error("User not found");
+  }
+
+  // Handle avatar upload mock
+  let avatarUrl = users[userIndex].avatarUrl;
+  if (data.avatar) {
+    // In a real app, you'd upload this to a storage service and get a URL.
+    // For this mock, we'll just store it in memory for the session.
+    // This won't persist across server restarts.
+    avatarUrl = `/mock-avatar-${userId}-${Date.now()}.jpg`;
+    console.log(`Mock avatar uploaded for user ${userId} to ${avatarUrl}`);
+  }
+
+  const { avatar, ...restOfData } = data;
+
   if (userIndex !== -1) {
-    users[userIndex] = { ...users[userIndex], ...data };
+    users[userIndex] = { ...users[userIndex], ...restOfData, avatarUrl };
   }
 
   const providerIndex = providers.findIndex(p => p.id === userId);
   if (providerIndex !== -1) {
-    providers[providerIndex] = { ...providers[providerIndex], ...data };
+    providers[providerIndex] = { ...providers[providerIndex], ...restOfData, avatarUrl };
   }
 
   console.log('User profile updated:', users[userIndex]);
@@ -248,3 +264,5 @@ export async function updateUserProfile(userId: string, data: Partial<User & Pro
   revalidatePath('/dashboard/settings/profile');
   redirect('/dashboard/settings/profile');
 }
+
+    

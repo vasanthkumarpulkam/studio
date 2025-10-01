@@ -5,6 +5,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -20,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { jobCategories, getCurrentUser } from '@/lib/data';
-import { ArrowLeft, Save, Trash2, PlusCircle, Loader2, User, Briefcase, Globe } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, PlusCircle, Loader2, User, Briefcase, Globe, Camera } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -28,13 +29,19 @@ import { updateUserProfile } from '@/app/actions';
 import type { User as UserType, Provider } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email('Invalid email address.'),
   phone: z.string().optional(),
   bio: z.string().optional(),
-  avatarUrl: z.string().url('Invalid URL.').optional(),
+  avatar: z.any().optional(),
   // Provider specific
   skills: z.array(z.string()).optional(),
   location: z.string().optional(),
@@ -49,6 +56,8 @@ export default function EditProfilePage() {
   const [currentUser, setCurrentUser] = useState<UserType | Provider | null>(null);
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -56,6 +65,9 @@ export default function EditProfilePage() {
       router.push('/login');
     }
     setCurrentUser(user);
+    if(user?.avatarUrl) {
+      setAvatarPreview(user.avatarUrl);
+    }
   }, [router]);
 
   const form = useForm<ProfileFormValues>({
@@ -65,7 +77,7 @@ export default function EditProfilePage() {
       email: currentUser?.email || '',
       phone: currentUser?.phone || '',
       bio: currentUser?.bio || '',
-      avatarUrl: currentUser?.avatarUrl || '',
+      avatar: undefined,
       skills: (currentUser as Provider)?.skills || [],
       location: (currentUser as Provider)?.location || '',
       website: (currentUser as Provider)?.website || '',
@@ -84,13 +96,34 @@ export default function EditProfilePage() {
         email: currentUser.email || '',
         phone: currentUser.phone || '',
         bio: currentUser.bio || '',
-        avatarUrl: currentUser.avatarUrl || '',
+        avatar: undefined,
         skills: (currentUser as Provider).skills || [],
         location: (currentUser as Provider).location || '',
         website: (currentUser as Provider).website || '',
       });
+      if(currentUser.avatarUrl) {
+        setAvatarPreview(currentUser.avatarUrl);
+      }
     }
   }, [currentUser, form]);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_AVATAR_SIZE) {
+      toast({ variant: 'destructive', title: 'File too large', description: `Avatar image must be less than 5MB.` });
+      return;
+    }
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      toast({ variant: 'destructive', title: 'Invalid file type', description: `Please select a valid image format (JPEG, PNG, GIF).` });
+      return;
+    }
+
+    form.setValue('avatar', file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
 
   function onSubmit(values: ProfileFormValues) {
     if (!currentUser) return;
@@ -150,6 +183,42 @@ export default function EditProfilePage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-6">
                     <h3 className="font-semibold text-lg flex items-center gap-2"><User className="w-5 h-5" />{t('profile_edit_basic_info_title')}</h3>
+                     
+                     <FormField
+                        control={form.control}
+                        name="avatar"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('profile_edit_avatar_label')}</FormLabel>
+                            <div className="flex items-center gap-4">
+                              <Avatar className="w-24 h-24 border">
+                                <AvatarImage src={avatarPreview || ''} alt="Avatar preview" />
+                                <AvatarFallback className="text-3xl">
+                                  {currentUser.name.split(' ').map((n) => n[0]).join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <FormControl>
+                                <Button asChild variant="outline">
+                                  <label htmlFor="avatar-upload">
+                                    <Camera className="mr-2 h-4 w-4" />
+                                    {t('profile_edit_avatar_button')}
+                                    <input 
+                                      id="avatar-upload" 
+                                      type="file" 
+                                      className="sr-only" 
+                                      onChange={handleAvatarChange}
+                                      accept="image/png, image/jpeg, image/gif"
+                                    />
+                                  </label>
+                                </Button>
+                              </FormControl>
+                            </div>
+                            <FormDescription>{t('profile_edit_avatar_desc')}</FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
                      <FormField
                         control={form.control}
                         name="name"
@@ -189,20 +258,7 @@ export default function EditProfilePage() {
                         </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="avatarUrl"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('profile_edit_avatar_label')}</FormLabel>
-                            <FormControl>
-                            <Input placeholder={t('profile_edit_avatar_placeholder')} {...field} />
-                            </FormControl>
-                             <FormDescription>{t('profile_edit_avatar_desc')}</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
+                    
                      <FormField
                         control={form.control}
                         name="bio"
