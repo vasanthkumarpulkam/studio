@@ -3,15 +3,16 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { getAllUsers, getAllOpenJobs, providers, jobs, bids as allBids } from '@/lib/data';
+import { getAllUsers, providers, jobs, bids as allBids } from '@/lib/data';
 import { BarChart, Users, Briefcase, FileText, LineChart, PieChart } from 'lucide-react';
 import { Line, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend, Cell, Bar } from 'recharts';
 import { subMonths, format } from 'date-fns';
+import { useState, useEffect } from 'react';
 
 export default function AdminDashboard() {
   const totalUsers = getAllUsers().length;
   const totalProviders = providers.length;
-  const openJobs = getAllOpenJobs().length;
+  const openJobs = jobs.filter(j => j.status === 'open').length;
   const totalRevenue = jobs
     .filter(job => job.status === 'completed' && job.acceptedBid)
     .reduce((acc, job) => {
@@ -23,6 +24,28 @@ export default function AdminDashboard() {
     }, 0);
 
 
+  const [userSignupData, setUserSignupData] = useState<any[]>([]);
+  const [revenueData, setRevenueData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Generate data on the client-side to avoid hydration errors
+    const generatedUserSignupData = Array.from({ length: 6 }).map((_, i) => {
+      const date = subMonths(new Date(), 5 - i);
+      const month = format(date, 'MMM');
+      const signups = Math.floor(Math.random() * (i + 1) * 2);
+      return { month, signups };
+    });
+    setUserSignupData(generatedUserSignupData);
+
+    const generatedRevenueData = Array.from({ length: 6 }).map((_, i) => {
+      const date = subMonths(new Date(), 5 - i);
+      const month = format(date, 'MMM');
+      const revenue = Math.floor(Math.random() * 500 + 100);
+      return { month, revenue };
+    });
+    setRevenueData(generatedRevenueData);
+  }, []);
+
   const jobStatusCounts = jobs.reduce((acc, job) => {
     acc[job.status] = (acc[job.status] || 0) + 1;
     return acc;
@@ -32,22 +55,6 @@ export default function AdminDashboard() {
     name: status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' '),
     value: jobStatusCounts[status],
   }));
-
-  const userSignupData = Array.from({ length: 6 }).map((_, i) => {
-    const date = subMonths(new Date(), 5 - i);
-    const month = format(date, 'MMM');
-    // Mock data for user signups
-    const signups = Math.floor(Math.random() * (i + 1) * 2);
-    return { month, signups };
-  });
-
-  const revenueData = Array.from({ length: 6 }).map((_, i) => {
-    const date = subMonths(new Date(), 5 - i);
-    const month = format(date, 'MMM');
-    // Mock data for revenue
-    const revenue = Math.floor(Math.random() * 500 + 100);
-    return { month, revenue };
-  });
 
   const statusColors = {
     open: 'hsl(var(--chart-1))',
