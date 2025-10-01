@@ -1,0 +1,276 @@
+
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the HandyConnect platform, either a customer or a service provider.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique identifier for the User entity, matches Firebase Auth UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "User's full name."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "description": "The type of user: 'customer' or 'provider'.",
+          "enum": ["customer", "provider", "admin"]
+        },
+        "avatarUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "phone": {
+            "type": "string"
+        },
+        "bio": {
+            "type": "string"
+        },
+        "location": {
+          "type": "string",
+          "description": "User's geographical location represented as coordinates, address, or geohash."
+        },
+        "hasPaymentMethod": {
+            "type": "boolean"
+        },
+        "kycVerified": {
+          "type": "boolean",
+          "description": "Indicates whether the user has been KYC verified."
+        }
+      },
+      "required": [
+        "uid",
+        "name",
+        "email",
+        "role"
+      ]
+    },
+    "JobPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "JobPost",
+      "type": "object",
+      "description": "Represents a job posting created by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the JobPost entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N JobPost)"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the job (e.g., plumbing, grass cutting)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the job."
+        },
+        "photoUrls": {
+          "type": "array",
+          "description": "URLs of the photos uploaded for the job.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string",
+          "description": "Location where the job needs to be performed (coordinates, address, or geohash)."
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the job post (e.g., open, in progress, completed)."
+        },
+        "postedDate": {
+          "type": "string",
+          "description": "Date and time when the job was posted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "category",
+        "description",
+        "photoUrls",
+        "location",
+        "status",
+        "postedDate"
+      ]
+    },
+    "Bid": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bid",
+      "type": "object",
+      "description": "Represents a bid submitted by a provider for a job post.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Bid entity."
+        },
+        "jobPostId": {
+          "type": "string",
+          "description": "Reference to JobPost. (Relationship: JobPost 1:N Bid)"
+        },
+        "providerId": {
+          "type": "string",
+          "description": "Reference to User (Provider). (Relationship: User 1:N Bid)"
+        },
+        "price": {
+          "type": "number",
+          "description": "The price offered in the bid."
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "Date and time when the bid was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the bid (e.g., pending, accepted, rejected)."
+        }
+      },
+      "required": [
+        "id",
+        "jobPostId",
+        "providerId",
+        "price",
+        "submissionDate",
+        "status"
+      ]
+    },
+    "Payment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Payment",
+      "type": "object",
+      "description": "Represents a payment transaction processed through the platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Payment entity."
+        },
+        "jobPostId": {
+          "type": "string",
+          "description": "Reference to JobPost. (Relationship: JobPost 1:1 Payment)"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User (Customer). (Relationship: User 1:1 Payment)"
+        },
+        "providerId": {
+          "type": "string",
+          "description": "Reference to User (Provider). (Relationship: User 1:1 Payment)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of the payment."
+        },
+        "paymentDate": {
+          "type": "string",
+          "description": "Date and time when the payment was processed.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the payment (e.g., pending, completed, refunded)."
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "Transaction ID from the payment gateway (Stripe/PayPal)."
+        }
+      },
+      "required": [
+        "id",
+        "jobPostId",
+        "userId",
+        "providerId",
+        "amount",
+        "paymentDate",
+        "status",
+        "transactionId"
+      ]
+    },
+    "Review": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Review",
+      "type": "object",
+      "description": "Represents a review and rating given by a user or provider after a job is completed.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Review entity."
+        },
+        "jobPostId": {
+          "type": "string",
+          "description": "Reference to JobPost. (Relationship: JobPost 1:N Review)"
+        },
+        "reviewerId": {
+          "type": "string",
+          "description": "Reference to User (Reviewer). (Relationship: User 1:N Review)"
+        },
+        "revieweeId": {
+          "type": "string",
+          "description": "Reference to User (Reviewee). (Relationship: User 1:N Review)"
+        },
+        "rating": {
+          "type": "number",
+          "description": "The rating given in the review (e.g., 1-5 stars)."
+        },
+        "comment": {
+          "type": "string",
+          "description": "Optional comment accompanying the rating."
+        },
+        "reviewDate": {
+          "type": "string",
+          "description": "Date and time when the review was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "jobPostId",
+        "reviewerId",
+        "revieweeId",
+        "rating",
+        "reviewDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password"
+    ]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles, including customers and providers."
+    },
+    "/job_posts/{jobPostId}": {
+      "schema": { "$ref": "#/entities/JobPost" },
+      "description": "Stores all job postings."
+    },
+    "/job_posts/{jobPostId}/bids/{bidId}": {
+      "schema": { "$ref": "#/entities/Bid" },
+      "description": "Subcollection for bids on a specific job."
+    },
+    "/payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/Payment" },
+      "description": "Stores payment transaction records."
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Stores all reviews for jobs."
+    }
+  }
+}
