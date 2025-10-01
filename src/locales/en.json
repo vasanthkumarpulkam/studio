@@ -177,7 +177,6 @@
   "settings_nav_notifications": "Notifications",
   "settings_profile_title": "Profile",
   "settings_profile_subtitle": "This is how others will see you on the site.",
-  "settings_profile_role": "Role",
   "settings_profile_rating": "Rating",
   "settings_profile_reviews": "reviews",
   "settings_profile_verification": "Verification",
@@ -189,7 +188,7 @@
   "settings_account_title": "Account Type",
   "settings_account_subtitle": "Manage your account type and verification status.",
   "settings_account_current_role_label": "Current Role",
-  "settings_account_current_role_desc": "You are currently a {role}.",
+  "settings_account_current_role_desc": "You are currently registered as a {role}.",
   "settings_account_verification_status_label": "Verification Status",
   "settings_account_verification_status_desc": "Your identity verification status.",
   "settings_account_verified_status": "Verified",
@@ -312,5 +311,7 @@
   "category_pet_care": "Pet Care",
   "category_tech_setup": "Tech Setup",
   "category_freelance_computer_work": "Freelance Computer Work",
-  "category_other": "Other"
+  "category_other": "Other",
+  "role_customer": "Customer",
+  "role_provider": "Provider"
 }

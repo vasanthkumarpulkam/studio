@@ -177,7 +177,6 @@
   "settings_nav_notifications": "Notificaciones",
   "settings_profile_title": "Perfil",
   "settings_profile_subtitle": "Así es como te verán los demás en el sitio.",
-  "settings_profile_role": "Rol",
   "settings_profile_rating": "Calificación",
   "settings_profile_reviews": "reseñas",
   "settings_profile_verification": "Verificación",
@@ -189,7 +188,7 @@
   "settings_account_title": "Tipo de Cuenta",
   "settings_account_subtitle": "Administre su tipo de cuenta y estado de verificación.",
   "settings_account_current_role_label": "Rol Actual",
-  "settings_account_current_role_desc": "Actualmente eres un {role}.",
+  "settings_account_current_role_desc": "Actualmente estás registrado como {role}.",
   "settings_account_verification_status_label": "Estado de Verificación",
   "settings_account_verification_status_desc": "El estado de verificación de su identidad.",
   "settings_account_verified_status": "Verificado",
@@ -312,5 +311,7 @@
   "category_pet_care": "Cuidado de mascotas",
   "category_tech_setup": "Configuración de tecnología",
   "category_freelance_computer_work": "Trabajo informático independiente",
-  "category_other": "Otro"
+  "category_other": "Otro",
+  "role_customer": "Cliente",
+  "role_provider": "Proveedor"
 }

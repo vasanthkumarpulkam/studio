@@ -39,10 +39,10 @@ export default function AccountSettingsPage() {
                     <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
                         <div>
                             <p className="font-semibold">{t('settings_account_current_role_label')}</p>
-                            <p className="text-muted-foreground text-sm">{t('settings_account_current_role_desc', { role: user.role })}</p>
+                            <p className="text-muted-foreground text-sm">{t('settings_account_current_role_desc', { role: t(`role_${user.role}`) })}</p>
                         </div>
                         <Badge variant={user.role === 'customer' ? 'secondary' : 'default'} className="capitalize">
-                            {user.role}
+                            {t(`role_${user.role}`)}
                         </Badge>
                     </div>
                      <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">

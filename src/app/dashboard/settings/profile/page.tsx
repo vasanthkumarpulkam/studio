@@ -50,7 +50,7 @@ export default function ProfileSettingsPage() {
                 <h3 className="text-xl font-bold font-headline">{user.name}</h3>
                 <p className="text-muted-foreground">{user.email}</p>
                 <Badge variant={user.role === 'customer' ? 'secondary' : 'default'} className="mt-2">
-                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    {t(`role_${user.role}`)}
                 </Badge>
             </div>
         </div>
