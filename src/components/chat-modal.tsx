@@ -17,7 +17,7 @@ import { Send, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, User, Provider } from '@/types';
-import { moderateChat } from '@/app/actions';
+import { moderateChat, sendMessage } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
 type ChatModalProps = {
@@ -52,19 +52,21 @@ export default function ChatModal({
       try {
         const moderatedText = await moderateChat(newMessage);
         
-        const optimisticMessage: ChatMessage = {
-          id: `temp-${Date.now()}`,
+        const optimisticMessage: Omit<ChatMessage, 'id' | 'timestamp'> = {
           jobId,
           providerId,
           senderId: currentUser.id,
           text: moderatedText,
-          timestamp: new Date().toISOString(),
         };
 
+        setNewMessage('');
+        
         // In a real app, you would send this to your backend/Firestore
         // and receive the new message via a real-time subscription.
-        setMessages((prev) => [...prev, optimisticMessage]);
-        setNewMessage('');
+        // For this mock, we'll call a server action and update the state.
+        const sentMessage = await sendMessage(optimisticMessage);
+
+        setMessages((prev) => [...prev, sentMessage]);
 
       } catch (error) {
          toast({

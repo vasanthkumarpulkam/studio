@@ -164,6 +164,13 @@ export async function sendMessage(message: Omit<ChatMessage, 'id' | 'timestamp'>
     return newMessage;
 }
 
+export async function moderateChat(message: string): Promise<string> {
+    // This is a mock function that would normally call a Genkit flow.
+    // For now, it just returns the original message.
+    return message;
+}
+
+
 export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 'images'> & { images: File[] }, postedById: string) {
   // In a real app, you would handle file uploads to a storage service like S3 or GCS
   // For this mock, we'll just use placeholder URLs
@@ -190,4 +197,20 @@ export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 
   revalidatePath('/dashboard/jobs/new');
   
   redirect(`/dashboard/jobs/${newJob.id}`);
+}
+
+
+export async function getAiBidSuggestion(jobDescription: string, jobCategory: string): Promise<{ suggestedBid: number; reasoning: string }> {
+  // This is a mock function. In a real app, this would call a Genkit flow.
+  console.log(`Getting AI suggestion for: ${jobCategory} - ${jobDescription}`);
+  
+  // Simulate a delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  const basePrice = Math.random() * 100 + 50;
+  const suggestedBid = Math.round(basePrice / 5) * 5; // Round to nearest 5
+
+  const reasoning = `Based on the job category '${jobCategory}' and the complexity described, we suggest a starting bid of $${suggestedBid}. This considers typical market rates and the estimated effort involved.`;
+
+  return { suggestedBid, reasoning };
 }
