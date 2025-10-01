@@ -42,6 +42,7 @@ import {
   LogIn,
   Hourglass,
   ThumbsUp,
+  Loader2,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -52,21 +53,34 @@ import AcceptBidButton from '@/components/accept-bid-button';
 import MarkCompletedButton from '@/components/mark-completed-button';
 import LeaveReviewForm from '@/components/leave-review-form';
 import StartWorkButton from '@/components/start-work-button';
-import type { Provider, User as UserType } from '@/types';
+import type { Job, Provider, User as UserType } from '@/types';
 import ChatModal from '@/components/chat-modal';
 import ConfirmJobButton from '@/components/confirm-job-button';
 import { useEffect, useState } from 'react';
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const [currentUser, setCurrentUser] = useState<UserType | Provider | null>(null);
-  
+  const [job, setJob] = useState<Job | null | undefined>(null);
+
   useEffect(() => {
     setCurrentUser(getCurrentUser());
-  }, []);
+    const jobData = getJob(params.id);
+    setJob(jobData);
+  }, [params.id]);
 
-  const job = getJob(params.id);
+  if (job === null) {
+     return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  if (job === undefined) {
+    notFound();
+  }
+
   const jobPoster = getUser(job?.postedBy || '');
-
 
   if (!job || !jobPoster) {
     notFound();
