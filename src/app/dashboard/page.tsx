@@ -68,7 +68,13 @@ export default function DashboardPage() {
     setIsLoading(false);
 
     if (user) {
-        setProviderJobs(getOpenJobsForProvider(user.id));
+        if (user.role === 'provider') {
+            const provider = getProvider(user.id);
+            if (provider) {
+                setProviderJobs(getOpenJobsForProvider(provider.id));
+                setSelectedCategories(provider.skills); // Pre-select provider's skills
+            }
+        }
         setCustomerJobs(getJobsForCustomer(user.id));
     }
   }, []);
@@ -86,7 +92,7 @@ export default function DashboardPage() {
         : true;
 
       const locationMatch = location.toLowerCase() 
-        ? job.location.toLowerCase().includes(location.toLowerCase())
+        ? (job.location || '').toLowerCase().includes(location.toLowerCase())
         : true;
       
       const categoryMatch = selectedCategories.length > 0
@@ -460,3 +466,4 @@ export default function DashboardPage() {
     </>
   );
 }
+
