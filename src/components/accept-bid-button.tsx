@@ -6,17 +6,19 @@ import { Button } from '@/components/ui/button';
 import { acceptBid } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Check } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function AcceptBidButton({ jobId, bidId, disabled }: { jobId: string; bidId: string; disabled?: boolean }) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleAccept = () => {
     if (disabled) {
        toast({
           variant: 'destructive',
-          title: 'Payment Method Required',
-          description: 'Please add a payment method before accepting a bid.',
+          title: t('payment_alert_title'),
+          description: t('accept_bid_payment_alert_desc'),
         });
       return;
     }
@@ -25,8 +27,8 @@ export default function AcceptBidButton({ jobId, bidId, disabled }: { jobId: str
       try {
         await acceptBid(jobId, bidId);
         toast({
-          title: 'Bid Accepted!',
-          description: 'The provider has been notified. Waiting for them to confirm.',
+          title: t('accept_bid_success_title'),
+          description: t('accept_bid_success_desc'),
         });
       } catch (error) {
         toast({
@@ -43,12 +45,12 @@ export default function AcceptBidButton({ jobId, bidId, disabled }: { jobId: str
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Accepting...
+          {t('accept_bid_button_pending')}
         </>
       ) : (
         <>
           <Check className="mr-2 h-4 w-4" />
-          Accept Bid
+          {t('accept_bid_button')}
         </>
       )}
     </Button>
