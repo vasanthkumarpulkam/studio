@@ -1,47 +1,68 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { jobCategories as initialCategories } from '@/lib/data';
-import { PlusCircle, Trash2, List, Settings, ChevronsUpDown } from 'lucide-react';
+import { PlusCircle, Trash2, List, Settings, ChevronsUpDown, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { addJobCategory, removeJobCategory } from '@/app/actions';
 
 export default function AdminSettingsPage() {
+  // This state is now just for the UI, the source of truth is the server data
   const [categories, setCategories] = useState<string[]>(initialCategories);
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
   const handleAddCategory = () => {
-    if (newCategory && !categories.includes(newCategory)) {
-      // In a real app, you would call a server action here to persist the change.
-      setCategories([...categories, newCategory].sort());
-      toast({
-        title: 'Category Added',
-        description: `"${newCategory}" has been added to the list.`,
-      });
-      setNewCategory('');
-    } else if (categories.includes(newCategory)) {
+    if (!newCategory) return;
+    
+    startTransition(async () => {
+      const result = await addJobCategory(newCategory);
+      if (result.success) {
+        // Optimistically update UI
+        setCategories(prev => [...prev, newCategory].sort());
         toast({
-            variant: 'destructive',
-            title: 'Category Exists',
-            description: `"${newCategory}" already exists.`,
+          title: 'Category Added',
+          description: result.message,
         });
-    }
+        setNewCategory('');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.message,
+        });
+      }
+    });
   };
 
   const handleRemoveCategory = (categoryToRemove: string) => {
-    // In a real app, you would call a server action here.
-    setCategories(categories.filter((cat) => cat !== categoryToRemove));
-     toast({
-        variant: 'destructive',
-        title: 'Category Removed',
-        description: `"${categoryToRemove}" has been removed.`,
-      });
+    startTransition(async () => {
+      // Optimistically update UI
+      setCategories(prev => prev.filter((cat) => cat !== categoryToRemove));
+      const result = await removeJobCategory(categoryToRemove);
+      if (result.success) {
+        toast({
+          variant: 'destructive',
+          title: 'Category Removed',
+          description: result.message,
+        });
+      } else {
+         // Revert on failure
+        setCategories(initialCategories);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.message,
+        });
+      }
+    });
   };
 
 
@@ -72,16 +93,18 @@ export default function AdminSettingsPage() {
                         value={newCategory}
                         onChange={(e) => setNewCategory(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                        disabled={isPending}
                     />
-                    <Button type="button" onClick={handleAddCategory}>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add Category
+                    <Button type="button" onClick={handleAddCategory} disabled={isPending}>
+                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
+                        Add Category
                     </Button>
                 </div>
 
                 <Alert>
                     <AlertTitle>Live Data</AlertTitle>
                     <AlertDescription>
-                        Changes made here are for demonstration purposes and will reset on page reload. In a production app, these actions would permanently update the database.
+                        Changes made here will permanently update the application's list of job categories.
                     </AlertDescription>
                 </Alert>
                 
@@ -95,6 +118,7 @@ export default function AdminSettingsPage() {
                                     size="icon"
                                     className="h-8 w-8"
                                     onClick={() => handleRemoveCategory(category)}
+                                    disabled={isPending}
                                 >
                                     <Trash2 className="h-4 w-4 text-destructive" />
                                     <span className="sr-only">Delete {category}</span>

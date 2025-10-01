@@ -1,7 +1,7 @@
 
 'use server';
 
-import { jobs, bids as allBids, notifications as allNotifications, chats, users, providers } from '@/lib/data';
+import { jobs, bids as allBids, notifications as allNotifications, chats, users, providers, jobCategories } from '@/lib/data';
 import type { Bid, ChatMessage, Job, User, Provider } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -319,4 +319,29 @@ export async function updateUserStatus(userId: string, newStatus: 'active' | 'su
 
   console.log(`Updated status for user ${userId} to ${newStatus}`);
   revalidatePath('/admin/users');
+}
+
+export async function addJobCategory(category: string) {
+    if (category && !jobCategories.includes(category)) {
+        jobCategories.push(category);
+        jobCategories.sort();
+        revalidatePath('/admin/settings');
+        revalidatePath('/dashboard/jobs/new');
+        return { success: true, message: `Category "${category}" added.` };
+    }
+    if (jobCategories.includes(category)) {
+        return { success: false, message: `Category "${category}" already exists.` };
+    }
+    return { success: false, message: 'Invalid category name.' };
+}
+
+export async function removeJobCategory(category: string) {
+    const index = jobCategories.indexOf(category);
+    if (index > -1) {
+        jobCategories.splice(index, 1);
+        revalidatePath('/admin/settings');
+        revalidatePath('/dashboard/jobs/new');
+        return { success: true, message: `Category "${category}" removed.` };
+    }
+    return { success: false, message: 'Category not found.' };
 }

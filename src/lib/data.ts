@@ -221,7 +221,7 @@ export function getChatMessages(jobId: string, providerId: string): ChatMessage[
 }
 
 
-export const jobCategories = [
+export let jobCategories = [
     'Cleaning',
     'Cooking',
     'Babysitting',
