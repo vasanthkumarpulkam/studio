@@ -52,7 +52,8 @@
   "sidebar_find_jobs": "Encontrar Trabajos",
   "sidebar_my_bids": "Mis Ofertas",
   "dashboard_filters_title": "Filtros",
-  "dashboard_filters_clear": "Limpiar todo",
+  "dashboard_filters_clear_all": "Limpiar todo",
+  "dashboard_filters_clear": "Limpiar",
   "dashboard_filters_search_placeholder": "Buscar por palabra clave...",
   "dashboard_filters_location_placeholder": "Ubicación",
   "dashboard_filters_radius_label": "Radio de Búsqueda",
@@ -60,6 +61,7 @@
   "dashboard_filters_radius_miles": "millas",
   "dashboard_filters_category_label": "Categoría",
   "dashboard_filters_category_filter_label": "Filtrar por categoría",
+  "dashboard_filters_select_all": "Seleccionar Todo",
   "dashboard_public_title": "Encuentre su Próximo Trabajo",
   "dashboard_public_subtitle": "Explore todos los trabajos disponibles en la plataforma. ¡Regístrese para comenzar a ofertar!",
   "dashboard_sort_by_placeholder": "Ordenar por",
@@ -353,3 +355,5 @@
   "profile_edit_error_title": "Error al Actualizar",
   "profile_edit_error_desc": "No se pudieron guardar sus cambios. Por favor, inténtelo de nuevo."
 }
+
+    

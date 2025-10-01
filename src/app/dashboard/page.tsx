@@ -22,6 +22,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -57,6 +58,8 @@ export default function DashboardPage() {
   const [customerJobs, setCustomerJobs] = useState<Job[]>([]);
 
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const providerProfile = useMemo(() => currentUser?.role === 'provider' ? getProvider(currentUser.id) : null, [currentUser]);
+  const providerSkills = useMemo(() => providerProfile?.skills || [], [providerProfile]);
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -127,7 +130,18 @@ export default function DashboardPage() {
     setRadius([50]);
   }
 
+  const handleSelectAllCategories = () => {
+    const categoriesToSelect = currentUser?.role === 'provider' ? providerSkills : jobCategories;
+    setSelectedCategories(categoriesToSelect);
+  }
+
+  const handleClearCategories = () => {
+    setSelectedCategories([]);
+  }
+
   const activeFilterCount = (searchTerm ? 1 : 0) + (location ? 1 : 0) + selectedCategories.length;
+  
+  const categoriesForFilter = currentUser?.role === 'provider' ? providerSkills : jobCategories;
 
   if (isLoading || !isTranslationReady) {
     return (
@@ -148,7 +162,7 @@ export default function DashboardPage() {
                   <div className="flex flex-col gap-4">
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>{t('dashboard_filters_title')} ({activeFilterCount})</h3>
-                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear')}</Button>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear_all')}</Button>
                       </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -192,10 +206,15 @@ export default function DashboardPage() {
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
+                      <DropdownMenuContent align="end" className="w-[280px] max-h-80 overflow-y-auto">
                           <DropdownMenuLabel>{t('dashboard_filters_category_filter_label')}</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          {jobCategories.map(cat => (
+                           <div className="flex justify-between px-2 py-1.5">
+                              <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleSelectAllCategories}>{t('dashboard_filters_select_all')}</Button>
+                              <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleClearCategories} disabled={selectedCategories.length === 0}>{t('dashboard_filters_clear')}</Button>
+                          </div>
+                           <DropdownMenuSeparator />
+                          {categoriesForFilter.map(cat => (
                               <DropdownMenuCheckboxItem 
                                 key={cat}
                                 checked={selectedCategories.includes(cat)}
@@ -259,8 +278,6 @@ export default function DashboardPage() {
 
   // Provider View
   if (isProvider) {
-    const providerProfile = getProvider(currentUser.id);
-    const providerSkills = providerProfile?.skills || [];
     return (
       <>
         <div className="grid lg:grid-cols-[320px_1fr] gap-8">
@@ -270,7 +287,7 @@ export default function DashboardPage() {
                   <div className="flex flex-col gap-4">
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="font-semibold flex items-center gap-2"><SlidersHorizontal className="w-4 h-4"/>{t('dashboard_filters_title')} ({activeFilterCount})</h3>
-                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear')}</Button>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>{t('dashboard_filters_clear_all')}</Button>
                       </div>
                       <div className="relative flex-1 w-full">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -314,10 +331,15 @@ export default function DashboardPage() {
                             <ListFilter className="h-4 w-4" />
                           </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[280px] max-h-60 overflow-y-auto">
+                      <DropdownMenuContent align="end" className="w-[280px] max-h-80 overflow-y-auto">
                           <DropdownMenuLabel>{t('dashboard_provider_filter_by_skills')}</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          {providerSkills.map(cat => (
+                           <div className="flex justify-between px-2 py-1.5">
+                              <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleSelectAllCategories}>{t('dashboard_filters_select_all')}</Button>
+                              <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleClearCategories} disabled={selectedCategories.length === 0}>{t('dashboard_filters_clear')}</Button>
+                          </div>
+                           <DropdownMenuSeparator />
+                          {categoriesForFilter.map(cat => (
                               <DropdownMenuCheckboxItem 
                                 key={cat}
                                 checked={selectedCategories.includes(cat)}
@@ -426,6 +448,8 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
 
     
 

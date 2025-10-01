@@ -52,7 +52,8 @@
   "sidebar_find_jobs": "Find Jobs",
   "sidebar_my_bids": "My Bids",
   "dashboard_filters_title": "Filters",
-  "dashboard_filters_clear": "Clear all",
+  "dashboard_filters_clear_all": "Clear all",
+  "dashboard_filters_clear": "Clear",
   "dashboard_filters_search_placeholder": "Search by keyword...",
   "dashboard_filters_location_placeholder": "Location",
   "dashboard_filters_radius_label": "Search Radius",
@@ -60,6 +61,7 @@
   "dashboard_filters_radius_miles": "miles",
   "dashboard_filters_category_label": "Category",
   "dashboard_filters_category_filter_label": "Filter by category",
+  "dashboard_filters_select_all": "Select All",
   "dashboard_public_title": "Find Your Next Job",
   "dashboard_public_subtitle": "Browse all available jobs on the platform. Sign up to start bidding!",
   "dashboard_sort_by_placeholder": "Sort by",
@@ -353,3 +355,5 @@
   "profile_edit_error_title": "Update Failed",
   "profile_edit_error_desc": "Could not save your changes. Please try again."
 }
+
+    
