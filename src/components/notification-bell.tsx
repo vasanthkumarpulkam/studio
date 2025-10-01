@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -13,10 +14,13 @@ import { getNotificationsForUser } from '@/lib/data';
 import NotificationCard from './notification-card';
 import { markAllNotificationsAsRead } from '@/app/actions';
 import { ScrollArea } from './ui/scroll-area';
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function NotificationBell({ userId }: { userId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { t, isTranslationReady } = useTranslation();
+
 
   // In a real app with a database, you'd likely use a server action
   // or an API route with SWR/React Query for fetching data.
@@ -29,6 +33,14 @@ export default function NotificationBell({ userId }: { userId: string }) {
       await markAllNotificationsAsRead(userId);
     });
   };
+
+  if (!isTranslationReady) {
+    return (
+      <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-5 w-5" />
+      </Button>
+    )
+  }
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -46,7 +58,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
       <PopoverContent align="end" className="w-80 p-0 md:w-96">
         <Card className="border-0">
           <CardHeader className="flex flex-row items-center justify-between border-b px-4 py-3">
-            <CardTitle className="text-lg font-headline">Notifications</CardTitle>
+            <CardTitle className="text-lg font-headline">{t('notifications_title')}</CardTitle>
             <Button
               variant="link"
               size="sm"
@@ -54,7 +66,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
               onClick={handleMarkAllRead}
               disabled={isPending || unreadCount === 0}
             >
-              {isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Mark all as read'}
+              {isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : t('notifications_mark_all_read')}
             </Button>
           </CardHeader>
           <CardContent className="p-0">
@@ -71,14 +83,14 @@ export default function NotificationBell({ userId }: { userId: string }) {
                 </div>
               ) : (
                 <div className="flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
-                  <p>You have no notifications yet.</p>
+                  <p>{t('notifications_none')}</p>
                 </div>
               )}
             </ScrollArea>
           </CardContent>
           <CardFooter className="border-t px-4 py-3">
             <Button size="sm" variant="ghost" className="w-full" disabled>
-              View all notifications
+              {t('notifications_view_all')}
             </Button>
           </CardFooter>
         </Card>
