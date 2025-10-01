@@ -222,7 +222,7 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                     <Briefcase className="h-4 w-4" />
                     <AlertTitle>{t('job_details_skillset_mismatch_title')}</AlertTitle>
                     <AlertDescription>
-                     {t('job_details_skillset_mismatch_desc', { category: job.category })}
+                     {t('job_details_skillset_mismatch_desc', { category: t(jobCategoryKey) })}
                     </AlertDescription>
                   </Alert>
                 ) : !hasPaymentMethod ? (
@@ -420,3 +420,5 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
     </div>
   );
 }
+
+    
