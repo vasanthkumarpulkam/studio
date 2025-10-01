@@ -18,25 +18,36 @@ const SidebarContext = React.createContext<SidebarContextProps>({
 
 export const useSidebar = () => React.useContext(SidebarContext);
 
-// Sidebar component
-export function Sidebar({ children }: { children: React.ReactNode }) {
-  // For now, we'll keep it always expanded. 
-  // We can add collapse functionality later.
-  const isCollapsed = false; 
+// SidebarProvider component
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+
+  // In a real app, you might sync this with localStorage or a cookie
+  const value = React.useMemo(() => ({ isCollapsed }), [isCollapsed]);
 
   return (
-    <SidebarContext.Provider value={{ isCollapsed }}>
-      <TooltipProvider>
-        <aside
-          className={cn(
-            'hidden md:flex flex-col border-r bg-background transition-all duration-300 ease-in-out',
-            isCollapsed ? 'w-16' : 'w-64'
-          )}
-        >
-          <nav className="flex flex-col p-2">{children}</nav>
-        </aside>
-      </TooltipProvider>
+    <SidebarContext.Provider value={value}>
+        <TooltipProvider>
+            {children}
+        </TooltipProvider>
     </SidebarContext.Provider>
+  );
+}
+
+
+// Sidebar component
+export function Sidebar({ children }: { children: React.ReactNode }) {
+  const { isCollapsed } = useSidebar();
+  
+  return (
+    <aside
+      className={cn(
+        'hidden md:flex flex-col border-r bg-background transition-all duration-300 ease-in-out',
+        isCollapsed ? 'w-16' : 'w-64'
+      )}
+    >
+      <nav className="flex flex-col p-2">{children}</nav>
+    </aside>
   );
 }
 
