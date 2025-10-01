@@ -17,19 +17,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { getCurrentUser } from '@/lib/data';
-import type { User, Provider } from '@/types';
+import { useUser } from '@/firebase';
+import type { User as AppUser, Provider } from '@/types';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/hooks/use-translation';
 import LanguageSwitcher from '@/components/language-switcher';
 
 export default function Home() {
   const { t, isTranslationReady } = useTranslation();
-  const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
-
-  useEffect(() => {
-    setCurrentUser(getCurrentUser());
-  }, []);
+  const { user: currentUser } = useUser();
 
   const postJobHref = currentUser ? '/dashboard/jobs/new' : '/login';
   const findWorkHref = '/dashboard';

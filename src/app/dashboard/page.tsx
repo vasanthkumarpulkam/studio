@@ -7,12 +7,12 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import {
-  getCurrentUser,
   getJobsForCustomer,
   getOpenJobsForProvider,
   jobCategories,
   getAllOpenJobs,
   getProvider,
+  getMockUser,
 } from '@/lib/data';
 import { JobCard } from '@/components/job-card';
 import { Button } from '@/components/ui/button';
@@ -42,16 +42,17 @@ import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/use-translation';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
 
 
 export default function DashboardPage() {
+  const { user: firebaseUser, isUserLoading } = useUser();
   const [currentUser, setCurrentUser] = useState<User | Provider | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');
   const [radius, setRadius] = useState([50]);
-  const [isLoading, setIsLoading] = useState(true);
   const { t, isTranslationReady } = useTranslation();
   const router = useRouter();
   
@@ -64,25 +65,26 @@ export default function DashboardPage() {
   const providerSkills = useMemo(() => providerProfile?.skills || [], [providerProfile]);
 
   useEffect(() => {
-    const user = getCurrentUser();
-    setCurrentUser(user);
-    setIsLoading(false);
+    if (!isUserLoading) {
+      const user = firebaseUser ? getMockUser(firebaseUser.uid) : null;
+      setCurrentUser(user as User | Provider | null);
 
-    if (user) {
-        if (user.role === 'provider') {
-            const provider = getProvider(user.id);
-            if (provider) {
-                setProviderJobs(getOpenJobsForProvider(provider.id));
-                setSelectedCategories(provider.skills); // Pre-select provider's skills
-            }
-        }
-        setCustomerJobs(getJobsForCustomer(user.id));
+      if (user) {
+          if (user.role === 'provider') {
+              const provider = getProvider(user.id);
+              if (provider) {
+                  setProviderJobs(getOpenJobsForProvider(provider.id));
+                  setSelectedCategories(provider.skills); // Pre-select provider's skills
+              }
+          }
+          setCustomerJobs(getJobsForCustomer(user.id));
+      }
     }
-  }, []);
+  }, [firebaseUser, isUserLoading]);
 
   useEffect(() => {
     // Only run filter if not loading
-    if (isLoading) return;
+    if (isUserLoading) return;
 
     const jobsToFilter = !currentUser || currentUser?.role === 'customer' ? allJobs : providerJobs;
     
@@ -121,7 +123,7 @@ export default function DashboardPage() {
 
     setFilteredJobs(results);
 
-  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius, currentUser, isLoading]);
+  }, [searchTerm, location, selectedCategories, allJobs, providerJobs, sortBy, radius, currentUser, isUserLoading]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories(prev => 
@@ -151,7 +153,7 @@ export default function DashboardPage() {
   
   const categoriesForFilter = currentUser?.role === 'provider' ? providerSkills : jobCategories;
 
-  if (isLoading || !isTranslationReady) {
+  if (isUserLoading || !isTranslationReady) {
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

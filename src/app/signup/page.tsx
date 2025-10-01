@@ -14,39 +14,44 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import LanguageSwitcher from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
+import { useAuth } from '@/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { Loader2 } from 'lucide-react';
 
 export default function SignupPage() {
-  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
   const { t, isTranslationReady } = useTranslation();
+  const auth = useAuth();
+  const [isPending, startTransition] = useTransition();
 
-  const handleFirstStep = (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would call your backend to send an OTP
-    setStep(2);
-    toast({
-        title: t('signup_toast_code_sent_title'),
-        description: `${t('signup_toast_code_sent_desc')} ${email}.`,
+    startTransition(async () => {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        toast({
+          title: t('signup_toast_account_created_title'),
+          description: t('signup_toast_account_created_desc'),
+        });
+        router.push(redirectUrl || '/dashboard');
+      } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Signup Failed',
+            description: error.message || 'Could not create account. Please try again.',
+        });
+      }
     });
-  };
-
-  const handleVerification = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real app, you would verify the OTP with your backend
-    toast({
-        title: t('signup_toast_account_created_title'),
-        description: t('signup_toast_account_created_desc'),
-    });
-    router.push(redirectUrl || '/dashboard');
   };
 
   if (!isTranslationReady) {
@@ -69,21 +74,18 @@ export default function SignupPage() {
               <Logo href="/" />
           </div>
           <CardTitle className="text-2xl font-headline">
-            {step === 1 ? t('signup_title_step1') : t('signup_title_step2')}
+            {t('signup_title_step1')}
           </CardTitle>
           <CardDescription>
-            {step === 1
-              ? t('signup_subtitle_step1')
-              : `${t('signup_subtitle_step2')} ${email}`}
+            {t('signup_subtitle_step1')}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {step === 1 ? (
-            <form onSubmit={handleFirstStep}>
+            <form onSubmit={handleSignup}>
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="full-name">{t('signup_fullname_label')}</Label>
-                  <Input id="full-name" placeholder="Max Robinson" required />
+                  <Input id="full-name" placeholder="Max Robinson" required disabled={isPending} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">{t('signup_email_label')}</Label>
@@ -94,11 +96,12 @@ export default function SignupPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isPending}
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">{t('signup_password_label')}</Label>
-                  <Input id="password" type="password" required />
+                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={isPending} />
                 </div>
 
                 <div className="grid gap-2">
@@ -106,6 +109,7 @@ export default function SignupPage() {
                   <RadioGroup
                     defaultValue="customer"
                     className="grid grid-cols-2 gap-4"
+                    disabled={isPending}
                   >
                     <div>
                       <RadioGroupItem
@@ -135,30 +139,15 @@ export default function SignupPage() {
                     </div>
                   </RadioGroup>
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                   {t('signup_create_account_button')}
                 </Button>
-                 <Button variant="link" type="button" onClick={() => router.back()}>
+                 <Button variant="link" type="button" onClick={() => router.back()} disabled={isPending}>
                     {t('signup_back_button')}
                 </Button>
               </div>
             </form>
-          ) : (
-            <form onSubmit={handleVerification}>
-                <div className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="otp">{t('signup_otp_label')}</Label>
-                        <Input id="otp" placeholder="_ _ _ _ _ _" required maxLength={6} />
-                    </div>
-                    <Button type="submit" className="w-full">
-                        {t('signup_verify_button')}
-                    </Button>
-                     <Button variant="link" size="sm" type="button" onClick={() => setStep(1)}>
-                        {t('signup_back_to_signup_button')}
-                    </Button>
-                </div>
-            </form>
-          )}
 
           <div className="mt-4 text-center text-sm">
             {t('signup_already_account')}{' '}

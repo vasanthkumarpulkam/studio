@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -9,27 +8,26 @@ import { Menu, Shield } from 'lucide-react';
 import Logo from '@/components/logo';
 import { SidebarNav } from '@/components/sidebar-nav';
 import { UserNav } from '@/components/user-nav';
-import { getCurrentUser } from '@/lib/data';
+import { getMockUser } from '@/lib/data';
 import NotificationBell from './notification-bell';
-import type { User, Provider } from '@/types';
+import { useUser } from '@/firebase';
 import { usePathname } from 'next/navigation';
 import LanguageSwitcher from './language-switcher';
 
 export function Header() {
-  const [user, setUser] = useState<User | Provider | null>(null);
+  const { user } = useUser();
   const pathname = usePathname();
-
-  useEffect(() => {
-    setUser(getCurrentUser());
-  }, [pathname]);
+  
+  const mockUser = user ? getMockUser(user.uid) : null;
 
   const isAdminSection = pathname.startsWith('/admin');
+  const userRole = mockUser?.role;
 
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-40">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Logo href="/" />
-        {user?.role === 'admin' && (
+        {userRole === 'admin' && (
            <Link
             href="/admin"
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
@@ -40,7 +38,7 @@ export function Header() {
           </Link>
         )}
       </nav>
-      {user && !isAdminSection && (
+      {user && !isAdminSection && userRole && (
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="shrink-0 md:hidden">
@@ -51,7 +49,7 @@ export function Header() {
           <SheetContent side="left">
             <nav className="grid gap-6 text-lg font-medium">
               <Logo href="/" />
-              <SidebarNav userRole={user.role} isMobile={true} />
+              <SidebarNav userRole={userRole as 'customer' | 'provider'} isMobile={true} />
             </nav>
           </SheetContent>
         </Sheet>
@@ -60,7 +58,7 @@ export function Header() {
         <LanguageSwitcher />
         {user ? (
           <>
-            {user.role !== 'admin' && <NotificationBell userId={user.id} />}
+            {userRole !== 'admin' && <NotificationBell userId={user.uid} />}
             <UserNav user={user} />
           </>
         ) : (

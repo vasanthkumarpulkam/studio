@@ -13,28 +13,32 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import type { User } from '@/types';
+import type { User as UserType } from 'firebase/auth';
 import { CreditCard, User as UserIcon, Settings, LogOut } from 'lucide-react';
-import { login } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/hooks/use-translation';
+import { useAuth } from '@/firebase';
 
-export function UserNav({ user }: { user: User }) {
+export function UserNav({ user }: { user: UserType }) {
   const router = useRouter();
   const { t } = useTranslation();
+  const auth = useAuth();
 
   const getInitials = (name: string) => {
+    if (!name) return 'U';
     return name
       .split(' ')
       .map((n) => n[0])
       .join('');
   };
 
-  const handleLogout = () => {
-    // In a real app, you'd call an API to sign out.
-    // For this mock, we'll "log out" by setting the user ID to null.
-    login(null);
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      router.push('/');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (
@@ -42,15 +46,15 @@ export function UserNav({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={user.avatarUrl} alt={user.name} />
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+            <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
+            <AvatarFallback>{getInitials(user.displayName || user.email || 'User')}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>

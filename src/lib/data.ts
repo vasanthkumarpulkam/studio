@@ -136,39 +136,20 @@ export let notifications: Notification[] = initialNotifications.slice();
 
 export { initialNotifications };
 
-const MOCK_USER_ID_KEY = 'mockUserId';
 
-export function login(userId: string | null) {
-    if (typeof window !== 'undefined') {
-        if (userId) {
-            window.localStorage.setItem(MOCK_USER_ID_KEY, userId);
-        } else {
-            window.localStorage.removeItem(MOCK_USER_ID_KEY);
-        }
-    }
-}
+// NOTE: The functions below are for the mock data and will be replaced by Firebase interactions.
 
-export function getCurrentUser(): User | Provider | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
+export function getMockUser(id: string): User | Provider | undefined {
+  const user = users.find(u => u.id === id);
+  if (!user) return undefined;
   
-  const MOCKED_CURRENT_USER_ID = window.localStorage.getItem(MOCK_USER_ID_KEY);
-  
-  if (!MOCKED_CURRENT_USER_ID) {
-    return null;
-  }
-  
-  const user = users.find(u => u.id === MOCKED_CURRENT_USER_ID);
-  if (!user) return null;
-
   if (user.role === 'provider') {
-    const providerDetails = providers.find(p => p.id === user.id);
+    const providerDetails = providers.find(p => p.id === id);
     return { ...user, ...providerDetails } as Provider;
   }
-
   return user;
 }
+
 
 export function getAllUsers(): (User | Provider)[] {
   return users.map(user => {

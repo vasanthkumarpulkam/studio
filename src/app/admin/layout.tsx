@@ -4,37 +4,37 @@
 import { Sidebar, SidebarProvider, SidebarItem, SidebarSection } from '@/components/admin-sidebar';
 import { Home, Users, Settings, History, ClipboardList } from 'lucide-react';
 import { Header } from '@/components/header';
-import { getCurrentUser } from '@/lib/data';
 import { redirect } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useUser } from '@/firebase';
+import { getMockUser } from '@/lib/data';
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<ReturnType<typeof getCurrentUser>>(null);
-
-    useEffect(() => {
-        const currentUser = getCurrentUser();
-        if (!currentUser || currentUser.role !== 'admin') {
-            redirect('/login');
-        } else {
-            setUser(currentUser);
-            setIsLoading(false);
-        }
-    }, []);
-
-    if (isLoading) {
+    const { user, isUserLoading } = useUser();
+    
+    if (isUserLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
         );
     }
+
+    if (!user) {
+        return redirect('/login');
+    }
     
+    // This is a temporary solution to get user role from mock data
+    // In a real app, this would come from Firestore or custom claims
+    const mockUser = getMockUser(user.uid);
+    if (mockUser?.role !== 'admin') {
+        return redirect('/dashboard');
+    }
+
     return (
         <SidebarProvider>
             <div className="flex h-screen flex-col">
