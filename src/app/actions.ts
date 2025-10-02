@@ -172,6 +172,7 @@ export async function postJob(jobData: Omit<Job, 'id' | 'postedOn' | 'status' | 
   const newJob: Omit<Job, 'id'> = {
     ...jobData,
     postedBy: postedById,
+    userId: postedById,
     postedOn: new Date().toISOString(),
     status: 'open',
     images: imageUrls,

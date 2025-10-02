@@ -124,14 +124,6 @@ export default function NewJobPage() {
         });
         return;
     }
-    if (!hasPaymentMethod) {
-      toast({
-        variant: 'destructive',
-        title: 'Payment Method Required',
-        description: 'Please add a payment method before posting a job.',
-      });
-      return;
-    }
     
     startTransition(async () => {
         try {
@@ -178,24 +170,9 @@ export default function NewJobPage() {
             <CardDescription>{t('new_job_description')}</CardDescription>
           </CardHeader>
           <CardContent>
-            {!hasPaymentMethod && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{t('payment_alert_title')}</AlertTitle>
-                <AlertDescription>
-                  {t('payment_alert_description_post')}
-                  <Button asChild variant="secondary" size="sm" className="mt-2 ml-auto block">
-                    <Link href="/dashboard/settings/payment">
-                      <CreditCard className="mr-2 h-4 w-4"/>
-                      {t('payment_alert_button')}
-                    </Link>
-                  </Button>
-                </AlertDescription>
-              </Alert>
-            )}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <fieldset disabled={!hasPaymentMethod || isPending} className="space-y-6">
+                <fieldset disabled={isPending} className="space-y-6">
                   <FormField
                     control={form.control}
                     name="title"
@@ -371,7 +348,7 @@ export default function NewJobPage() {
                   />
                 </fieldset>
 
-                <Button type="submit" className="w-full sm:w-auto" disabled={!hasPaymentMethod || isPending}>
+                <Button type="submit" className="w-full sm:w-auto" disabled={isPending}>
                     {isPending ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -392,8 +369,3 @@ export default function NewJobPage() {
     </>
   );
 }
-
-    
-    
-
-    

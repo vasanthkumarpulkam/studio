@@ -6,7 +6,6 @@ import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
 import { Auth, User } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
-import { useUser as useAppUser } from './auth/use-user';
 
 interface FirebaseProviderProps {
   children: ReactNode;
@@ -96,5 +95,3 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
   
   return memoized;
 }
-
-export const useUser = useAppUser;

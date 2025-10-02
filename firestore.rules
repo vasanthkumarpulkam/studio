@@ -1,33 +1,7 @@
-/**
- * @file Firestore Security Rules for HandyConnect Platform
- * @description This ruleset enforces a user-ownership model for user profiles and a public-read, owner-write model for job posts.
- *
- * Data Structure:
- * - /users/{userId}: Stores user profiles. Only the authenticated user can read/write their own profile.
- * - /job_posts/{jobPostId}: Stores job postings. Publicly readable, but only the job poster can modify.
- * - /job_posts/{jobPostId}/bids/{bidId}: Stores bids for a specific job post. Only accessible to the job poster and the bidder.
- * - /payments/{paymentId}: Stores payment transactions. Publicly readable, only system can modify.
- * - /reviews/{reviewId}: Stores reviews for jobs. Publicly readable, only system can modify.
- *
- * Key Security Decisions:
- * - Users can only access their own data under `/users/{userId}`.
- * - Job posts are publicly readable to maximize visibility.
- * - No user listing is allowed.
- *
- * Denormalization for Authorization:
- * - JobPost documents MUST contain a `userId` field to indicate ownership.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Secure user profiles. Only the authenticated user can access their own profile.
-     * @path /users/{userId}
-     * @allow (create, update, delete) User with UID "K3C5lt2v2MXswpNjh9JkDZjZ3ue2" can modify /users/K3C5lt2v2MXswpNjh9JkDZjZ3ue2
-     * @deny (create, update, delete) User with UID "OtherUID" cannot modify /users/K3C5lt2v2MXswpNjh9JkDZjZ3ue2
-     * @principle Enforces document ownership for writes.
-     */
     match /users/{userId} {
       function isSignedIn() {
         return request.auth != null;
@@ -49,14 +23,6 @@ service cloud.firestore {
       allow delete: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
     }
 
-    /**
-     * @description Secure job postings. Publicly readable, but only the job poster can modify.
-     * @path /job_posts/{jobPostId}
-     * @allow (get, list) Anyone can read job posts.
-     * @allow (create, update, delete) User with UID "K3C5lt2v2MXswpNjh9JkDZjZ3ue2" can modify /job_posts/{jobPostId} where resource.data.userId == "K3C5lt2v2MXswpNjh9JkDZjZ3ue2"
-     * @deny (create, update, delete) User with UID "OtherUID" cannot modify /job_posts/{jobPostId} where resource.data.userId == "K3C5lt2v2MXswpNjh9JkDZjZ3ue2"
-     * @principle Public read, owner-only writes.
-     */
     match /job_posts/{jobPostId} {
       function isSignedIn() {
         return request.auth != null;
@@ -77,17 +43,11 @@ service cloud.firestore {
       allow get: if true;
       allow list: if true;
 
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && request.resource.data.userId == request.auth.uid && resource.data.userId == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.postedBy == request.auth.uid;
+      allow update: if isSignedIn() && request.resource.data.postedBy == request.auth.uid && resource.data.postedBy == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.postedBy == request.auth.uid;
     }
 
-    /**
-     * @description Secure bids on a specific job post. Only accessible to the job poster and the bidder.
-     * @path /job_posts/{jobPostId}/bids/{bidId}
-     * @allow (create, update, delete) User with UID "K3C5lt2v2MXswpNjh9JkDZjZ3ue2" can create a bid under /job_posts/{jobPostId}/bids/{bidId} if they are the bidder.
-     * @deny (create, update, delete) User with UID "OtherUID" cannot modify /job_posts/{jobPostId}/bids/{bidId}
-     */
     match /job_posts/{jobPostId}/bids/{bidId} {
       function isSignedIn() {
         return request.auth != null;
@@ -113,10 +73,6 @@ service cloud.firestore {
       allow delete: if isSignedIn() && resource.data.providerId == request.auth.uid;
     }
 
-    /**
-     * @description Secure payment transactions. Publicly readable, only system can modify.
-     * @path /payments/{paymentId}
-     */
     match /payments/{paymentId} {
       function isSignedIn() {
         return request.auth != null;
@@ -124,13 +80,9 @@ service cloud.firestore {
 
       allow get: if true;
       allow list: if true;
-      allow create, update, delete: if false; // TODO: Add system role check once roles are defined.
+      allow create, update, delete: if false; 
     }
 
-    /**
-     * @description Secure reviews for jobs. Publicly readable, only system can modify.
-     * @path /reviews/{reviewId}
-     */
     match /reviews/{reviewId} {
       function isSignedIn() {
         return request.auth != null;
@@ -138,13 +90,9 @@ service cloud.firestore {
 
       allow get: if true;
       allow list: if true;
-      allow create, update, delete: if false; // TODO: Add system role check once roles are defined.
+      allow create, update, delete: if false; 
     }
 
-     /**
-      * @description Secure notifications.  Any signed in user can list the notifications.
-      * @path /notifications
-      */
      match /notifications/{notificationId} {
         function isSignedIn() {
           return request.auth != null;
