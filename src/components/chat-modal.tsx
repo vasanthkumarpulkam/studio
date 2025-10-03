@@ -14,10 +14,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Image as ImageIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '@/firebase/config';
 import type { ChatMessage, User, Provider } from '@/types';
 import { sendMessage } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -45,6 +47,7 @@ export default function ChatModal({
 }: ChatModalProps) {
   const [newMessage, setNewMessage] = useState('');
   const [isPending, startTransition] = useTransition();
+  const [files, setFiles] = useState<File[]>([]);
   const { toast } = useToast();
   const { language } = useTranslation();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -70,14 +73,26 @@ export default function ChatModal({
 
     startTransition(async () => {
       try {
+        const mediaUrls: string[] = [];
+        for (const file of files) {
+          if (file.size > 5 * 1024 * 1024) {
+            toast({ variant: 'destructive', title: 'File too large', description: `${file.name} exceeds 5MB.` });
+            continue;
+          }
+          const storageRef = ref(storage, `chats/${jobId}/${Date.now()}-${file.name}`);
+          await uploadBytes(storageRef, file);
+          mediaUrls.push(await getDownloadURL(storageRef));
+        }
         const optimisticMessage: Omit<ChatMessage, 'id' | 'timestamp'> = {
           jobId,
           providerId,
           senderId: currentUser.uid,
           text: newMessage,
+          media: mediaUrls,
         };
 
         setNewMessage('');
+        setFiles([]);
         await sendMessage(optimisticMessage);
       } catch (error) {
          toast({
@@ -127,6 +142,13 @@ export default function ChatModal({
                     )}
                   >
                     <p>{message.text}</p>
+                    {message.media && message.media.length > 0 && (
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {message.media.map((m, idx) => (
+                          <img key={idx} src={m} alt="attachment" className="rounded-md object-cover aspect-square" />
+                        ))}
+                      </div>
+                    )}
                     <p className={cn(
                         'text-xs mt-1',
                         isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'
@@ -159,6 +181,12 @@ export default function ChatModal({
               onChange={(e) => setNewMessage(e.target.value)}
               disabled={isPending}
             />
+            <div>
+              <input id="chat-files" type="file" multiple accept="image/*" className="hidden" onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+              <Button type="button" variant="outline" size="icon" onClick={() => document.getElementById('chat-files')?.click()} disabled={isPending}>
+                <ImageIcon className="h-4 w-4" />
+              </Button>
+            </div>
             <Button type="submit" size="icon" disabled={isPending}>
               {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               <span className="sr-only">Send</span>

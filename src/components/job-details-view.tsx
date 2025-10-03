@@ -57,6 +57,7 @@ import type { Job, Provider, User as UserType, Bid, ChatMessage } from '@/types'
 import ChatModal from '@/components/chat-modal';
 import ConfirmJobButton from '@/components/confirm-job-button';
 import { getProvider } from '@/lib/data';
+import BidCard from './bid-card';
 import { useTranslation } from '@/hooks/use-translation';
 
 
@@ -434,42 +435,8 @@ export default function JobDetailsView({ job, bids, currentUser, jobPoster, acce
                     {bids.map((bid) => {
                       const provider = getProvider(bid.providerId);
                       if (!provider) return null;
-
-                      const bidMessage = isTranslationReady && language === 'es' && bid.i18n?.es?.message ? bid.i18n.es.message : bid.message;
-
-                      return (
-                        <div key={bid.id} className="p-4 border rounded-lg">
-                          <div className="flex justify-between items-start">
-                             <div className="flex items-center gap-3">
-                                <Avatar>
-                                   <AvatarImage src={provider.avatarUrl} alt={provider.name} />
-                                   <AvatarFallback>{provider.name.charAt(0)}</AvatarFallback>
-                                 </Avatar>
-                                 <div>
-                                   <p className="font-semibold">{provider.name}</p>
-                                   <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                                     <span className="flex items-center gap-1">
-                                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                                        {provider.rating} ({provider.reviews} {t('job_details_reviews')})
-                                     </span>
-                                     {provider.isVerified && <ShieldCheck className="w-3 h-3 text-primary" />}
-                                     {bid.completionTime && (
-                                        <span className="flex items-center gap-1">
-                                            <Clock className="w-3 h-3" />
-                                            {bid.completionTime}
-                                        </span>
-                                     )}
-                                   </div>
-                                 </div>
-                             </div>
-                             <p className="text-lg font-bold text-primary">${bid.amount}</p>
-                          </div>
-                          {bidMessage && <p className="text-sm text-muted-foreground mt-2 pl-11">{bidMessage}</p>}
-                          <div className="flex justify-end mt-3 gap-2">
-                             <AcceptBidButton jobId={job.id} bidId={bid.id} disabled={!hasPaymentMethod}/>
-                          </div>
-                        </div>
-                      );
+                      const canAccept = hasPaymentMethod;
+                      return <BidCard key={bid.id} bid={bid} provider={provider} jobId={job.id} canAccept={canAccept} />;
                     })}
                   </div>
                 ) : (
