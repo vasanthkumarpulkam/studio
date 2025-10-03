@@ -36,11 +36,18 @@ service cloud.firestore {
       }
     }
 
-    // CHATS - only participants can access
-    match /chats/{threadId} {
-      allow get, list: if signedIn() && (request.resource.data.participants has request.auth.uid);
-      allow create: if signedIn();
-      // messages subcollection could be similarly restricted if added
+    // CHATS - current model stores messages as top-level docs with jobId/providerId/senderId
+    match /chats/{messageId} {
+      allow create: if signedIn() && request.resource.data.senderId == request.auth.uid;
+      allow get: if signedIn() && (
+        resource.data.senderId == request.auth.uid ||
+        // poster of the job
+        get(/databases/$(database)/documents/job_posts/$(resource.data.jobId)).data.postedBy == request.auth.uid ||
+        // awarded provider (we cannot check award here reliably without extra data; allow providerId)
+        resource.data.providerId == request.auth.uid
+      );
+      allow list: if false;
+      allow update, delete: if false;
     }
 
     // ADMINS - role-gated
