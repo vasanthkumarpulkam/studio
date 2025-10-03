@@ -2,6 +2,9 @@
 'use client';
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useUser } from '@/firebase';
+import { db } from '@/firebase/config';
+import { doc, updateDoc } from 'firebase/firestore';
 
 type LanguageContextType = {
   language: string;
@@ -12,6 +15,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState('en');
+  const { user } = useUser();
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language');
@@ -20,11 +24,20 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (user?.language && user.language !== language) {
+      setLanguage(user.language);
+    }
+  }, [user?.language]);
+
   const value = {
     language,
-    setLanguage: (lang: string) => {
+    setLanguage: async (lang: string) => {
       setLanguage(lang);
       localStorage.setItem('language', lang);
+      if (user?.uid) {
+        try { await updateDoc(doc(db, 'users', user.uid), { language: lang }); } catch {}
+      }
     },
   };
 

@@ -29,6 +29,7 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'customer' | 'provider'>('customer');
+  const [language, setLanguage] = useState<'en' | 'es'>('en');
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
@@ -50,6 +51,7 @@ function Signup() {
             name,
             email,
             role,
+            language,
             joinedOn: new Date().toISOString(),
             status: 'active',
         });
