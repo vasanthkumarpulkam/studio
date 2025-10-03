@@ -7,6 +7,24 @@ import { FirebaseClientProvider } from '@/firebase';
 export const metadata: Metadata = {
   title: 'ServiceHub',
   description: 'Connects daily workers and repair service providers with customers.',
+  openGraph: {
+    title: 'ServiceHub',
+    description: 'Find local help for cleaning, moving, landscaping, handyman, and events in Texas.',
+    url: 'https://example.com',
+    siteName: 'ServiceHub',
+    images: [
+      { url: 'https://placehold.co/1200x630', width: 1200, height: 630, alt: 'ServiceHub' },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ServiceHub',
+    description: 'Find and hire trusted local providers in Texas.',
+    images: ['https://placehold.co/1200x630'],
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

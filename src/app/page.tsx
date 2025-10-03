@@ -20,6 +20,7 @@ import { useUser } from '@/firebase';
 import { Footer } from '@/components/footer';
 import { useTranslation } from '@/hooks/use-translation';
 import LanguageSwitcher from '@/components/language-switcher';
+import Script from 'next/script';
 
 export default function Home() {
   const { t, isTranslationReady } = useTranslation();
@@ -39,6 +40,19 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      <Script id="ld-json-landing" type="application/ld+json" strategy="afterInteractive">
+        {JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'ServiceHub',
+          url: 'https://example.com',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://example.com/jobs?q={search_term_string}',
+            'query-input': 'required name=search_term_string'
+          }
+        })}
+      </Script>
       <header className="px-4 lg:px-6 h-16 flex items-center shadow-sm bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <Logo href="/" />
         <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
