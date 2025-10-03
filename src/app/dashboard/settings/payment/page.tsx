@@ -47,6 +47,9 @@ function SetupForm() {
         if (!card) throw new Error('Card element missing');
         const result = await stripe.confirmCardSetup(clientSecret, { payment_method: { card } });
         if (result.error) throw result.error;
+        // Mark hasPaymentMethod for UX toggles
+        const mark = httpsCallable(functions, 'markHasPaymentMethod');
+        await mark({});
         toast({ title: 'Payment Method Saved!', description: 'Your card has been securely saved.' });
       } catch (err: any) {
         toast({ variant: 'destructive', title: 'Setup failed', description: err.message || 'Try again.' });

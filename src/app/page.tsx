@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import Logo from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Users } from 'lucide-react';
+import { ArrowRight, Users, ShieldCheck, Star, MapPin, ChevronRight } from 'lucide-react';
 import Testimonials from '@/components/testimonials';
 import {
   Carousel,
@@ -30,9 +30,6 @@ export default function Home() {
   const findWorkHref = '/dashboard';
 
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
-  const feature1 = PlaceHolderImages.find(p => p.id === 'feature-1');
-  const feature2 = PlaceHolderImages.find(p => p.id === 'feature-2');
-  const feature3 = PlaceHolderImages.find(p => p.id === 'feature-3');
 
   if (!isTranslationReady) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
@@ -80,15 +77,16 @@ export default function Home() {
         </nav>
       </header>
       <main className="flex-1">
-        <section className="w-full py-20 md:py-32 lg:py-40 bg-card">
+        <section className="w-full py-16 md:py-28 lg:py-32 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.08),transparent_60%)]" />
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+            <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
               <div className="flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
-                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl font-headline">
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl font-headline">
                     {t('landing_hero_title')}
                   </h1>
-                  <p className="max-w-[600px] text-foreground/80 md:text-xl">
+                  <p className="max-w-[680px] text-foreground/80 md:text-xl">
                     {t('landing_hero_subtitle')}
                   </p>
                 </div>
@@ -104,14 +102,19 @@ export default function Home() {
                     </Link>
                   </Button>
                 </div>
+                <div className="flex items-center gap-6 pt-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary"/>Verified providers</div>
+                  <div className="flex items-center gap-2"><Star className="h-4 w-4 text-amber-500"/>Private bids only</div>
+                  <div className="flex items-center gap-2"><MapPin className="h-4 w-4"/>Texas-focused</div>
+                </div>
               </div>
-              <div className="relative h-64 md:h-auto">
+              <div className="relative h-72 md:h-[520px]">
                 {heroImage &&
                     <Image
                     src={heroImage.imageUrl}
                     alt="Hero"
                     fill
-                    className="rounded-xl object-cover shadow-lg"
+                    className="rounded-2xl object-cover shadow-2xl"
                     data-ai-hint={heroImage.imageHint}
                   />
                 }
@@ -119,8 +122,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-20 lg:py-24">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -130,44 +132,42 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
-              <Card className="bg-transparent border-none shadow-none">
-                {feature1 && <div className="relative h-48 mb-4">
-                    <Image src={feature1.imageUrl} alt={feature1.description} fill className="object-contain" data-ai-hint={feature1.imageHint}/>
-                </div>}
-                <CardHeader className="p-0">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-10">
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
                   <CardTitle className="font-headline">{t('landing_feature1_title')}</CardTitle>
-                  <CardDescription>
-                    {t('landing_feature1_description')}
-                  </CardDescription>
+                  <CardDescription>{t('landing_feature1_description')}</CardDescription>
                 </CardHeader>
               </Card>
-               <Card className="bg-transparent border-none shadow-none">
-                 {feature2 && <div className="relative h-48 mb-4">
-                    <Image src={feature2.imageUrl} alt={feature2.description} fill className="object-contain" data-ai-hint={feature2.imageHint}/>
-                </div>}
-                <CardHeader className="p-0">
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
                   <CardTitle className="font-headline">{t('landing_feature2_title')}</CardTitle>
-                  <CardDescription>
-                   {t('landing_feature2_description')}
-                  </CardDescription>
+                  <CardDescription>{t('landing_feature2_description')}</CardDescription>
                 </CardHeader>
               </Card>
-               <Card className="bg-transparent border-none shadow-none">
-                 {feature3 && <div className="relative h-48 mb-4">
-                    <Image src={feature3.imageUrl} alt={feature3.description} fill className="object-contain" data-ai-hint={feature3.imageHint}/>
-                </div>}
-                <CardHeader className="p-0">
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
                   <CardTitle className="font-headline">{t('landing_feature3_title')}</CardTitle>
-                  <CardDescription>
-                    {t('landing_feature3_description')}
-                  </CardDescription>
+                  <CardDescription>{t('landing_feature3_description')}</CardDescription>
                 </CardHeader>
               </Card>
             </div>
           </div>
         </section>
-
+        <section className="w-full py-10">
+          <div className="container px-4 md:px-6">
+            <h3 className="text-xl font-semibold mb-4">Explore popular services</h3>
+            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {['Cleaning','Moving','Landscaping','Handyman','Events','Other'].map(cat => (
+                <Link key={cat} href={`/services/${cat.toLowerCase()}`} className="group flex items-center justify-between rounded-md border p-3 hover:bg-accent">
+                  <span>{cat}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground"/>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+        
         <Testimonials />
         
         <section className="w-full py-12 md:py-24 lg:py-32 bg-card">

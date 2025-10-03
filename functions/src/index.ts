@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
+import fetch from 'node-fetch';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -177,5 +178,30 @@ export const createSetupIntent = functions.https.onCall(async (data, context) =>
   const customerId = await getStripeCustomerId(uid);
   const setupIntent = await stripe.setupIntents.create({ customer: customerId, automatic_payment_methods: { enabled: true } });
   return { clientSecret: setupIntent.client_secret };
+});
+
+// Optional: mark hasPaymentMethod after webhook in real app. Simple callable for demo:
+export const markHasPaymentMethod = functions.https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be signed in');
+  await db.collection('users').doc(context.auth.uid).set({ hasPaymentMethod: true }, { merge: true });
+  return { ok: true };
+});
+
+// reCAPTCHA v3 verification callable
+export const verifyRecaptcha = functions.https.onCall(async (data, context) => {
+  const token = data?.token as string | undefined;
+  if (!token) throw new functions.https.HttpsError('invalid-argument', 'Missing token');
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) throw new functions.https.HttpsError('failed-precondition', 'Recaptcha secret not configured');
+  const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
+  });
+  const json = await res.json();
+  if (!json.success || (json.score !== undefined && json.score < 0.5)) {
+    throw new functions.https.HttpsError('permission-denied', 'Recaptcha verification failed');
+  }
+  return { ok: true, score: json.score };
 });
 

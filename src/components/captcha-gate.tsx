@@ -1,28 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { httpsCallable, getFunctions } from 'firebase/functions';
+import Script from 'next/script';
 
 type CaptchaGateProps = {
   onChange?: (verified: boolean) => void;
-  label?: string;
   className?: string;
 };
 
-export default function CaptchaGate({ onChange, label = 'I am not a robot', className }: CaptchaGateProps) {
-  const [checked, setChecked] = useState(false);
+export default function CaptchaGate({ onChange, className }: CaptchaGateProps) {
+  const [ready, setReady] = useState(false);
+  const [ok, setOk] = useState(false);
+  const functions = getFunctions();
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string | undefined;
 
-  useEffect(() => {
-    onChange?.(checked);
-  }, [checked, onChange]);
+  useEffect(() => { onChange?.(ok); }, [ok, onChange]);
+
+  const execute = async () => {
+    if (!siteKey) return setOk(true); // bypass if not configured
+    // @ts-ignore
+    const token = await window.grecaptcha.execute(siteKey, { action: 'submit' });
+    const verify = httpsCallable(functions, 'verifyRecaptcha');
+    try {
+      const res = await verify({ token });
+      setOk((res.data as any)?.ok === true);
+    } catch {
+      setOk(false);
+    }
+  };
 
   return (
     <div className={className}>
-      <div className="flex items-center space-x-2 border rounded-md p-3">
-        <Checkbox id="captcha-gate" checked={checked} onCheckedChange={(v) => setChecked(Boolean(v))} />
-        <Label htmlFor="captcha-gate">{label}</Label>
-      </div>
+      {siteKey && (
+        <Script src={`https://www.google.com/recaptcha/api.js?render=${siteKey}`} onLoad={() => setReady(true)} strategy="afterInteractive" />
+      )}
+      <button type="button" onClick={execute} disabled={!ready} className="text-xs text-muted-foreground underline">
+        Verify reCAPTCHA
+      </button>
+      {ok && <span className="ml-2 text-xs text-green-600">Verified</span>}
     </div>
   );
 }
