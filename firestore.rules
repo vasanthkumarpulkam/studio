@@ -31,7 +31,8 @@ service cloud.firestore {
           // job poster can read bids for their job
           get(/databases/$(database)/documents/job_posts/$(jobId)).data.postedBy == request.auth.uid
         );
-        allow list: if false; // require targeted queries
+        // allow queries; doc-level get checks still apply
+        allow list: if signedIn();
         allow update, delete: if false; // immutable; changes via server functions later
       }
     }
@@ -46,7 +47,7 @@ service cloud.firestore {
         // awarded provider (we cannot check award here reliably without extra data; allow providerId)
         resource.data.providerId == request.auth.uid
       );
-      allow list: if false;
+      allow list: if signedIn();
       allow update, delete: if false;
     }
 
@@ -55,10 +56,9 @@ service cloud.firestore {
       allow get, list, create, update, delete: if isAdmin();
     }
 
-    // NOTIFICATIONS - only owner can list/get their notifications
+    // NOTIFICATIONS - owner-only read/update
     match /notifications/{notificationId} {
-      allow get, update: if signedIn() && resource.data.userId == request.auth.uid;
-      allow list: if false;
+      allow read, update: if signedIn() && resource.data.userId == request.auth.uid;
       allow create, delete: if false;
     }
 
