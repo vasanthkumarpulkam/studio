@@ -2,106 +2,61 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() {
+      return signedIn() && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.since != null;
+    }
+
+    // USERS - public profiles readable, self-manageable
     match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isExistingOwner() {
-        return isSignedIn() && resource.data.userId == request.auth.uid;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
+      allow get: if true; // public profile readable
       allow list: if false;
-
-      allow create: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
-      allow update: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
-      allow delete: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
+      allow create: if isOwner(userId) && request.resource.data.uid == userId;
+      allow update, delete: if isOwner(userId);
     }
 
-    match /job_posts/{jobPostId} {
-      function isSignedIn() {
-        return request.auth != null;
+    // JOBS (stored as job_posts in this codebase)
+    match /job_posts/{jobId} {
+      allow get, list: if true;
+      allow create: if signedIn() && request.resource.data.postedBy == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.postedBy == request.auth.uid;
+
+      // BIDS subcollection - private to job poster and bidder
+      match /bids/{bidId} {
+        allow create: if signedIn() && request.resource.data.providerId == request.auth.uid;
+        allow get: if signedIn() && (
+          // bidder can read their bid
+          resource.data.providerId == request.auth.uid ||
+          // job poster can read bids for their job
+          get(/databases/$(database)/documents/job_posts/$(jobId)).data.postedBy == request.auth.uid
+        );
+        allow list: if false; // require targeted queries
+        allow update, delete: if false; // immutable; changes via server functions later
       }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isJobPostOwner(userId) {
-          return resource.data.userId == userId;
-      }
-
-      function isExistingJobPostOwner() {
-        return isSignedIn() && resource.data.userId == request.auth.uid;
-      }
-
-      allow get: if true;
-      allow list: if true;
-
-      allow create: if isSignedIn() && request.resource.data.postedBy == request.auth.uid;
-      allow update: if isSignedIn() && request.resource.data.postedBy == request.auth.uid && resource.data.postedBy == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.postedBy == request.auth.uid;
     }
 
-    match /job_posts/{jobPostId}/bids/{bidId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(providerId) {
-        return request.auth.uid == providerId;
-      }
-
-      function isBidder(providerId) {
-        return resource.data.providerId == providerId;
-      }
-
-      function isExistingBidOwner() {
-          return isSignedIn() && resource.data.providerId == request.auth.uid;
-      }
-
-      allow get: if isSignedIn();
-      allow list: if isSignedIn();
-
-      allow create: if isSignedIn() && request.resource.data.providerId == request.auth.uid;
-      allow update: if isSignedIn() && request.resource.data.providerId == request.auth.uid && resource.data.providerId == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.providerId == request.auth.uid;
+    // CHATS - only participants can access
+    match /chats/{threadId} {
+      allow get, list: if signedIn() && (request.resource.data.participants has request.auth.uid);
+      allow create: if signedIn();
+      // messages subcollection could be similarly restricted if added
     }
 
-    match /payments/{paymentId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get: if true;
-      allow list: if true;
-      allow create, update, delete: if false; 
+    // ADMINS - role-gated
+    match /admins/{uid} {
+      allow get, list, create, update, delete: if isAdmin();
     }
 
-    match /reviews/{reviewId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get: if true;
-      allow list: if true;
-      allow create, update, delete: if false; 
+    // NOTIFICATIONS - only owner can list/get their notifications
+    match /notifications/{notificationId} {
+      allow get, update: if signedIn() && resource.data.userId == request.auth.uid;
+      allow list: if false;
+      allow create, delete: if false;
     }
 
-     match /notifications/{notificationId} {
-        function isSignedIn() {
-          return request.auth != null;
-        }
-        allow get: if isSignedIn();
-        allow list: if isSignedIn();
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
-      }
+    // PAYMENTS/REVIEWS - placeholder, locked down for now
+    match /payments/{paymentId} { allow read: if false; allow write: if false; }
+    match /reviews/{reviewId} { allow read: if true; allow write: if false; }
   }
 }
