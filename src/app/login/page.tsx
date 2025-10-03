@@ -17,7 +17,7 @@ import { Suspense, useEffect, useState, useTransition } from 'react';
 import LanguageSwitcher from '@/components/language-switcher';
 import { useTranslation } from '@/hooks/use-translation';
 import { useAuth, useUser } from '@/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +33,7 @@ function Login() {
   const [isPending, startTransition] = useTransition();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isGooglePending, startGoogle] = useTransition();
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -60,6 +61,18 @@ function Login() {
                 description: error.message || 'Please check your credentials and try again.',
             });
         }
+    });
+  };
+
+  const handleGoogle = () => {
+    startGoogle(async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        // redirect handled by useEffect
+      } catch (error: any) {
+        toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: error.message || 'Try again.' });
+      }
     });
   };
 
@@ -134,6 +147,12 @@ function Login() {
 
             <div className="mt-4 text-center text-sm text-muted-foreground">
                 Or use a demo account:
+            </div>
+            <div className="mt-4">
+              <Button type="button" className="w-full" onClick={handleGoogle} disabled={isGooglePending}>
+                {isGooglePending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Continue with Google
+              </Button>
             </div>
              <div className="grid gap-2 mt-4">
               <Button type="button" variant="secondary" className="w-full" onClick={() => handleDemoLogin('customer@servicehub.com')}>

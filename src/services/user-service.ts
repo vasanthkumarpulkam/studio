@@ -18,6 +18,7 @@ export function createUserProfile(firestore: Firestore, uid: string, userData: O
   
   const dataToSave = {
     ...userData,
+    language: userData.language || 'en',
     hasPaymentMethod: false, // Default value
   };
 

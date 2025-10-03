@@ -10,9 +10,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Languages } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
+import { useUser } from '@/firebase';
 
 export default function LanguageSwitcher() {
   const { setLanguage } = useLanguage();
+  const { user } = useUser();
 
   return (
     <DropdownMenu>

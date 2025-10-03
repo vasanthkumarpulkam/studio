@@ -39,6 +39,8 @@ import { Loader2 } from 'lucide-react';
 import type { User, Provider } from '@/types';
 import { useTranslation } from '@/hooks/use-translation';
 import { useUser } from '@/firebase';
+import CaptchaGate from '@/components/captcha-gate';
+import { isRateLimited } from '@/lib/utils';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -62,6 +64,7 @@ export default function NewJobPage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const { t, isTranslationReady } = useTranslation();
+  const [captchaOk, setCaptchaOk] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && !currentUser) {
@@ -123,6 +126,14 @@ export default function NewJobPage() {
             description: 'You must be logged in to post a job.',
         });
         return;
+    }
+    if (isRateLimited('post-job', 3, 300_000)) {
+      toast({ variant: 'destructive', title: 'Slow down', description: 'You are posting too frequently. Try again later.' });
+      return;
+    }
+    if (!captchaOk) {
+      toast({ variant: 'destructive', title: 'Captcha required', description: 'Please confirm you are not a robot.' });
+      return;
     }
     
     startTransition(async () => {
@@ -348,6 +359,7 @@ export default function NewJobPage() {
                   />
                 </fieldset>
 
+                <CaptchaGate onChange={setCaptchaOk} />
                 <Button type="submit" className="w-full sm:w-auto" disabled={isPending}>
                     {isPending ? (
                         <>
