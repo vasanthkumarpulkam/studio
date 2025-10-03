@@ -23,12 +23,15 @@ import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
 import { createUserProfile } from '@/services/user-service';
+import CaptchaGate from '@/components/captcha-gate';
+import { isRateLimited } from '@/lib/utils';
 
 function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'customer' | 'provider'>('customer');
+  const [language, setLanguage] = useState<'en' | 'es'>('en');
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
@@ -37,9 +40,18 @@ function Signup() {
   const auth = useAuth();
   const firestore = useFirestore();
   const [isPending, startTransition] = useTransition();
+  const [captchaOk, setCaptchaOk] = useState(false);
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isRateLimited('signup', 3, 60_000)) {
+      toast({ variant: 'destructive', title: 'Too many attempts', description: 'Please wait a minute and try again.' });
+      return;
+    }
+    if (!captchaOk) {
+      toast({ variant: 'destructive', title: 'Captcha required', description: 'Please confirm you are not a robot.' });
+      return;
+    }
     startTransition(async () => {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -50,6 +62,7 @@ function Signup() {
             name,
             email,
             role,
+            language,
             joinedOn: new Date().toISOString(),
             status: 'active',
         });
@@ -163,6 +176,26 @@ function Signup() {
                     </div>
                   </RadioGroup>
                 </div>
+                <div className="grid gap-2">
+                  <Label>Language</Label>
+                  <RadioGroup
+                    defaultValue="en"
+                    className="grid grid-cols-2 gap-4"
+                    disabled={isPending}
+                    onValueChange={(value) => setLanguage(value as 'en' | 'es')}
+                    value={language}
+                  >
+                    <div>
+                      <RadioGroupItem value="en" id="lang-en" className="peer sr-only" />
+                      <Label htmlFor="lang-en" className="flex items-center justify-center rounded-md border-2 p-2 peer-data-[state=checked]:border-primary">English</Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem value="es" id="lang-es" className="peer sr-only" />
+                      <Label htmlFor="lang-es" className="flex items-center justify-center rounded-md border-2 p-2 peer-data-[state=checked]:border-primary">Español</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                <CaptchaGate onChange={setCaptchaOk} className="mt-2" />
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                   {t('signup_create_account_button')}

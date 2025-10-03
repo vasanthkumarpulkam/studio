@@ -40,6 +40,7 @@ import { useRouter } from 'next/navigation';
 import { useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import Pagination from '@/components/ui/pagination';
 
 
 export default function DashboardPage() {
@@ -64,6 +65,8 @@ export default function DashboardPage() {
   const { data: allJobs } = useCollection<Job>(allJobsQuery);
 
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     // Pre-select provider's skills on initial load
@@ -122,6 +125,7 @@ export default function DashboardPage() {
     });
 
     setFilteredJobs(results);
+    setPage(1);
 
   }, [searchTerm, location, selectedCategories, allJobs, providerJobs, customerJobs, sortBy, radius, currentUser, isUserLoading]);
 
@@ -259,11 +263,12 @@ export default function DashboardPage() {
                 </Select>
               </div>
               <div className="mt-6">
-                  {filteredJobs.length > 0 ? (
+            {filteredJobs.length > 0 ? (
                       <div className="space-y-6">
-                      {filteredJobs.map((job) => (
+              {filteredJobs.slice((page-1)*pageSize, page*pageSize).map((job) => (
                           <JobCard key={job.id} job={job} />
                       ))}
+              <Pagination page={page} pageSize={pageSize} total={filteredJobs.length} onPageChange={setPage} />
                       </div>
                   ) : (
                       <Card>

@@ -1,0 +1,28 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function isImage() { return request.resource.contentType.matches('image/.*'); }
+
+    // User avatars: users/{uid}/avatars/{file}
+    match /users/{uid}/avatars/{file} {
+      allow read: if true; // public avatars
+      allow write: if signedIn() && request.auth.uid == uid && isImage() && request.resource.size < 5 * 1024 * 1024; // <5MB
+    }
+
+    // Job media: jobs/{jobId}/{file}
+    match /jobs/{jobId}/{file} {
+      allow read: if true; // or via signed URLs if required later
+      allow write: if signedIn() && isImage() && request.resource.size < 10 * 1024 * 1024; // <10MB
+    }
+
+    // Chat attachments (optional): chats/{threadId}/{file}
+    // NOTE: Enforcing participant check requires custom metadata or CF token validation.
+    // For v1 keep simple: signed-in users only, small images.
+    match /chats/{threadId}/{file} {
+      allow read: if signedIn();
+      allow write: if signedIn() && isImage() && request.resource.size < 5 * 1024 * 1024; // <5MB
+    }
+  }
+}
+
