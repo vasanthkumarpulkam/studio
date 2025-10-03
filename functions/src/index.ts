@@ -168,3 +168,14 @@ export const retryFailedFees = functions.pubsub.schedule('every 6 hours').onRun(
   await Promise.all(promises);
 });
 
+// Callable: create SetupIntent for saving a card
+export const createSetupIntent = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Must be signed in');
+  }
+  const uid = context.auth.uid;
+  const customerId = await getStripeCustomerId(uid);
+  const setupIntent = await stripe.setupIntents.create({ customer: customerId, automatic_payment_methods: { enabled: true } });
+  return { clientSecret: setupIntent.client_secret };
+});
+

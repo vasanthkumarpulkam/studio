@@ -18,34 +18,63 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, Banknote, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
-import { useEffect } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { httpsCallable, getFunctions } from 'firebase/functions';
+import { auth } from '@/firebase/config';
 
-const paymentSchema = z.object({
-  cardName: z.string().min(2, 'Name on card is required.'),
-  cardNumber: z.string().length(16, 'Card number must be 16 digits.'),
-  expiryDate: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Expiry date must be in MM/YY format.'),
-  cvc: z.string().length(3, 'CVC must be 3 digits.'),
-});
+const paymentSchema = z.object({});
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
+
+function SetupForm() {
+  const { toast } = useToast();
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isPending, startTransition] = useTransition();
+  const functions = getFunctions();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+    startTransition(async () => {
+      try {
+        const createSetupIntent = httpsCallable(functions, 'createSetupIntent');
+        const { data } = await createSetupIntent({});
+        const clientSecret = (data as any).clientSecret as string;
+        const card = elements.getElement(CardElement);
+        if (!card) throw new Error('Card element missing');
+        const result = await stripe.confirmCardSetup(clientSecret, { payment_method: { card } });
+        if (result.error) throw result.error;
+        toast({ title: 'Payment Method Saved!', description: 'Your card has been securely saved.' });
+      } catch (err: any) {
+        toast({ variant: 'destructive', title: 'Setup failed', description: err.message || 'Try again.' });
+      }
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="border rounded-md p-3">
+        <CardElement options={{ hidePostalCode: true }} />
+      </div>
+      <Button type="submit" className="w-full sm:w-auto" disabled={!stripe || isPending}>
+        <CreditCard className="mr-2 h-4 w-4" /> Save Card
+      </Button>
+    </form>
+  );
+}
 
 export default function PaymentSettingsPage() {
   const { toast } = useToast();
   const { t, isTranslationReady } = useTranslation();
+  const [stripePromise, setStripePromise] = useState<any>(null);
   
-  const form = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentSchema),
-  });
-
-  function onSubmit(values: PaymentFormValues) {
-    console.log(values);
-    toast({
-      title: 'Payment Method Saved!',
-      description: 'Your payment details have been securely stored.',
-    });
-    // In a real app, you would now update the user's hasPaymentMethod status to true
-    form.reset();
-  }
+  useEffect(() => {
+    const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string | undefined;
+    if (pk) setStripePromise(loadStripe(pk));
+  }, []);
 
   if (!isTranslationReady) {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -59,71 +88,13 @@ export default function PaymentSettingsPage() {
             <CardDescription>{t('settings_payment_subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="cardName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('settings_payment_form_name_label')}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t('settings_payment_form_name_placeholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="cardNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('settings_payment_form_card_number_label')}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t('settings_payment_form_card_number_placeholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="expiryDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('settings_payment_form_expiry_label')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('settings_payment_form_expiry_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="cvc"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('settings_payment_form_cvc_label')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('settings_payment_form_cvc_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Button type="submit" className="w-full sm:w-auto">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  {t('settings_payment_form_save_button')}
-                </Button>
-              </form>
-            </Form>
+            {stripePromise ? (
+              <Elements stripe={stripePromise}>
+                <SetupForm />
+              </Elements>
+            ) : (
+              <div className="text-muted-foreground">Stripe is not configured.</div>
+            )}
             
             <div className="mt-8 text-center text-muted-foreground">
                 <p className="text-sm">{t('settings_payment_bank_info')}</p>
